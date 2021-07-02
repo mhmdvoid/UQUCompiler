@@ -1,0 +1,51 @@
+
+
+
+namespace LiveTut {
+
+class Live {
+public:
+    Live();
+private:
+    std::string m_idx;
+
+};
+}
+
+var lexer = Lexer(.cpp, src)
+
+lexer.tokens -> [namespace, LiveTut, {, class, Live, {, public, :, Live, (, ), ;, private, :, std, :, :, string, m_idx, ;, }, ;, }]
+
+package pckName;
+
+class Main {
+
+}
+
+// var lexer = Lexer(.Java, src)
+
+lexer.tokens() ->  [package, pckName, ;, class, Main, {, }]
+
+
+import UQULexer;
+
+
+cpp , Python , UnexpectedToken>
+var lexer = new Lexer(.Python, src)
+
+language custom;  // Later
+
+
+
+package pckName;
+ ^
+class Main {
+
+}
+
+// var lexer = Lexer(.Java, src)
+
+lexer.tokens() ->  [package, pckName, ;, class, Main, {, }]
+
+
+
