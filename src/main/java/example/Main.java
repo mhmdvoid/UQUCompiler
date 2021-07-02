@@ -7,7 +7,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        var srcBuffer = "foo bar";
+        // int x  = 10;
+        var srcBuffer = "x = 10;";
         var lexer = new LexerManager(srcBuffer);
 
         System.out.println(Arrays.toString(lexer.getTokens().toArray()));

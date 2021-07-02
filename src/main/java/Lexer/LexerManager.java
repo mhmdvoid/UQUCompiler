@@ -10,6 +10,7 @@ public class LexerManager {
     private char currentChar;
 
 
+    private boolean inError = false;
     private final String bufferSource;
 
     private final ArrayList<Token> tokens;
@@ -45,14 +46,25 @@ public class LexerManager {
                 // TODO: skip();
                 nextChar();
             } else if (Character.isJavaIdentifierStart(currentChar)) {
-                // nextChar();//
+//                 nextChar();//
                 lexIdentifier();
+//                nextChar();
+            } else if (Character.isDigit(currentChar)) {
+                lexNumber();
+            } else if (currentChar == '=') {
+                tokens.add(new Token(TokenType.ASSIGN_OP, "="));
                 nextChar();
+            } else if (currentChar == ';') {
+                tokens.add(new Token(TokenType.SEMICOLON, ";"));
+                nextChar();
+            } else {
+                inError = true;
+                break; // maybe?
             }
         }
     }
 
-    void lexIdentifier() {
+    private void lexIdentifier() {
         var buffer = new StringBuilder();
 
         while (Character.isJavaIdentifierPart(currentChar) && currentChar != '\0') {
@@ -63,7 +75,20 @@ public class LexerManager {
         tokens.add(new Token(TokenType.IDENTIFIER, buffer.toString()));
     }
 
+    private void lexNumber() {
+        var buffer = new StringBuilder();
+        while (Character.isDigit(currentChar) && currentChar != '\0') {
+            buffer.append(currentChar);
+            nextChar();
+        }
+        tokens.add(new Token(TokenType.NUMBER_LITERAL, buffer.toString()));
+    }
+
     public ArrayList<Token> getTokens() {
         return tokens;
+    }
+
+    public boolean isInError() {
+        return inError;
     }
 }
