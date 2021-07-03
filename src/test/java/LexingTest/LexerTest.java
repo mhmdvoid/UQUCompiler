@@ -16,17 +16,16 @@ public class LexerTest extends TestCase {
         // if there's test should fail ?
         // That;s why we need the source manager;
 
-        var testExampleDir = new File("/Users/engmoht/IdeaProjects/UQULexer/src/test/java/test_examples");
+        var testExampleDir = new File("/Users/engmoht/IdeaProjects/UQULexer/src/test/java/test_examples_pass");
 
         var testFiles = testExampleDir.listFiles();
 
         SourceManager sourceManager;
 
         var errorHappened = false;
-        assert testFiles != null;
+        assert testFiles != null;    //testFile
         for (File testFile : testFiles) {
-            sourceManager = new SourceManager(testFile.getAbsolutePath());
-            underTest = new LexerManager(sourceManager.getBufferContent().toString());
+            underTest = new LexerManager(testFile.getAbsolutePath());
             errorHappened |= underTest.isInError(); // one ture is enough;
             // false |= true ?
         }

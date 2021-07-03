@@ -5,60 +5,72 @@ import java.util.ArrayList;
 
 public class LexerManager {
 
-    private int position;
+//    private int position; // currentCursor; ???????
+//    private char charManager.currentChar();
 
-    private char currentChar;
+    
+    private CharManager charManager;
+    
 
-
+    private final Reader bufferManager;
     private boolean inError = false;
-    private final String bufferSource;
 
-    private final ArrayList<Token> tokens;
+    String bufferSource;
+    private final ArrayList<Token> tokens = new ArrayList<>();
 
-    public LexerManager(String bufferSource) {
-        this.bufferSource = bufferSource;
-        tokens = new ArrayList<>();
-        position = 0;
-        nextChar();
+
+    public LexerManager(Reader reader) {
+        this.bufferManager = reader;
+
+        if (reader instanceof SourceManager) {
+            bufferSource = ((SourceManager) reader).getBufferContent().toString();
+        }
+
+        charManager = new CharManager(bufferSource);
         this.lex();
+    }
 
 
+    public LexerManager(String srcPath) {
+        this(new SourceManager(srcPath));
     }
 
     // Low-level system level?
     // Void method has side effect and i hate that explicitly;
     public boolean nextChar() {
-        if (position < bufferSource.length()) {
-            currentChar = bufferSource.charAt(position++);
-            return true;
-        }
-
-        currentChar = '\0';
-        return false;  // unable to advance;
+        return charManager.advance();
+//        if (position < bufferSource.length()) {
+//            charManager.currentChar() = bufferSource.charAt(position++);
+//            return true;
+//        }
+//
+//        charManager.currentChar() = '\0';
+//        return false;  // unable to advance;
     }
 
 
     void lex() {
         // Recursion function here;
 
-        while (currentChar != '\0') {
-            if (Character.isWhitespace(currentChar)) {
+        while (charManager.currentChar() != '\0') {
+            if (Character.isWhitespace(charManager.currentChar())) {
                 // TODO: skip();
                 nextChar();
-            } else if (Character.isJavaIdentifierStart(currentChar)) {
+            } else if (Character.isJavaIdentifierStart(charManager.currentChar())) {
 //                 nextChar();//
                 lexIdentifier();
 //                nextChar();
-            } else if (Character.isDigit(currentChar)) {
+            } else if (Character.isDigit(charManager.currentChar())) {
                 lexNumber();
-            } else if (currentChar == '=') {
+            } else if (charManager.currentChar() == '=') {
                 tokens.add(new Token(TokenType.ASSIGN_OP, "="));
                 nextChar();
-            } else if (currentChar == ';') {
+            } else if (charManager.currentChar() == ';') {
                 tokens.add(new Token(TokenType.SEMICOLON, ";"));
                 nextChar();
             } else {
                 inError = true;
+                System.out.println("Unsupported symbol yet `" + charManager.currentChar() + "`, Found index: " + charManager.getCharPosition().column + " line: " + charManager.getCharPosition().row);
                 break; // maybe?
             }
         }
@@ -67,8 +79,8 @@ public class LexerManager {
     private void lexIdentifier() {
         var buffer = new StringBuilder();
 
-        while (Character.isJavaIdentifierPart(currentChar) && currentChar != '\0') {
-            buffer.append(currentChar);
+        while (Character.isJavaIdentifierPart(charManager.currentChar()) && charManager.currentChar() != '\0') {
+            buffer.append(charManager.currentChar());
             nextChar();
         }
 
@@ -77,8 +89,8 @@ public class LexerManager {
 
     private void lexNumber() {
         var buffer = new StringBuilder();
-        while (Character.isDigit(currentChar) && currentChar != '\0') {
-            buffer.append(currentChar);
+        while (Character.isDigit(charManager.currentChar()) && charManager.currentChar() != '\0') {
+            buffer.append(charManager.currentChar());
             nextChar();
         }
         tokens.add(new Token(TokenType.NUMBER_LITERAL, buffer.toString()));
@@ -90,5 +102,11 @@ public class LexerManager {
 
     public boolean isInError() {
         return inError;
+    }
+
+    public static void main(String[] args) {
+        var lexer = new LexerManager("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/Fail1");
+
+
     }
 }

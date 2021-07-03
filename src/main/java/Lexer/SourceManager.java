@@ -5,11 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-interface Reader {
 
-    // Fixme: change return value;
-    void read();
-}
 
 
 /**
@@ -42,10 +38,14 @@ public final class SourceManager implements Reader {
     public void read() {
         try {
             Scanner myReader = new Scanner(consumedFile);
+            boolean first = true;  // Fixme: Should find another/proper way to read
             while (myReader.hasNextLine()) {
-                bufferContent.append(" ");
+                if (!first) {
+                    bufferContent.append('\n');
+                }
                 String data = myReader.nextLine();
                 bufferContent.append(data);
+                first = false;
             }
             myReader.close();
         } catch (FileNotFoundException e) {
