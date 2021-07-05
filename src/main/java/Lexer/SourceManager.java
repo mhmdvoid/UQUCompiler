@@ -16,7 +16,7 @@ import java.util.Scanner;
 public final class SourceManager implements Reader {
     private final File consumedFile;
 
-    private final String filePath;   // Command line javac Main.java
+    private final String filePath;
 
 
     private StringBuilder bufferContent;
