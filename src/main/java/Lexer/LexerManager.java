@@ -1,9 +1,6 @@
 package Lexer;
 
 
-import lang_tokinezer.Cpp;
-import lang_tokinezer.Java;
-import lang_tokinezer.Language;
 
 import java.util.ArrayList;
 
@@ -14,7 +11,6 @@ public class LexerManager {
 
     
     private CharManager charManager;
-    private final Language language;
 
     private final Reader bufferManager;
     private boolean inError = false;
@@ -23,9 +19,9 @@ public class LexerManager {
     private final ArrayList<Token> tokens = new ArrayList<>();
 
 
-    public LexerManager(Reader reader, Language language) {
+
+    public LexerManager(Reader reader) {
         this.bufferManager = reader;
-        this.language = language;
         if (reader instanceof SourceManager) {
             bufferSource = ((SourceManager) reader).getBufferContent().toString();
         }
@@ -34,25 +30,15 @@ public class LexerManager {
         this.lex();
     }
 
-
     public LexerManager(String srcPath) {
-        this(new SourceManager(srcPath), new Java());
+        this(new SourceManager(srcPath));
     }
 
-    public LexerManager(String srcPath, Language language) {
-        this(new SourceManager(srcPath), language);
-    }
     // Low-level system level?
     // Void method has side effect and i hate that explicitly;
     public boolean nextChar() {
         return charManager.advance();
-//        if (position < bufferSource.length()) {
-//            charManager.currentChar() = bufferSource.charAt(position++);
-//            return true;
-//        }
-//
-//        charManager.currentChar() = '\0';
-//        return false;  // unable to advance;
+
     }
 
 
@@ -88,6 +74,18 @@ public class LexerManager {
             } else if (charManager.currentChar() == ')') {
                 tokens.add(new Token(TokenType.R_PAREN, ")"));
                 nextChar();
+            } else if (charManager.currentChar() == ':') {
+                tokens.add(new Token(TokenType.COLON, ":"));
+                nextChar();
+            } else if (charManager.currentChar() == '-') {
+                nextChar();
+                if (charManager.currentChar() == '>') {
+                    tokens.add(new Token(TokenType.RIGHT_ARROW, "->"));
+                    nextChar();
+                }
+                // todo:  implement dec -= later;
+                else
+                    tokens.add(new Token(TokenType.SUB, "-"));
             } else {
                 inError = true;
                 System.out.println("Unsupported symbol yet `" + charManager.currentChar() + "`, Found index: " + charManager.getCharPosition().column + " line: " + charManager.getCharPosition().row);
@@ -104,11 +102,8 @@ public class LexerManager {
             nextChar();
         }
 
-        if (language.mapToken(buffer.toString())) {
-            tokens.add(new Token(language.getToken(), language.getTokenValue()));
-        } else {
-            tokens.add(new Token(TokenType.IDENTIFIER, buffer.toString()));
-        }
+        tokens.add(new Token(TokenType.IDENTIFIER, buffer.toString()));
+
     }
     // Think of the api that's much better;
     // Don;t think too much about it? cuz really it's just another MVC problem we need extensibility reader, writer logic modifier, and other
@@ -131,9 +126,6 @@ public class LexerManager {
     }
 
     public static void main(String[] args) {
-        var lexer = new LexerManager("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/Fail1", new Cpp());
-        System.out.println(lexer.getTokens());
-        // By default is java?
 
     }
 }

@@ -1,8 +1,7 @@
 package Lexer;
 
-import lang_tokinezer.LangToken;
 
-public enum TokenType implements LangToken {
+public enum TokenType {
 
 
     // COMMENT INCLUDED IN AST ? OR JUST SKIP ?  LOOK LATER;
@@ -13,6 +12,9 @@ public enum TokenType implements LangToken {
     L_PAREN,
     R_PAREN ,
     L_BRACE,
-    R_BRACE;
+    R_BRACE,
+    COLON,
+    SUB,
+    RIGHT_ARROW;
 
 }

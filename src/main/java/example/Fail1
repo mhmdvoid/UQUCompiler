@@ -1,5 +1,0 @@
-public class {
-    private Constructor() {
-        int x = 10;
-    }
-}

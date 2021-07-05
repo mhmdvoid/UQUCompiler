@@ -3,7 +3,6 @@ package LexingTest;
 import Lexer.LexerManager;
 import Lexer.SourceManager;
 import junit.framework.TestCase;
-import lang_tokinezer.Cpp;
 
 import java.io.File;
 
@@ -30,16 +29,6 @@ public class LexerTest extends TestCase {
             errorHappened |= underTest.isInError(); // one ture is enough;
             // false |= true ?
         }
-
-        testExampleDir = new File("/Users/engmoht/IdeaProjects/UQULexer/src/test/java/cpp_example_pass");
-        testFiles = testExampleDir.listFiles();
-        assert testFiles != null;
-        for (File testFile : testFiles) {
-            underTest = new LexerManager(testFile.getAbsolutePath(), new Cpp());
-            errorHappened |= underTest.isInError(); // one ture is enough;
-            // false |= true ?
-        }
-        testFiles = testExampleDir.listFiles();
 
         assertFalse(errorHappened);
     }

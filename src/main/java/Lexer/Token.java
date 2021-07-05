@@ -1,15 +1,14 @@
 package Lexer;
 
-import lang_tokinezer.LangToken;
 
 public class Token {
 
-    private final LangToken type;
+    private final TokenType type;
 
 
     private final String tokenValue;
 
-    public Token(LangToken type, String tokenValue) {
+    public Token(TokenType type, String tokenValue) {
         this.type = type;
         this.tokenValue = tokenValue;
     }
@@ -19,7 +18,7 @@ public class Token {
     // TODO: some tokenizer helper methods;  such as: isKeyword? etc...
 
 
-    public LangToken getType() {
+    public TokenType getType() {
         return type;
     }
 
