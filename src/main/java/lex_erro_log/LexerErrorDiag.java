@@ -11,8 +11,8 @@ public class LexerErrorDiag implements LexLog {
 
     @Override
     public boolean log(int actualIdx, int newLineIdx) { // can throw? right?
-        var beginIdx = actualIdx - newLineIdx;
         try {
+            var beginIdx = actualIdx - newLineIdx;
             var cutErrorText = buffer.substring(beginIdx); // int x: 10\n other lines right?
             int i = 0;
             for (;i < cutErrorText.length(); i++) {
