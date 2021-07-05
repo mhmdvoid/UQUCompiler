@@ -9,11 +9,8 @@ import java.util.ArrayList;
 
 public class LexerManager {
 
-//    private int position; // currentCursor; ???????
-//    private char charManager.currentChar();
-
     
-    private CharManager charManager;
+    private final CharManager charManager;
     private final Language language;
 
     private final Reader bufferManager;
@@ -46,13 +43,6 @@ public class LexerManager {
     // Void method has side effect and i hate that explicitly;
     public boolean nextChar() {
         return charManager.advance();
-//        if (position < bufferSource.length()) {
-//            charManager.currentChar() = bufferSource.charAt(position++);
-//            return true;
-//        }
-//
-//        charManager.currentChar() = '\0';
-//        return false;  // unable to advance;
     }
 
 
@@ -90,6 +80,7 @@ public class LexerManager {
                 nextChar();
             } else {
                 inError = true;
+                charManager.log(charManager.getCharPosition().column, charManager.m_idx);
                 System.out.println("Unsupported symbol yet `" + charManager.currentChar() + "`, Found index: " + charManager.getCharPosition().column + " line: " + charManager.getCharPosition().row);
                 break; // maybe?
             }
@@ -131,8 +122,7 @@ public class LexerManager {
     }
 
     public static void main(String[] args) {
-        var lexer = new LexerManager("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/Fail1", new Cpp());
-        System.out.println(lexer.getTokens());
+        var lexer = new LexerManager("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/Fail1");
         // By default is java?
 
     }
