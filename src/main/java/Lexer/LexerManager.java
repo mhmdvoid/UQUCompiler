@@ -1,6 +1,7 @@
 package Lexer;
 
-
+import Lexer.language.Java;
+import Lexer.language.Language;
 
 import java.util.ArrayList;
 
@@ -9,6 +10,7 @@ public class LexerManager {
     
     private final CharManager charManager;
 
+    private final Java java;
 
     private final Reader bufferManager;
     private boolean inError = false;
@@ -18,8 +20,9 @@ public class LexerManager {
 
 
 
-    public LexerManager(Reader reader) {
+    public LexerManager(Reader reader, Java java) {
         this.bufferManager = reader;
+        this.java = java;
         if (reader instanceof SourceManager) {
             bufferSource = ((SourceManager) reader).getBufferContent().toString();
         }
@@ -29,7 +32,7 @@ public class LexerManager {
     }
 
     public LexerManager(String srcPath) {
-        this(new SourceManager(srcPath));
+        this(new SourceManager(srcPath), Java.instance());
     }
 
     // Low-level system level?
@@ -74,6 +77,12 @@ public class LexerManager {
             } else if (charManager.currentChar() == ':') {
                 tokens.add(new Token(TokenType.COLON, ":"));
                 nextChar();
+            } else if (charManager.currentChar() == '[') {
+                tokens.add(new Token(TokenType.L_BRACKET, "["));
+                nextChar();
+            } else if (charManager.currentChar() == ']') {
+                tokens.add(new Token(TokenType.R_BRACKET, "]"));
+                nextChar();
             } else if (charManager.currentChar() == '-') {
                 nextChar();
                 if (charManager.currentChar() == '>') {
@@ -100,7 +109,11 @@ public class LexerManager {
             nextChar();
         }
 
-        tokens.add(new Token(TokenType.IDENTIFIER, buffer.toString()));
+        if (java.foundKeyword(buffer.toString())) {
+            tokens.add(new Token(java.getTokenType(), buffer.toString()));
+        } else {
+            tokens.add(new Token(TokenType.IDENTIFIER, buffer.toString()));
+        }
 
     }
     // Think of the api that's much better;
@@ -121,6 +134,13 @@ public class LexerManager {
 
     public boolean isInError() {
         return inError;
+    }
+
+
+    public static void main(String[] args) {
+        var lexer = new LexerManager("/Users/engmoht/IdeaProjects/UQULexer/src/test/java/java_example_pass/Main.java");
+        System.out.println(lexer.getTokens());
+
     }
 
 }

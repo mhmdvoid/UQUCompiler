@@ -15,6 +15,18 @@ public enum TokenType {
     R_BRACE,
     COLON,
     SUB,
+    PUBLIC,
+    PACKAGE,
+    PRIVATE,
+    IMPORT,
+    VOID,
+    INT_KWD,
+    BOOLEAN,
+    FOR,
+    L_BRACKET,
+    R_BRACKET,
+    NEW,
+
     RIGHT_ARROW;
 
 }
