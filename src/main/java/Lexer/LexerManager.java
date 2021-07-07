@@ -108,10 +108,10 @@ public class LexerManager {
     private void lexIdentifier() {
         var buffer = new StringBuilder();
 
-        while (Character.isJavaIdentifierPart(charManager.currentChar()) && charManager.currentChar() != '\0') {
+        do {
             buffer.append(charManager.currentChar());
             nextChar();
-        }
+        } while (Character.isJavaIdentifierPart(charManager.currentChar()) && charManager.currentChar() != '\0') ;
         tokens.add(new Token(keywords.getOrDefault(buffer.toString(), TokenType.IDENTIFIER), buffer.toString()));
 
     }
@@ -131,6 +131,11 @@ public class LexerManager {
 
     public boolean isInError() {
         return inError;
+    }
+
+    public static void main(String[] args) {
+        var lexer = new LexerManager("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang");
+        System.out.println(lexer.getTokens());
     }
 
 }

@@ -27,8 +27,9 @@ public class CharManager {
     }
 
 
-
-    boolean advance() {
+    public boolean advance() {
+        // var x = 10
+        //          ^
         if (charPosition.column < source.length()) {
             wrappedChar = source.charAt(charPosition.column ++);
             m_idx ++;
@@ -42,6 +43,12 @@ public class CharManager {
         wrappedChar = '\0';
         return false;
 
+    }
+    public boolean peek(int by) {
+        var ableToPeek = true;
+        for (var i = 0; i < by && ableToPeek; i++)
+            ableToPeek = advance();
+        return ableToPeek;
     }
 
     // Todo: return a logger instance and check for null test;
@@ -57,15 +64,8 @@ public class CharManager {
         return charPosition;
     }
 
-
-
-
     public char currentChar() {
         return wrappedChar;
     }
 }
 
-class Position {
-    int row = 1;
-    int column;  // should be private ? write ?
-}
