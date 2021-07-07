@@ -14,7 +14,7 @@ Currently, UQULang is only being developed by me, Mohammed.
 ### Example of what UQULang should look like at the end 
 ```
 func int main(i: int, args: string[]) {
-    print("Hello, World);
+    print("Hello, World");
     return 0;
 }
 ```
