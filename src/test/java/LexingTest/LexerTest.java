@@ -16,7 +16,7 @@ public class LexerTest extends TestCase {
         // if there's test should fail ?
         // That;s why we need the source manager;
 
-        var testExampleDir = new File("/Users/engmoht/IdeaProjects/UQULexer/src/test/java/java_example_pass");
+        var testExampleDir = new File("/Users/engmoht/IdeaProjects/UQULexer/src/test/java/uqulang_test_pass");
 
         var testFiles = testExampleDir.listFiles();
 

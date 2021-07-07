@@ -1,0 +1,3 @@
+func int add(x : int, y: int) {
+    return x + y;
+}
