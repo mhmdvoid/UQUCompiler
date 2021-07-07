@@ -1,12 +1,13 @@
 package Lexer;
 
-
-public enum TokenType {
+public enum TokenType  {
 
 
     // COMMENT INCLUDED IN AST ? OR JUST SKIP ?  LOOK LATER;
     IDENTIFIER,
+    ADD_OP,
     NUMBER_LITERAL,
+    COMMA,
     ASSIGN_OP,
     SEMICOLON,
     L_PAREN,
@@ -15,18 +16,14 @@ public enum TokenType {
     R_BRACE,
     COLON,
     SUB,
-    PUBLIC,
-    PACKAGE,
-    PRIVATE,
-    IMPORT,
-    VOID,
     INT_KWD,
-    BOOLEAN,
-    FOR,
     L_BRACKET,
     R_BRACKET,
-    NEW,
+    FUNC,
+    STRING_KWD,
+    IMMUTABLE,
+    MUTABLE,
+    RETURN,
 
-    RIGHT_ARROW;
 
 }

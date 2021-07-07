@@ -1,38 +1,46 @@
 package Lexer;
 
-import Lexer.language.Java;
-import Lexer.language.Language;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LexerManager {
 
-    
+
     private final CharManager charManager;
 
-    private final Java java;
-
-    private final Reader bufferManager;
+    private final SourceManager bufferManager;
     private boolean inError = false;
 
     String bufferSource;
+
+    private Map<String, TokenType> keywords;
     private final ArrayList<Token> tokens = new ArrayList<>();
 
 
-
-    public LexerManager(Reader reader, Java java) {
-        this.bufferManager = reader;
-        this.java = java;
-        if (reader instanceof SourceManager) {
-            bufferSource = ((SourceManager) reader).getBufferContent().toString();
-        }
-
+    public LexerManager(SourceManager bufferManager) {
+        this.bufferManager = bufferManager;
+        bufferSource = bufferManager.getBufferContent().toString();
         charManager = new CharManager(bufferSource);
+        keywords = new HashMap<>();
+        fillKwds();
+
+
         this.lex();
     }
 
+    private void fillKwds() {
+        keywords.put("func", TokenType.FUNC);
+        keywords.put("mutable", TokenType.MUTABLE);
+        keywords.put("immutable", TokenType.IMMUTABLE);
+        keywords.put("return", TokenType.RETURN);
+        keywords.put("int", TokenType.INT_KWD);
+        keywords.put("string", TokenType.STRING_KWD);
+    }
+
     public LexerManager(String srcPath) {
-        this(new SourceManager(srcPath), Java.instance());
+        this(new SourceManager(srcPath));
     }
 
     // Low-level system level?
@@ -64,9 +72,14 @@ public class LexerManager {
             } else if (charManager.currentChar() == '{') {
                 tokens.add(new Token(TokenType.L_BRACE, "{"));
                 nextChar();
-            }
-            else if (charManager.currentChar() == '}') {
+            } else if (charManager.currentChar() == '}') {
                 tokens.add(new Token(TokenType.R_BRACE, "}"));
+                nextChar();
+            } else if (charManager.currentChar() == ',') {
+                tokens.add(new Token(TokenType.COMMA, ","));
+                nextChar();
+            } else if (charManager.currentChar() == '+') {
+                tokens.add(new Token(TokenType.ADD_OP, "+"));
                 nextChar();
             } else if (charManager.currentChar() == '(') {
                 tokens.add(new Token(TokenType.L_PAREN, "("));
@@ -83,15 +96,6 @@ public class LexerManager {
             } else if (charManager.currentChar() == ']') {
                 tokens.add(new Token(TokenType.R_BRACKET, "]"));
                 nextChar();
-            } else if (charManager.currentChar() == '-') {
-                nextChar();
-                if (charManager.currentChar() == '>') {
-                    tokens.add(new Token(TokenType.RIGHT_ARROW, "->"));
-                    nextChar();
-                }
-                // todo:  implement dec -= later;
-                else
-                    tokens.add(new Token(TokenType.SUB, "-"));
             } else {
                 inError = true;
                 charManager.log(charManager.getCharPosition().column, charManager.m_idx);
@@ -108,16 +112,9 @@ public class LexerManager {
             buffer.append(charManager.currentChar());
             nextChar();
         }
-
-        if (java.foundKeyword(buffer.toString())) {
-            tokens.add(new Token(java.getTokenType(), buffer.toString()));
-        } else {
-            tokens.add(new Token(TokenType.IDENTIFIER, buffer.toString()));
-        }
+        tokens.add(new Token(keywords.getOrDefault(buffer.toString(), TokenType.IDENTIFIER), buffer.toString()));
 
     }
-    // Think of the api that's much better;
-    // Don;t think too much about it? cuz really it's just another MVC problem we need extensibility reader, writer logic modifier, and other
 
     private void lexNumber() {
         var buffer = new StringBuilder();
@@ -134,13 +131,6 @@ public class LexerManager {
 
     public boolean isInError() {
         return inError;
-    }
-
-
-    public static void main(String[] args) {
-        var lexer = new LexerManager("/Users/engmoht/IdeaProjects/UQULexer/src/test/java/java_example_pass/Main.java");
-        System.out.println(lexer.getTokens());
-
     }
 
 }

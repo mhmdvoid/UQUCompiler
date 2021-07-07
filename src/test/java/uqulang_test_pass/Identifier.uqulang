@@ -1,0 +1,6 @@
+func int test() {
+
+
+    mutable foo : int = 10;
+    return foo;
+}
