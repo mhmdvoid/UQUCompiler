@@ -17,8 +17,8 @@ functionDecl := FUNC (VOID | type) IDENTIFIER  // method
                          block
 
 parameters := L_PAREN
-                    [formalParameter {COMMA formalParameter}]
-                    R_PAREN
+              [parameter {COMMA parameter}]
+              R_PAREN
 
 parameter := type IDENTIFIER
 
