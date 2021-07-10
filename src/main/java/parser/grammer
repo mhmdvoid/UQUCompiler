@@ -1,0 +1,25 @@
+######
+
+This file contains the syntactic grammar of our simple language
+var x: int = 10;
+func int main(arg: int, argvs: string[]) { return 0; }
+-----------------------------------------------------------------------
+Warning: Parsers are context-free grammar, i.e - they don't care about the context 'Meaning/Logic' of the program. it's about syntactic construction of tokens.
+E.g var x: int = 10 + true; .  Shouldn't be a problem for a parser since the construction of assignment expression matches the requirements/rules.
+Further, This semantic/logical error should be caught in other compiler's phases. Not to be confused
+
+######
+
+###### START GRAMMAR ######
+
+functionDecl := FUNC (VOID | type) IDENTIFIER  // method
+                         parameters
+                         block
+
+parameters := L_PAREN
+                    [formalParameter {COMMA formalParameter}]
+                    R_PAREN
+
+parameter := type IDENTIFIER
+
+block := L_BRACE /*local-block*/ R_BRACE

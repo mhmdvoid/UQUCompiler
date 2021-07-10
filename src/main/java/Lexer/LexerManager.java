@@ -28,12 +28,14 @@ public class LexerManager {
 
 
         this.lex();
+        tokens.add(new Token(TokenType.EOF, "\0"));
     }
 
     private void fillKwds() {
         keywords.put("func", TokenType.FUNC);
-        keywords.put("mutable", TokenType.MUTABLE);
-        keywords.put("immutable", TokenType.IMMUTABLE);
+        keywords.put("var", TokenType.VAR);
+//        keywords.put("mutable", TokenType.MUTABLE);
+//        keywords.put("immutable", TokenType.IMMUTABLE);
         keywords.put("return", TokenType.RETURN);
         keywords.put("int", TokenType.INT_KWD);
         keywords.put("string", TokenType.STRING_KWD);

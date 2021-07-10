@@ -33,4 +33,8 @@ public class Token {
                 ", tokenValue='" + tokenValue + '\'' +
                 '}';
     }
+
+    public boolean isNot(TokenType tokenType) {
+        return tokenType == this.type;
+    }
 }
