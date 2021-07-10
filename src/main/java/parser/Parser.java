@@ -3,6 +3,10 @@ package parser;
 import Lexer.LexerManager;
 import Lexer.Token;
 import Lexer.TokenType;
+import ast.BlockNode;
+import ast.MethodDeclNode;
+import ast.ParamNode;
+import ast.ParameterNode;
 
 public class Parser {
 
@@ -72,6 +76,25 @@ public class Parser {
             System.err.println(parseErrorMsg);
             return true;
         }
+    }
+
+    MethodDeclNode parseMethodDecl() {
+        // TODO: 7/10/21 Unimplemented method
+        return null;
+    }
+
+    ParameterNode parseParams() {
+        // TODO: 7/10/21 Unimplemented method
+        return null;
+    }
+
+    ParamNode parseParam() {
+        // TODO: 7/10/21 Unimplemented method
+        return null;
+    }
+    BlockNode parseBlock() {
+        // TODO: 7/10/21 Unimplemented method
+        return null;
     }
 
     public Token token() {
