@@ -21,9 +21,11 @@ public enum TokenType  {
     R_BRACKET,
     FUNC,
     STRING_KWD,
-    IMMUTABLE,
-    MUTABLE,
+    VAR,
+//    IMMUTABLE,
+//    MUTABLE,
     RETURN,
+    EOF;
 
 
 }
