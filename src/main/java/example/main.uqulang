@@ -1,1 +1,1 @@
-func int main(args: int, anotherParam: int)
+func int main(args: Any, anotherParam: int)
