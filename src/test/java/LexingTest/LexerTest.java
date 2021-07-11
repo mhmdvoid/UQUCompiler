@@ -1,7 +1,7 @@
 package LexingTest;
 
-import Lexer.LexerManager;
-import Lexer.SourceManager;
+import lexer.LexerManager;
+import lexer.SourceManager;
 import junit.framework.TestCase;
 
 import java.io.File;

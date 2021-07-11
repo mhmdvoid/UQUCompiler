@@ -1,4 +1,4 @@
-package Lexer;
+package lexer;
 
 
 import java.util.ArrayList;

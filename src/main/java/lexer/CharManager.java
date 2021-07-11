@@ -1,4 +1,4 @@
-package Lexer;
+package lexer;
 
 import lex_erro_log.LexLog;
 import lex_erro_log.LexerErrorDiag;
