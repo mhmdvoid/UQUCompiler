@@ -1,7 +1,1 @@
-func int main(args: string[]) {
-    immutable x : int = 10;
-    mutable   y : string
-    print(x);
-
-    return 10;
-}
+func int main(args: int, anotherParam: int)

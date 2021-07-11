@@ -15,6 +15,9 @@ Further, This semantic/logical error should be caught in other compiler's phases
 functionDecl := FUNC (VOID | type) IDENTIFIER  // method
                          parameters
                          block
+type := (basicType)
+
+basicType := INT
 
 parameters := L_PAREN
               [parameter {COMMA parameter}]
