@@ -1,19 +1,25 @@
 package ast;
 
-import java.util.ArrayList;
-
 public class ParameterNode extends ASTNode {
 
-    ArrayList<ParamNode> params;
+    String paramName;
 
-    public ParameterNode(ArrayList<ParamNode> params) {
-        this.params = params;
+    String typeName;
+//    private final int dataType;
+//    Type paramType; Todo : Implement simple type system
+
+
+    public ParameterNode(String paramName, String typeName) {
+        this.paramName = paramName;
+        this.typeName = typeName;
+//        dataType = Types.typenameToInt(typeName);
     }
 
     @Override
     public String toString() {
-        return "ParameterNode{" +
-                "params=" + params +
+        return "ParamNode{" +
+                "paramName='" + paramName + '\'' +
+                ", typeName='" + typeName + '\'' +
                 '}';
     }
 }

@@ -10,13 +10,20 @@ Further, This semantic/logical error should be caught in other compiler's phases
 
 ######
 
+###
+Vocab: {} indicate zero or more of this kind of syntax.
+       [] One and only one of this construct
+###
+
 ###### START GRAMMAR ######
 
-functionDecl := FUNC (VOID | type) IDENTIFIER  // method
+
+functionDecl := FUNC (VOID | type) identifier  // method
                          parameters
                          block
 type := (basicType)
 
+identifier = IDENTIFIER {DOT identifier}
 basicType := INT
 
 parameters := L_PAREN

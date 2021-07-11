@@ -4,9 +4,7 @@ import lexer.LexerManager;
 import lexer.Token;
 import lexer.TokenType;
 import ast.*;
-
 import java.util.ArrayList;
-import java.util.regex.PatternSyntaxException;
 
 public class Parser {
 
@@ -34,9 +32,9 @@ public class Parser {
 
     }
 
-
     boolean consume() {
         if (idx < lexer.getTokens().size()) {
+            skippedToken = currentToken;
             currentToken = lexer.getTokens().get(idx++);
             return true;
         }
@@ -68,7 +66,6 @@ public class Parser {
         return tokenType == currentToken.getType();
     }
 
-
     /**
      * This should consume otherwise throw syntax error;
      *
@@ -77,7 +74,6 @@ public class Parser {
      */
     boolean parseEat(TokenType tokenType, String parseErrorMsg) {
         if (see(tokenType)) {
-            skippedToken = currentToken;
             consume();
             return false;
         } else {
@@ -88,41 +84,48 @@ public class Parser {
 
     public TranslationUnit translationUnit() {
         consume();  // Pump the lexer;
-        parseMethodDecl();
+        parseMethodDecl();  // Todo: Support more top-level declaration. e.g more funcs & vars
         return null;
     }
 
-    MethodDeclNode parseMethodDecl() {
-
+    FuncDeclNode parseMethodDecl() {
         if (parseEat(TokenType.FUNC, "func keyword missing; signature should start with func ")) {
-            // Todo: Handle error;
+            skipTill(TokenType.SEMICOLON);
         }
-
-        parseEat(TokenType.INT_KWD, "function should have return type");
-        var returnType = skippedToken.getTokenValue();
-        parseEat(TokenType.IDENTIFIER, "function name missing");
-        var funcName = skippedToken.getTokenValue();
-
-        // Fixme: we'll skip types for now and implement them later;
-
-        return new MethodDeclNode(returnType, funcName, parseParams());
+        return new FuncDeclNode(parseType(), parseIdentifier(), parseParams());
     }
 
-    ParameterNode parseParams() {
-        var params = new ArrayList<ParamNode>();
+    /*IdentifierObject*/ String  parseType() {
+
+        switch (currentToken.getType()) {
+            case INT_KWD -> {
+                consume(); return skippedToken.getTokenValue(); }
+            default ->  { return null; } // Todo:  if null we;ll throw an error later
+        }
+    }
+
+    String parseIdentifier() {
+        parseEat(TokenType.IDENTIFIER, "Missing Identifier");
+        return skippedToken.getTokenValue();
+    }
+
+    ArrayList<ParameterNode> parseParams() {
+        var params = new ArrayList<ParameterNode>();
         parseEat(TokenType.L_PAREN, "`(` missing");
         if (currentToken.getType() == TokenType.R_PAREN)
-            return new ParameterNode(params);
+            return params;
         do {
-            parseEat(TokenType.IDENTIFIER, "param should have type and name");
-            var pName = skippedToken.getTokenValue();
-            parseEat(TokenType.COLON, "colon after param name");
-            parseEat(TokenType.INT_KWD, "param type missing");
-            var type = skippedToken.getTokenValue();
-
-            params.add(new ParamNode(pName, type));
+            params.add(parseParameter());
         } while (have(TokenType.COMMA));
-        return new ParameterNode(params);
+        return params;
+    }
+
+    ParameterNode parseParameter() {
+        var idName = parseIdentifier();
+        parseEat(TokenType.COLON, "parameter should be followed by colon");
+        var type = parseType();
+
+        return new ParameterNode(idName, type);
     }
 
     BlockNode parseBlock() {
@@ -134,8 +137,4 @@ public class Parser {
         return currentToken;
     }
 
-    public static void main(String[] args) {
-        var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang");
-        parser.translationUnit();
-    }
 }
