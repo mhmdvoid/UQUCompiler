@@ -1,1 +1,7 @@
+x = 10;
+lhs , rhs  => BinaryExpression; two operand , one operand ? Unary expression
+var x: int = 10;
+var y: int = 20;
+var isPositive: bool = false;
+var z: int = x + y;
 func int main(args: Any, anotherParam: int)
