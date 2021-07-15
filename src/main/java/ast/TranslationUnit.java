@@ -10,5 +10,6 @@ public class TranslationUnit extends ASTNode {
 
     public TranslationUnit(List<GlobalMembersNode> globalMembers) {
         this.globalMembers = globalMembers;
+        translationUnit = this;
     }
 }
