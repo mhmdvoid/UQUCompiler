@@ -2,21 +2,25 @@ package ast;
 
 public class Type {
 
-	 enum BasicType {
-		Int(4)
-
-		private byte size;
+	 public enum BasicType {
+		Int(4);
 
 
-		BasicType(byte size) {
-			this.size = size;
-		}
-	}
+		private int size;
+		 BasicType(int size) {
+		 	this.size = size;
+		 }
+	 }
 	BasicType type;
 	public Type(BasicType type) 
 	{
 		this.type = type;
 	}
 
-
+	@Override
+	public String toString() {
+		return "Type{" +
+				"type=" + type +
+				'}';
+	}
 }

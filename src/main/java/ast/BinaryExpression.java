@@ -17,6 +17,14 @@ public class BinaryExpression extends Expression {
         this.rhs = rhs;
     }
 
+    @Override
+    public String toString() {
+        return "BinaryExpression{" +
+                "lhs=" + lhs +
+                " rhs=" + rhs +
+                '}';
+    }
+
     //    Operator operator;
 }
 
