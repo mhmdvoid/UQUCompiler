@@ -78,14 +78,59 @@ public class Parser {
             return false;
         } else {
             inError = true;
+            System.out.println(parseErrorMsg);
+            System.err.println("Expected " + tokenType + " Got " + currentToken);
             return true;
         }
     }
 
     public TranslationUnit translationUnit() {
         consume();  // Pump the lexer;
-        parseMethodDecl();  // Todo: Support more top-level declaration. e.g more funcs & vars
+        var list = new ArrayList<>();
+        while (have(TokenType.VAR)) {
+            list.add(parseAssignmentStatement());
+        }
+
+//        TranslationUnit translationUnit = new TranslationUnit(list)));
         return null;
+//        parseMethodDecl();  // Todo: Support more top-level declaration. e.g more funcs & vars
+    }
+
+    // var isGlobal : bool = true;
+    // Syntax diagnostic engine;
+    AssignmentOperationNode parseAssignmentStatement() {
+
+        var lhs = parseVarDecl();
+        var rhs = parseInitialization();
+        parseEat(TokenType.SEMICOLON, "assignment statement end ; ");
+        return new AssignmentOperationNode(lhs, rhs);
+    }
+
+    LhsVarNode parseVarDecl() {
+            parseEat(TokenType.IDENTIFIER, "variable name missing");
+            var varName = skippedToken.getTokenValue();
+            // we should have a diagnostic engine ? w/ type-checker;
+            parseEat(TokenType.COLON, "colon for type");
+            var type = parseType();
+            return new LhsVarNode(varName, type);
+//            if (see(TokenType.SEMICOLON)) {
+//                // todo: return new VarDeclaration(varName, varType);
+//            } else {
+//                // todo: parse VarInitializationNode;
+//
+//            }
+        }
+
+    Expression parseInitialization() {
+        parseEat(TokenType.ASSIGN_OP, "variable initialization should start with `=`");
+        return new IntegerLiteral(parseValue());
+    }
+
+    String parseValue() {
+        if (have(TokenType.NUMBER_LITERAL)) {
+            return skippedToken.getTokenValue();
+        }
+        return ""; // fixme;
     }
 
     FuncDeclNode parseMethodDecl() {
@@ -95,11 +140,11 @@ public class Parser {
         return new FuncDeclNode(parseType(), parseIdentifier(), parseParams());
     }
 
-    /*IdentifierObject*/ String  parseType() {
+    /*IdentifierObject*/ Type parseType() {
 
         switch (currentToken.getType()) {
             case INT_KWD -> {
-                consume(); return skippedToken.getTokenValue(); }
+                consume(); return new Type(Type.BasicType.Int); }
             default ->  { return null; } // Todo:  if null we;ll throw an error later
         }
     }
@@ -137,4 +182,8 @@ public class Parser {
         return currentToken;
     }
 
+    public static void main(String[] args) {
+        var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang");
+        parser.translationUnit();
+    }
 }

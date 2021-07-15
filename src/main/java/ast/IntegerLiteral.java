@@ -1,7 +1,7 @@
 package ast;
 
 
-class IntegerLiteral extends Expression {
+public class IntegerLiteral extends Expression {
 	
 
 	String intValue;
@@ -10,10 +10,19 @@ class IntegerLiteral extends Expression {
 	public IntegerLiteral(String intValue) 
 	{
 		this.intValue = intValue;
+		typeCheck();
 	}
 
 	public Expression typeCheck() {
 		this.type = new Type(Type.BasicType.Int);
 		return this;
+	}
+
+	@Override
+	public String toString() {
+		return "IntegerLiteral{" +
+				"type=" + type +
+				", intValue='" + intValue + '\'' +
+				'}';
 	}
 }
