@@ -8,7 +8,6 @@ import java.util.List;
 public class TranslationUnit extends ASTNode {
     List<GlobalMembersNode> globalMembers;
 
-
     protected TranslationUnit(int line) {
         super(line);
     }
