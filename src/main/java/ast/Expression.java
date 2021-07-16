@@ -7,5 +7,8 @@ public class Expression extends Statement {
 
     protected boolean isStatementExpression;
 
+    protected Expression(int line) {
+        super(line);
+    }
 }
 

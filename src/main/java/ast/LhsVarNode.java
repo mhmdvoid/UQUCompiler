@@ -5,7 +5,8 @@ public class LhsVarNode extends Expression {
 
 	String varName;
 
-	public LhsVarNode(String varName, Type varType) {
+	public LhsVarNode(int line, String varName, Type varType) {
+		super(line);
 		this.varName = varName;
 		this.type = varType;
 	}

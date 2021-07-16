@@ -3,7 +3,8 @@ package ast;
 public class Type {
 
 	 public enum BasicType {
-		Int(4);
+		Int(4),
+		Bool(1);
 
 
 		private int size;

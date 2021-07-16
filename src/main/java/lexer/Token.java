@@ -8,7 +8,9 @@ public class Token {
 
     private final String tokenValue;
 
-    public Token(TokenType type, String tokenValue) {
+    private final int line;
+    public Token(int line, TokenType type, String tokenValue) {
+        this.line = line;
         this.type = type;
         this.tokenValue = tokenValue;
     }
@@ -26,11 +28,16 @@ public class Token {
         return tokenValue;
     }
 
+    public int getLine() {
+        return line;
+    }
+
     @Override
     public String toString() {
         return "Token{" +
                 "type=" + type +
                 ", tokenValue='" + tokenValue + '\'' +
+                ", line=" + line +
                 '}';
     }
 

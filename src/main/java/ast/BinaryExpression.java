@@ -11,11 +11,14 @@ public class BinaryExpression extends Expression {
     String operator;
     Expression rhs;
 
-    public BinaryExpression(Expression lhs, String operator, Expression rhs) {
+    public BinaryExpression(int line, Expression lhs, String operator, Expression rhs) {
+        super(line);
         this.lhs = lhs;
         this.operator = operator;
         this.rhs = rhs;
     }
+
+
 
     @Override
     public String toString() {

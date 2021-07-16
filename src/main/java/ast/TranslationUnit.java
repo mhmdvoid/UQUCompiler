@@ -8,8 +8,7 @@ import java.util.List;
 public class TranslationUnit extends ASTNode {
     List<GlobalMembersNode> globalMembers;
 
-    public TranslationUnit(List<GlobalMembersNode> globalMembers) {
-        this.globalMembers = globalMembers;
-        translationUnit = this;
+    protected TranslationUnit(int line) {
+        super(line);
     }
 }
