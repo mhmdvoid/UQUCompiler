@@ -9,7 +9,8 @@ public class FuncDeclNode extends ASTNode {
     String funcName;
     ArrayList<ParameterNode> funcParams;
 
-    public FuncDeclNode(Type returnType, String funcName, ArrayList<ParameterNode> funcParams) {
+    public FuncDeclNode(int line, Type returnType, String funcName, ArrayList<ParameterNode> funcParams) {
+        super(line);
         this.returnType = returnType;
         this.funcName = funcName;
         this.funcParams = funcParams;

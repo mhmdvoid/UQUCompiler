@@ -9,7 +9,8 @@ public class ParameterNode extends ASTNode {
 //    Type paramType; Todo : Implement simple type system
 
 
-    public ParameterNode(String paramName, Type typeName) {
+    public ParameterNode(int line, String paramName, Type typeName) {
+        super(line);
         this.paramName = paramName;
         this.typeName = typeName;
     }

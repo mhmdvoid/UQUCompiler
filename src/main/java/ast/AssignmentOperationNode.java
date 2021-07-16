@@ -2,8 +2,8 @@ package ast;
 
 public class AssignmentOperationNode extends AssignmentStatement {
 
-    public AssignmentOperationNode(Expression lhs, Expression rhs) {
-        super(lhs, "=", rhs);
+    public AssignmentOperationNode(int line, Expression lhs, Expression rhs) {
+        super(line, lhs, "=", rhs);
     }
 
     @Override
@@ -11,6 +11,7 @@ public class AssignmentOperationNode extends AssignmentStatement {
         return "AssignmentOperationNode{" +
                 "lhs=" + lhs  +
                 " rhs=" + rhs +
+                " line=" + getLine() +
                 '}';
     }
 }

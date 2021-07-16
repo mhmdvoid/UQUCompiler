@@ -86,9 +86,11 @@ public class Parser {
 
     public TranslationUnit translationUnit() {
         consume();  // Pump the lexer;
+        var line = currentToken.getLine();
         var list = new ArrayList<>();
         while (have(TokenType.VAR)) {
-            list.add(parseAssignmentStatement());
+            System.out.println(parseAssignmentStatement());
+//            list.add(parseAssignmentStatement());
         }
 
 //        TranslationUnit translationUnit = new TranslationUnit(list)));
@@ -100,19 +102,22 @@ public class Parser {
     // Syntax diagnostic engine;
     AssignmentOperationNode parseAssignmentStatement() {
 
+        var line = currentToken.getLine();
         var lhs = parseVarDecl();
         var rhs = parseInitialization();
         parseEat(TokenType.SEMICOLON, "assignment statement end ; ");
-        return new AssignmentOperationNode(lhs, rhs);
+        return new AssignmentOperationNode(line, lhs, rhs);
     }
 
     LhsVarNode parseVarDecl() {
+        // in every node out of the way !
+        var line = currentToken.getLine();
             parseEat(TokenType.IDENTIFIER, "variable name missing");
             var varName = skippedToken.getTokenValue();
             // we should have a diagnostic engine ? w/ type-checker;
             parseEat(TokenType.COLON, "colon for type");
             var type = parseType();
-            return new LhsVarNode(varName, type);
+            return new LhsVarNode(line, varName, type);
 //            if (see(TokenType.SEMICOLON)) {
 //                // todo: return new VarDeclaration(varName, varType);
 //            } else {
@@ -122,8 +127,9 @@ public class Parser {
         }
 
     Expression parseInitialization() {
+        var line = currentToken.getLine();
         parseEat(TokenType.ASSIGN_OP, "variable initialization should start with `=`");
-        return new IntegerLiteral(parseValue());
+        return new IntegerLiteral(line, parseValue());
     }
 
     String parseValue() {
@@ -134,10 +140,11 @@ public class Parser {
     }
 
     FuncDeclNode parseMethodDecl() {
+        var line = currentToken.getLine();
         if (parseEat(TokenType.FUNC, "func keyword missing; signature should start with func ")) {
             skipTill(TokenType.SEMICOLON);
         }
-        return new FuncDeclNode(parseType(), parseIdentifier(), parseParams());
+        return new FuncDeclNode(line, parseType(), parseIdentifier(), parseParams());
     }
 
     /*IdentifierObject*/ Type parseType() {
@@ -166,11 +173,12 @@ public class Parser {
     }
 
     ParameterNode parseParameter() {
+        var line = currentToken.getLine();
         var idName = parseIdentifier();
         parseEat(TokenType.COLON, "parameter should be followed by colon");
         var type = parseType();
 
-        return new ParameterNode(idName, type);
+        return new ParameterNode(line, idName, type);
     }
 
     BlockNode parseBlock() {
