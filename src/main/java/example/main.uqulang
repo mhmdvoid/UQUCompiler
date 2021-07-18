@@ -1,2 +1,5 @@
 var x: int = 4;
 var y: int = 10;
+var anotherGlobalVar : int = 99999;
+
+func int main(i : int)

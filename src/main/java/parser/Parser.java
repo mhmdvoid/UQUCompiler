@@ -87,14 +87,16 @@ public class Parser {
     public TranslationUnit translationUnit() {
         consume();  // Pump the lexer;
         var line = currentToken.getLine();
-        var list = new ArrayList<>();
-        while (have(TokenType.VAR)) {
-            System.out.println(parseAssignmentStatement());
-//            list.add(parseAssignmentStatement());
+        var gMembers = new GlobalScope(line);   // Fixme: see line issue;
+        while (see(TokenType.VAR) || see(TokenType.FUNC)) {
+            if (have(TokenType.VAR))
+                gMembers.addStatement(parseAssignmentStatement());
+            else gMembers.addStatement(parseFuncDecl());
         }
 
+
+        return new TranslationUnit(line, /*filename: should be from lexer*/ "main.uqulang", gMembers);
 //        TranslationUnit translationUnit = new TranslationUnit(list)));
-        return null;
 //        parseMethodDecl();  // Todo: Support more top-level declaration. e.g more funcs & vars
     }
 
@@ -139,7 +141,7 @@ public class Parser {
         return ""; // fixme;
     }
 
-    FuncDeclNode parseMethodDecl() {
+    FuncDeclNode parseFuncDecl() {
         var line = currentToken.getLine();
         if (parseEat(TokenType.FUNC, "func keyword missing; signature should start with func ")) {
             skipTill(TokenType.SEMICOLON);
@@ -182,7 +184,7 @@ public class Parser {
     }
 
     BlockNode parseBlock() {
-        // TODO: 7/10/21 Unimplemented method
+        // TODO: 7/10/21 Unimplemented method, should introduce a local scope
         return null;
     }
 
@@ -192,6 +194,6 @@ public class Parser {
 
     public static void main(String[] args) {
         var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang");
-        parser.translationUnit();
+        var program = parser.translationUnit();
     }
 }

@@ -2,7 +2,7 @@ package ast;
 
 import java.util.ArrayList;
 
-public class FuncDeclNode extends ASTNode {
+public class FuncDeclNode extends Statement {  // FIXME: Should extends DeclarationNode;
 
 
     Type returnType;
