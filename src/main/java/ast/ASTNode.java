@@ -1,7 +1,9 @@
 package ast;
 
+import semantic.Context;
+
 // Should extract common classes for all AST nodes;
-public abstract class ASTNode {
+public abstract class ASTNode  {
 
     private int line;
 
@@ -9,6 +11,9 @@ public abstract class ASTNode {
         this.line = line;
     }
 
+    public  void semaAnalysis(Context context) {
+
+    }
     public int getLine() {
         return line;
     }

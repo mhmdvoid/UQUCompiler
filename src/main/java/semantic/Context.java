@@ -11,7 +11,7 @@ public class Context {
 
      TranslationUnitContext translationUnitContext;
 
-     Map<String,Definition> table;
+     public Map<String,Definition> table;
 
 
     public Context(Context surroundingContext, TranslationUnitContext translationUnitContext) {
@@ -19,7 +19,7 @@ public class Context {
         this.translationUnitContext = translationUnitContext;
         table = new HashMap<>();
     }
-
+    // Todo: include line with def type for better error message;
     public void addEntry(int line, String name, Definition definition) {
         if (table.containsKey(name)) {
             System.err.println("Redefining name: " + name + " line: " + line) ;

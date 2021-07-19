@@ -7,6 +7,11 @@ public class BoolLiteral extends Expression {
         this.value = value;
     }
 
+    public Expression typeCheck() {
+        type = new Type(Type.BasicType.Bool);
+        return this;
+    }
+
     @Override
     public String toString() {
         return "BoolLiteral{" +
