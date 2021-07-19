@@ -1,6 +1,4 @@
 var x: int = 4;
 var y: int = 10;
 var anotherGlobalVar : int = 99999;
-var isReachable: bool = true;
-
-func int main(i : int)
+var isReachable: bool = 10;
