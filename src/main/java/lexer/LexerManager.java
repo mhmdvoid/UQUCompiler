@@ -39,6 +39,8 @@ public class LexerManager {
 //        keywords.put("immutable", TokenType.IMMUTABLE);
         keywords.put("return", TokenType.RETURN);
         keywords.put("int", TokenType.INT_KWD);
+        keywords.put("true", TokenType.TRUE);
+        keywords.put("false", TokenType.FALSE);
         keywords.put("string", TokenType.STRING_KWD);
     }
 
