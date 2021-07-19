@@ -196,6 +196,7 @@ public class Parser {
     public static void main(String[] args) {
         var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang");
         var program = parser.translationUnit();
-        System.out.println(program);
+        program.semaAnalysis();
+        System.out.println(program.getTranslationUnitContext());
     }
 }

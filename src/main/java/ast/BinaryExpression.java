@@ -28,6 +28,11 @@ public class BinaryExpression extends Expression {
                 '}';
     }
 
+    @Override
+    public Expression typeCheck() {
+        return null;  // Todo: use a better design pattern;
+    }
+
     //    Operator operator;
 }
 
