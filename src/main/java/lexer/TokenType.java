@@ -22,6 +22,7 @@ public enum TokenType  {
     FUNC,
     STRING_KWD,
     VAR,
+    TRUE, FALSE,
     BOOL,
 //    IMMUTABLE,
 //    MUTABLE,

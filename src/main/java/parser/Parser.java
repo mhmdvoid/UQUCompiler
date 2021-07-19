@@ -90,19 +90,15 @@ public class Parser {
         var gMembers = new GlobalScope(line);   // Fixme: see line issue;
         while (see(TokenType.VAR) || see(TokenType.FUNC)) {
             if (have(TokenType.VAR))
-                gMembers.addStatement(parseAssignmentStatement());
+                gMembers.addStatement(parseVarDeclAssign());
             else gMembers.addStatement(parseFuncDecl());
         }
 
 
         return new TranslationUnit(line, /*filename: should be from lexer*/ "main.uqulang", gMembers);
-//        TranslationUnit translationUnit = new TranslationUnit(list)));
-//        parseMethodDecl();  // Todo: Support more top-level declaration. e.g more funcs & vars
     }
 
-    // var isGlobal : bool = true;
-    // Syntax diagnostic engine;
-    AssignmentOperationNode parseAssignmentStatement() {
+    /* AssignmentOperationNode parseAssignmentStatement() {
 
         var line = currentToken.getLine();
         var lhs = parseVarDecl();
@@ -110,35 +106,36 @@ public class Parser {
         parseEat(TokenType.SEMICOLON, "assignment statement end ; ");
         return new AssignmentOperationNode(line, lhs, rhs);
     }
+    */
 
-    LhsVarNode parseVarDecl() {
+    VarDecl parseVarDeclAssign() {
         // in every node out of the way !
         var line = currentToken.getLine();
-            parseEat(TokenType.IDENTIFIER, "variable name missing");
-            var varName = skippedToken.getTokenValue();
-            // we should have a diagnostic engine ? w/ type-checker;
-            parseEat(TokenType.COLON, "colon for type");
-            var type = parseType();
-            return new LhsVarNode(line, varName, type);
-//            if (see(TokenType.SEMICOLON)) {
-//                // todo: return new VarDeclaration(varName, varType);
-//            } else {
-//                // todo: parse VarInitializationNode;
-//
-//            }
-        }
+        parseEat(TokenType.IDENTIFIER, "variable name missing");
+        var varName = skippedToken.getTokenValue();
+        // we should have a diagnostic engine ? w/ type-checker;
+        parseEat(TokenType.COLON, "colon for type");
+        var type = parseType();
+        var initial = parseInitialization();
+        parseEat(TokenType.SEMICOLON, "var decl statement missing `;` line" + line);
+        return new VarDecl(line, varName, type, initial);
+    }
 
     Expression parseInitialization() {
         var line = currentToken.getLine();
         parseEat(TokenType.ASSIGN_OP, "variable initialization should start with `=`");
-        return new IntegerLiteral(line, parseValue());
+        return parseValue();
     }
 
-    String parseValue() {
+    Expression parseValue() {
+        var line = currentToken.getLine();
         if (have(TokenType.NUMBER_LITERAL)) {
-            return skippedToken.getTokenValue();
+            return new IntegerLiteral(line, skippedToken.getTokenValue());
+        } else if (have(TokenType.TRUE) || have(TokenType.FALSE)) {
+            return new BoolLiteral(line, skippedToken.getTokenValue());
         }
-        return ""; // fixme;
+
+        return null;  // should never reach
     }
 
     FuncDeclNode parseFuncDecl() {
@@ -152,10 +149,11 @@ public class Parser {
     /*IdentifierObject*/ Type parseType() {
 
         switch (currentToken.getType()) {
-            case INT_KWD -> {
-                consume(); return new Type(Type.BasicType.Int); }
+            case INT_KWD -> { consume(); return new Type(Type.BasicType.Int);}
+            case BOOL -> { consume(); return new Type(Type.BasicType.Bool); }
             default ->  { return null; } // Todo:  if null we;ll throw an error later
         }
+
     }
 
     String parseIdentifier() {
@@ -195,5 +193,6 @@ public class Parser {
     public static void main(String[] args) {
         var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang");
         var program = parser.translationUnit();
+        System.out.println(program);
     }
 }

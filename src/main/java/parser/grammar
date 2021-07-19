@@ -33,3 +33,10 @@ parameters := L_PAREN
 parameter := type IDENTIFIER
 
 block := L_BRACE /*local-block*/ R_BRACE
+
+## TODO
+variableDeclarationStatement ::= type variableDeclarators SEMI
+
+variableDeclarators ::= variableDeclarator {COMMA variableDeclarator}
+
+variableDeclarator ::= IDENTIFIER [ASSIGN variableInitializer]
