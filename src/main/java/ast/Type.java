@@ -1,5 +1,7 @@
 package ast;
 
+import java.util.Objects;
+
 public class Type {
 
 	 public enum BasicType {
@@ -12,7 +14,7 @@ public class Type {
 		 	this.size = size;
 		 }
 	 }
-	BasicType type;
+	private BasicType type;
 	public Type(BasicType type) 
 	{
 		this.type = type;
@@ -23,5 +25,18 @@ public class Type {
 		return "Type{" +
 				"type=" + type +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Type type1 = (Type) o;
+		return type == type1.type;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(type);
 	}
 }

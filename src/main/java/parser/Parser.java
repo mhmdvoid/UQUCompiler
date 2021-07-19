@@ -4,6 +4,9 @@ import lexer.LexerManager;
 import lexer.Token;
 import lexer.TokenType;
 import ast.*;
+import sema.AnalyzeExpression;
+import sema.SemanticBase;
+
 import java.util.ArrayList;
 
 public class Parser {
