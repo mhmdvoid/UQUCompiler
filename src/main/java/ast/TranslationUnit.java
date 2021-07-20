@@ -45,6 +45,16 @@ public class TranslationUnit extends ASTNode {
                 '}';
     }
 
+    @Override
+    protected void dump(int indent) {
+        System.out.println("TranslationUnit");
+        globalMembers.dump(indent + 2);
+    }
+
+    public void dump() {
+        dump(0);
+    }
+
     public Map getTranslationUnitContext() {
         return translationUnitContext.table;
     }

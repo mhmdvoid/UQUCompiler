@@ -1,6 +1,8 @@
 package ast;
 
 
+import compile.utils.ShapeDump;
+
 public class IntegerLiteral extends Expression {
 	
 
@@ -31,5 +33,14 @@ public class IntegerLiteral extends Expression {
 				", intValue='" + intValue + '\'' +
 				" line=" + getLine() +
 				'}';
+	}
+
+	@Override
+	protected void dump(int indent) {
+		for (int i = 0; i < indent; i++) {
+			ShapeDump.spaceTreeShape(ShapeDump.BasicShape.WhiteSpace);     // shape.print(-) in a separate class;
+
+		}
+		System.out.println("IntegerLiteral " + intValue);
 	}
 }

@@ -11,7 +11,12 @@ public abstract class ASTNode  {
         this.line = line;
     }
 
-    public  void semaAnalysis(Context context) {
+    public void semaAnalysis(Context context) {
+
+    }
+
+    // Very bad common APi
+    protected void dump(int indent) {
 
     }
     public int getLine() {
