@@ -1,5 +1,6 @@
 package ast;
 
+import compile.utils.ShapeDump;
 import semantic.Context;
 import semantic.Definition;
 
@@ -34,6 +35,15 @@ public class VarDecl extends Expression {
                 "name='" + name + '\'' +
                 ", initialExpression=" + initialExpression +
                 '}';
+    }
+
+    @Override
+    protected void dump(int indent) {
+        for (int i = 0; i < indent; i++) {
+            ShapeDump.spaceTreeShape(ShapeDump.BasicShape.WhiteSpace);
+        }
+        System.out.println("VarDeclNode");
+        initialExpression.dump(indent + 2);
     }
 
     @Override

@@ -1,4 +1,6 @@
 package ast;
+import compile.utils.ShapeDump;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,5 +32,14 @@ public class GlobalScope extends ScopeNode {
     @Override
     public String toString() {
         return statements.toString();
+    }
+
+    @Override
+    protected void dump(int indent) {
+        for (int i = 0; i < indent; i++) {
+            ShapeDump.spaceTreeShape(ShapeDump.BasicShape.WhiteSpace);
+        }
+        System.out.println("GlobalScope");
+        statements.forEach(statement -> {statement.dump(indent + 2);});
     }
 }
