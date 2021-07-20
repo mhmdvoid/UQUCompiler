@@ -14,16 +14,16 @@ public class Type {
 		 	this.size = size;
 		 }
 	 }
-	private BasicType type;
-	public Type(BasicType type) 
+	public BasicType kind;
+	public Type(BasicType kind)
 	{
-		this.type = type;
+		this.kind = kind;
 	}
 
 	@Override
 	public String toString() {
 		return "Type{" +
-				"type=" + type +
+				"type=" + kind +
 				'}';
 	}
 
@@ -32,11 +32,11 @@ public class Type {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Type type1 = (Type) o;
-		return type == type1.type;
+		return kind == type1.kind;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(type);
+		return Objects.hash(kind);
 	}
 }

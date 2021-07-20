@@ -6,6 +6,7 @@ public enum TokenType  {
     // COMMENT INCLUDED IN AST ? OR JUST SKIP ?  LOOK LATER;
     IDENTIFIER,
     ADD_OP,
+    MUL_OP,
     NUMBER_LITERAL,
     COMMA,
     ASSIGN_OP,
