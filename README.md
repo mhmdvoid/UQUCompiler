@@ -8,7 +8,7 @@
 --- 
 Currently, UQULang is only being developed by me, Mohammed.
 
-` the language is not to be taken seriously in any kind of way at this moment, since it's just another fun project of mine` 
+` the language is not to be taken seriously in any kind of way at this moment, Since it's just another fun project of mine` 
 
 
 ### Example of what UQULang should look like at the end 
