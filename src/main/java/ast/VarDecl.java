@@ -5,6 +5,7 @@ import semantic.Context;
 import semantic.Definition;
 
 // For simplicity all vars are initialized for now as grammar rule by parser
+// Fixme: this should be called GlobalVarDecl as they have non-trivial rules, Local vars don't have.
 public class VarDecl extends Expression {
 
     String name;

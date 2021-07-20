@@ -71,6 +71,9 @@ public class LexerManager {
             } else if (charManager.currentChar() == '=') {
                 tokens.add(new Token(charManager.getCharPosition().row, TokenType.ASSIGN_OP, "="));
                 nextChar();
+            } else if (charManager.currentChar() == '*') {
+                tokens.add(new Token(charManager.getCharPosition().row, TokenType.MUL_OP, "*"));
+                nextChar();
             } else if (charManager.currentChar() == ';') {
                 tokens.add(new Token(charManager.getCharPosition().row, TokenType.SEMICOLON, ";"));
                 nextChar();

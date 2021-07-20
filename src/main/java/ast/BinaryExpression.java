@@ -19,12 +19,12 @@ public class BinaryExpression extends Expression {
     }
 
 
-
     @Override
     public String toString() {
         return "BinaryExpression{" +
                 "lhs=" + lhs +
-                " rhs=" + rhs +
+                ", operator='" + operator + '\'' +
+                ", rhs=" + rhs +
                 '}';
     }
 

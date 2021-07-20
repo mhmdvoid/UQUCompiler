@@ -4,8 +4,6 @@ import lexer.LexerManager;
 import lexer.Token;
 import lexer.TokenType;
 import ast.*;
-import sema.AnalyzeExpression;
-import sema.SemanticBase;
 
 import java.util.ArrayList;
 
@@ -127,6 +125,36 @@ public class Parser {
     Expression parseInitialization() {
         var line = currentToken.getLine();
         parseEat(TokenType.ASSIGN_OP, "variable initialization should start with `=`");
+        return parseRhs();
+    }
+
+    Expression parseRhs() {
+        return parseAdditive();
+    }
+
+    private Expression parseAdditive() {
+        var line = currentToken.getLine();
+        var lhs =  parseMul();
+        while (true) {
+            if (have(TokenType.ADD_OP))  {
+                lhs = new AddOpExpression(line, lhs, parseMul());
+            } else break;
+        }
+        return lhs;
+    }
+
+    private Expression parseMul() {
+        var lhs = parsePrimary();
+        while (true) {
+            if (have(TokenType.MUL_OP))
+                lhs = new MulOpExpression(currentToken.getLine(), lhs, parsePrimary());
+            else break;
+        }
+        return lhs;
+    }
+
+
+    private Expression parsePrimary() {
         return parseValue();
     }
 
@@ -140,6 +168,7 @@ public class Parser {
 
         return null;  // should never reach
     }
+
 
     FuncDeclNode parseFuncDecl() {
         var line = currentToken.getLine();
@@ -197,6 +226,5 @@ public class Parser {
         var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang");
         var program = parser.translationUnit();
         program.semaAnalysis();
-        System.out.println(program.getTranslationUnitContext());
     }
 }
