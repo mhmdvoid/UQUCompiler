@@ -1,7 +1,7 @@
-func int loveYou(times: int) {
+func int foo(bar: int, foobar: bool) {
 
 }
 
-func bool willYouLoveMyLang() {
+func void sideEffect(sure: bool) {
 
 }

@@ -186,7 +186,7 @@ public class Parser {
             case INT_KWD -> { consume(); return new BuiltinType(BuiltinType.BuiltinContext.S_INT_32);}
             case BOOL -> { consume(); return new BuiltinType(BuiltinType.BuiltinContext.BOOL_8); }
             case VOID ->  { consume(); return new BuiltinType(BuiltinType.BuiltinContext.VOID_TYPE); }
-            default ->  { return null; } // Todo:  if null we;ll throw an error later
+            default ->  { inError = true;return null; } // Todo:  if null we;ll throw an error later
         }
 
     }
@@ -199,7 +199,7 @@ public class Parser {
     ArrayList<ParameterNode> parseParams() {
         var params = new ArrayList<ParameterNode>();
         parseEat(TokenType.L_PAREN, "`(` missing");
-        if (see(TokenType.R_PAREN))
+        if (have(TokenType.R_PAREN))
             return params;
         do {
             params.add(parseParameter());

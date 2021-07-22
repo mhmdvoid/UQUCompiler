@@ -2,6 +2,8 @@ package ast;
 
 import ast.type.Type;
 import semantic.Context;
+import semantic.Definition;
+import semantic.MethodContext;
 
 import java.util.ArrayList;
 
@@ -12,6 +14,7 @@ public class FuncDeclNode extends Statement {  // FIXME: Should extends Declarat
     String funcName;
     ArrayList<ParameterNode> funcParams;
     BlockNode funcBlock;
+    MethodContext methodContext;
 
     public FuncDeclNode(int line, Type returnType, String funcName, ArrayList<ParameterNode> funcParams, BlockNode funcBlock) {
         super(line);
@@ -23,7 +26,10 @@ public class FuncDeclNode extends Statement {  // FIXME: Should extends Declarat
 
     @Override
     public void semaAnalysis(Context context) {
-        // we do the following .. lookup the func return type, as well as params type.
+        methodContext = new MethodContext(context, returnType);
+        methodContext.addEntry(getLine(), funcName, new Definition(returnType));    // example of our table [main: int] used by return statement to check
+
+        funcParams.forEach(parameterNode -> {parameterNode.semaAnalysis(methodContext);});
     }
 
     @Override

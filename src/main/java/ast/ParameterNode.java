@@ -1,6 +1,9 @@
 package ast;
 
 import ast.type.Type;
+import semantic.Context;
+import semantic.LocalScopeDefinition;
+import semantic.MethodContext;
 
 public class ParameterNode extends ASTNode {
 
@@ -15,6 +18,13 @@ public class ParameterNode extends ASTNode {
         super(line);
         this.paramName = paramName;
         this.type = type;
+    }
+
+    @Override
+    public void semaAnalysis(Context context) {      // like the surronding ?
+        // context is methodContext;
+
+        context.addEntry(getLine(), paramName, new LocalScopeDefinition(type, ((MethodContext) context).offset()));
     }
 
     @Override
