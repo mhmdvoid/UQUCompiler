@@ -2,6 +2,7 @@ package semantic;
 
 import ast.BinaryExpression;
 import ast.Expression;
+import ast.FuncDeclNode;
 import ast.VarDecl;
 import ast.type.BuiltinType;
 import ast.type.Type;
@@ -37,11 +38,14 @@ public class TypeChecker {
             return expressionNode;
         }
 
-
-        // for bin expression we allow only int for now;
     }
 
     public Expression typeExpression(Expression expression) {
+        return null;
+    }
+
+    public FuncDeclNode checkFuncType(FuncDeclNode funcDeclNode) {
+        // we look it up? this is a sema analysis ?
         return null;
     }
     // Todo: for binding variables; we need to lookup the variable to get its type if it

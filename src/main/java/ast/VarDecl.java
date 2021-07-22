@@ -19,7 +19,7 @@ public class VarDecl extends Expression {
     public VarDecl(int line, String name, Type type, Expression initialExpression) {
         super(line);
         this.name = name;
-        this.type = type;
+        this.type = type;   // todo: lookup the variable type, for now it's coded by the parser to refuses any type name not recognised , i.e int, bool, void.
         this.initialExpression = initialExpression;
         typeChecker.typeDeclState(this);
 //        if (initialExpression == null) isInitialized = false;

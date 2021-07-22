@@ -18,6 +18,7 @@ public class BuiltinType extends Type {
     public enum BuiltinContext { // Fixme
         S_INT_32,
         BOOL_8,
+        VOID_TYPE, // variables can never have it for now
         CHAR_8;
     }
 
