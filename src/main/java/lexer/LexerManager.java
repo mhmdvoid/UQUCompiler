@@ -35,13 +35,12 @@ public class LexerManager {
         keywords.put("func", TokenType.FUNC);
         keywords.put("var", TokenType.VAR);
         keywords.put("bool", TokenType.BOOL);
-//        keywords.put("mutable", TokenType.MUTABLE);
-//        keywords.put("immutable", TokenType.IMMUTABLE);
         keywords.put("return", TokenType.RETURN);
         keywords.put("int", TokenType.INT_KWD);
         keywords.put("true", TokenType.TRUE);
         keywords.put("false", TokenType.FALSE);
         keywords.put("string", TokenType.STRING_KWD);
+        keywords.put("void", TokenType.VOID);
     }
 
     public LexerManager(String srcPath) {

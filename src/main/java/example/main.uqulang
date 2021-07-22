@@ -1,2 +1,7 @@
-var x: int = 10;
-var y: int = 10 * 10 + 19 + 19 * 200;
+func int loveYou(times: int) {
+
+}
+
+func bool willYouLoveMyLang() {
+
+}

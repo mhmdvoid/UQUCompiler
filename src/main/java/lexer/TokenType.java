@@ -18,6 +18,7 @@ public enum TokenType  {
     COLON,
     SUB,
     INT_KWD,
+    VOID,
     L_BRACKET,
     R_BRACKET,
     FUNC,
@@ -25,8 +26,6 @@ public enum TokenType  {
     VAR,
     TRUE, FALSE,
     BOOL,
-//    IMMUTABLE,
-//    MUTABLE,
     RETURN,
     EOF;
 

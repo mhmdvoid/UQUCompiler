@@ -177,7 +177,7 @@ public class Parser {
         if (parseEat(TokenType.FUNC, "func keyword missing; signature should start with func ")) {
             skipTill(TokenType.SEMICOLON);
         }
-        return new FuncDeclNode(line, parseType(), parseIdentifier(), parseParams());
+        return new FuncDeclNode(line, parseType(), parseIdentifier(), parseParams(), parseBlock());
     }
 
     /*IdentifierObject*/ Type parseType() {
@@ -185,6 +185,7 @@ public class Parser {
         switch (currentToken.getType()) {
             case INT_KWD -> { consume(); return new BuiltinType(BuiltinType.BuiltinContext.S_INT_32);}
             case BOOL -> { consume(); return new BuiltinType(BuiltinType.BuiltinContext.BOOL_8); }
+            case VOID ->  { consume(); return new BuiltinType(BuiltinType.BuiltinContext.VOID_TYPE); }
             default ->  { return null; } // Todo:  if null we;ll throw an error later
         }
 
@@ -198,11 +199,12 @@ public class Parser {
     ArrayList<ParameterNode> parseParams() {
         var params = new ArrayList<ParameterNode>();
         parseEat(TokenType.L_PAREN, "`(` missing");
-        if (currentToken.getType() == TokenType.R_PAREN)
+        if (see(TokenType.R_PAREN))
             return params;
         do {
             params.add(parseParameter());
         } while (have(TokenType.COMMA));
+        parseEat(TokenType.R_PAREN, "end params list with `)`, Check line: " + currentToken.getLine());
         return params;
     }
 
@@ -216,7 +218,12 @@ public class Parser {
     }
 
     BlockNode parseBlock() {
-        // TODO: 7/10/21 Unimplemented method, should introduce a local scope
+        var blockStartLine = currentToken.getLine();
+        parseEat(TokenType.L_BRACE, "How do you want to implement func w/o block definition, Are you mad?. To fix your stupidity check line: "  + blockStartLine);
+
+        // TODO: 7/22/21 Parse rest of the block here, Statemetns of our language if-statement, for-loop, var-declaration and similar
+
+        parseEat(TokenType.R_BRACE, "func end w close `}` line: " + currentToken.getLine());
         return null;
     }
 
