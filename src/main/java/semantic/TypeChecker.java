@@ -28,12 +28,13 @@ public class TypeChecker {
 
         var lhsInt = expressionNode.getLhs().type;
         var rhsInt = expressionNode.getRhs().type;
-        if (lhsInt.binAccept() && rhsInt.binAccept()) {
+        if (lhsInt.binAccept() && rhsInt.binAccept()) { // var x: int = false + false;
             expressionNode.type = lhsInt;
             return expressionNode;
         } else {
             System.err.println("Error typing!");
-            return null;
+            expressionNode.type = new BuiltinType(null);
+            return expressionNode;
         }
 
 
