@@ -1,10 +1,5 @@
 package ast;
-enum Operator {
-    ADD,
-    SUB,
-    ASSIGN,
-    EQUAL,
-}
+
 public class BinaryExpression extends Expression {
 
     Expression lhs;
@@ -16,6 +11,7 @@ public class BinaryExpression extends Expression {
         this.lhs = lhs;
         this.operator = operator;
         this.rhs = rhs;
+        typeChecker.typeBinExpression(this);
     }
 
 
@@ -28,9 +24,16 @@ public class BinaryExpression extends Expression {
                 '}';
     }
 
-    @Override
-    public Expression typeCheck() {
-        return null;  // Todo: use a better design pattern;
+    public Expression getLhs() {
+        return lhs;
+    }
+
+    public String getOperator() {
+        return operator;
+    }
+
+    public Expression getRhs() {
+        return rhs;
     }
 
     //    Operator operator;

@@ -1,5 +1,7 @@
 package ast;
 
+import ast.type.Type;
+
 // This represent expression 'No side effect ' except for statementExpression?
 public abstract class Expression extends Statement {
 
@@ -11,6 +13,5 @@ public abstract class Expression extends Statement {
         super(line);
     }
 
-    public abstract Expression typeCheck();
 }
 

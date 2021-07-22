@@ -1,8 +1,5 @@
 package semantic;
 
-import ast.TranslationUnit;
-import ast.Type;
-
 import java.util.HashMap;
 import java.util.Map;
 

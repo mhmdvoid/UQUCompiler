@@ -1,5 +1,7 @@
 package ast;
 
+import ast.type.Type;
+
 import java.util.ArrayList;
 
 public class FuncDeclNode extends Statement {  // FIXME: Should extends DeclarationNode;

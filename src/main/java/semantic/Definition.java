@@ -1,6 +1,6 @@
 package semantic;
 
-import ast.Type;
+import ast.type.Type;
 
 public class Definition {
 
