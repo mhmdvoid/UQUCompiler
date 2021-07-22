@@ -13,8 +13,6 @@ Currently, UQULang is only being developed by me, Mohammed.
 
 ### Example of what UQULang should look like at the end 
 ```
-var globalInt : int = 10;
-var areYouReadingThis: bool = true;
 func int main(i: int, args: string[]) {
     print("Hello, World");
     return 0;
