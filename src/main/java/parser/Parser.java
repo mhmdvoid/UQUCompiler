@@ -1,5 +1,7 @@
 package parser;
 
+import ast.type.BuiltinType;
+import ast.type.Type;
 import lexer.LexerManager;
 import lexer.Token;
 import lexer.TokenType;
@@ -116,10 +118,10 @@ public class Parser {
         var varName = skippedToken.getTokenValue();
         // we should have a diagnostic engine ? w/ type-checker;
         parseEat(TokenType.COLON, "colon for type");
-        var type = parseType();
+        var varType = parseType();
         var initial = parseInitialization();
         parseEat(TokenType.SEMICOLON, "var decl statement missing `;` line" + line);
-        return new VarDecl(line, varName, type, initial);
+        return new VarDecl(line, varName, varType, initial);
     }
 
     Expression parseInitialization() {
@@ -181,8 +183,8 @@ public class Parser {
     /*IdentifierObject*/ Type parseType() {
 
         switch (currentToken.getType()) {
-            case INT_KWD -> { consume(); return new Type(Type.BasicType.Int);}
-            case BOOL -> { consume(); return new Type(Type.BasicType.Bool); }
+            case INT_KWD -> { consume(); return new BuiltinType(BuiltinType.BuiltinContext.S_INT_32);}
+            case BOOL -> { consume(); return new BuiltinType(BuiltinType.BuiltinContext.BOOL_8); }
             default ->  { return null; } // Todo:  if null we;ll throw an error later
         }
 

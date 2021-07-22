@@ -7,13 +7,10 @@ public class BoolLiteral extends Expression {
     public BoolLiteral(int line, String value) {
         super(line);
         this.value = value;
-        typeCheck();
+
     }
 
-    public Expression typeCheck() {
-        type = new Type(Type.BasicType.Bool);
-        return this;
-    }
+
 
     @Override
     public String toString() {

@@ -1,5 +1,6 @@
 package ast;
 
+import ast.type.Type;
 import compile.utils.ShapeDump;
 import semantic.Context;
 import semantic.Definition;
@@ -9,6 +10,9 @@ import semantic.Definition;
 public class VarDecl extends Expression {
 
     String name;
+
+
+
     //    boolean isInitialized;
     Expression initialExpression;
 
@@ -17,18 +21,10 @@ public class VarDecl extends Expression {
         this.name = name;
         this.type = type;
         this.initialExpression = initialExpression;
-        typeCheck();
+        typeChecker.typeDeclState(this);
 //        if (initialExpression == null) isInitialized = false;
     }
 
-    public VarDecl typeCheck() {
-        initialExpression =  initialExpression.typeCheck();
-
-        if (!this.type.equals(initialExpression.type)) {
-            System.err.println("Semantic Error: required type: " + this.type + ", provided: " + initialExpression.type + " line: " + getLine());
-        }
-        return this;
-    }
 
     @Override
     public String toString() {
@@ -52,5 +48,9 @@ public class VarDecl extends Expression {
         // Fixme: for rhs expression if was variable ?
         context.addEntry(getLine(), name, new Definition(type));   // new variable declaration which means no lookup needed;
         // Fixme: As everyDecl requires init rhs expression we should separate nodes;
+    }
+
+    public Expression getInitialExpression() {
+        return initialExpression;
     }
 }

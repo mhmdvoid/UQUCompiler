@@ -1,6 +1,7 @@
 package ast;
 
 
+import ast.type.BuiltinType;
 import compile.utils.ShapeDump;
 
 public class IntegerLiteral extends Expression {
@@ -9,22 +10,13 @@ public class IntegerLiteral extends Expression {
 	String intValue;
 
 
-	public IntegerLiteral(int line, String intValue)
-	{
+	public IntegerLiteral(int line, String intValue) {
 
 		super(line);
 		this.intValue = intValue;
-		typeCheck();
+		typeChecker.typeConstantValue(this, BuiltinType.BuiltinContext.S_INT_32);  // a better approach to traverse !;
 	}
 
-	public Expression typeCheck() {
-		this.type = new Type(Type.BasicType.Int);
-		return this; // a new node with type conform;
-	}
-
-	public void analyzeSema() {
-
-	}
 
 	@Override
 	public String toString() {
