@@ -1,5 +1,6 @@
 package ast;
 
+import ast.type.BuiltinType;
 import compile.utils.ShapeDump;
 
 public class BoolLiteral extends Expression {
@@ -7,7 +8,7 @@ public class BoolLiteral extends Expression {
     public BoolLiteral(int line, String value) {
         super(line);
         this.value = value;
-
+        typeChecker.typeConstantValue(this, BuiltinType.BuiltinContext.BOOL_8);
     }
 
 
