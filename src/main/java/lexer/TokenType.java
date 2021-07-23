@@ -28,6 +28,7 @@ public enum TokenType  {
     BOOL,
     RETURN,
     SINGLE_COMMENT,
+    TYPEALIAS,
     EOF;
 
 

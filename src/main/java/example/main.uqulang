@@ -1,4 +1,5 @@
 var globalVar: bool = false;
+typealias Myint = int;
 func int foo(bar: int, foobar: bool) {
     var bar: bool = false;
     // var globalVar: int = 10; // globalVar gets bound to localScope;

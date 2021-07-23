@@ -41,6 +41,7 @@ public class LexerManager {
         keywords.put("false", TokenType.FALSE);
         keywords.put("string", TokenType.STRING_KWD);
         keywords.put("void", TokenType.VOID);
+        keywords.put("typealias", TokenType.TYPEALIAS);
     }
 
     public LexerManager(String srcPath) {
