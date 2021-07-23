@@ -1,6 +1,7 @@
 package ast;
 
 import ast.type.Type;
+import compile.utils.ShapeDump;
 import semantic.Context;
 import semantic.LocalScopeDefinition;
 import semantic.MethodContext;
@@ -25,6 +26,14 @@ public class ParameterNode extends ASTNode {
         // context is methodContext;
 
         context.addEntry(getLine(), paramName, new LocalScopeDefinition(type, ((MethodContext) context).offset()));
+    }
+
+    @Override
+    protected void dump(int indent) {
+        for (int i = 0; i < indent; i++) {
+            ShapeDump.spaceTreeShape(ShapeDump.BasicShape.WhiteSpace);
+        }
+        System.out.println("Parameter " + paramName);
     }
 
     @Override
