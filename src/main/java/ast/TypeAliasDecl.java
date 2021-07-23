@@ -1,5 +1,6 @@
 package ast;
 
+import ast.type.BuiltinType;
 import ast.type.Type;
 import compile.utils.ShapeDump;
 import semantic.Context;
@@ -17,9 +18,14 @@ public class TypeAliasDecl extends Statement {
 
 
     @Override
-    public void semaAnalysis(Context context) {
+    public ASTNode semaAnalysis(Context context) {
         // context is global here;
-        context.addEntry(getLine(), thaAliasName, new Definition(underlayType));   // Again: hard-coded types no need to look them up. Fix if user-defined allowed
+        if (!(underlayType instanceof BuiltinType))   // for now check here
+            System.err.println("Alias for unknown type");
+        else
+            context.addEntry(getLine(), thaAliasName, new Definition(underlayType));   // Again: hard-coded types no need to look them up. Fix if user-defined allowed
+
+        return this;
 //        we should return  age analyzing
     }
 

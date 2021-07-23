@@ -22,10 +22,11 @@ public class ParameterNode extends ASTNode {
     }
 
     @Override
-    public void semaAnalysis(Context context) {      // like the surronding ?
+    public ASTNode semaAnalysis(Context context) {      // like the surronding ?
         // context is methodContext;
-
+        System.out.println(type);   // it;s not looked up !;
         context.addEntry(getLine(), paramName, new LocalScopeDefinition(type, ((MethodContext) context).offset()));
+        return this;
     }
 
     @Override

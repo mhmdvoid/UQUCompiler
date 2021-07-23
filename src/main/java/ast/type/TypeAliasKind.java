@@ -2,13 +2,15 @@ package ast.type;
 
 public class TypeAliasKind extends Type{
 
-    public TypeAliasKind(TypeKind kind) {
-        super(kind);
+    public Type underlay;
+
+    public TypeAliasKind(TypeKind kind, String name) {
+        super(kind, name); // look it up here? need  acontex
     }
 
     @Override
     public boolean equalType(Type type) {
-        return false;
+        return this.underlay.equalType(type);
     }
 
     @Override

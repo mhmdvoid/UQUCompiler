@@ -5,7 +5,7 @@ public class ArrayType extends Type {
     private final int size;   // for now can't be zero, and checked by the parser;
 
     public ArrayType(Type base, int size) {
-        super(TypeKind.ARRAY_KIND);
+        super(TypeKind.ARRAY_KIND, "Array");
         this.base = base;
         this.size = size;
     }

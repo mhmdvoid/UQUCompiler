@@ -25,7 +25,7 @@ public class BuiltinType extends Type {
     private BuiltinContext builtinContext;
 
     public BuiltinType(BuiltinContext typeContext) {
-        super(TypeKind.BUILTIN_KIND);
+        super(TypeKind.BUILTIN_KIND, "builtin");
         builtinContext = typeContext;
 
     }

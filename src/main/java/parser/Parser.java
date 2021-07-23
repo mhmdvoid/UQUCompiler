@@ -2,6 +2,8 @@ package parser;
 
 import ast.type.BuiltinType;
 import ast.type.Type;
+import ast.type.TypeAliasKind;
+import ast.type.TypeKind;
 import lexer.LexerManager;
 import lexer.Token;
 import lexer.TokenType;
@@ -186,11 +188,12 @@ public class Parser {
     }
 
     /*IdentifierObject*/ Type parseType() {
-
         switch (currentToken.getType()) {
             case INT_KWD -> { consume(); return new BuiltinType(BuiltinType.BuiltinContext.S_INT_32);}
             case BOOL -> { consume(); return new BuiltinType(BuiltinType.BuiltinContext.BOOL_8); }
             case VOID ->  { consume(); return new BuiltinType(BuiltinType.BuiltinContext.VOID_TYPE); }
+            case IDENTIFIER ->  { consume(); return new TypeAliasKind(TypeKind.TYPEALIAS_KIND, skippedToken.getTokenValue());   // Fixme
+            }
             default ->  {
                 System.out.println("BUG");inError = true;return null; } // Todo:  if null we;ll throw an error later
         }
@@ -253,6 +256,5 @@ public class Parser {
         var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang");
         var program = parser.translationUnit();
         program.semaAnalysis();
-        System.out.println(program);
     }
 }

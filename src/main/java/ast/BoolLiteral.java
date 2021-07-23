@@ -2,6 +2,7 @@ package ast;
 
 import ast.type.BuiltinType;
 import compile.utils.ShapeDump;
+import semantic.Context;
 
 public class BoolLiteral extends Expression {
     String value;
@@ -9,6 +10,7 @@ public class BoolLiteral extends Expression {
         super(line);
         this.value = value;
         typeChecker.typeConstantValue(this, BuiltinType.BuiltinContext.BOOL_8);
+
     }
 
 
@@ -19,6 +21,7 @@ public class BoolLiteral extends Expression {
                 "value='" + value + '\'' +
                 '}';
     }
+
 
     @Override
     protected void dump(int indent) {

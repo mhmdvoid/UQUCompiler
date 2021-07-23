@@ -1,7 +1,9 @@
-var globalVar: bool = false;
-typealias Myint = int;
-func int foo(bar: int, foobar: bool) {
-    var bar: bool = false;
-    // var globalVar: int = 10; // globalVar gets bound to localScope;
-    var bar: int = 2;   // Error bar is already defined same scope;
-}
+typealias Foo = int;
+typealias Bar = bool;
+
+var x: Bar = 10;   // will give error `x` type not match with expression Int type
+var y: FooBar = false;   // will give error `FooBar` doesn't exist and default initialExpression to int type; Undeclared Error
+var u: Foo = 10;  // Works fine;
+
+func int funcDecl(param: Bar) // No Analysis done yet , this `Bar` will not be recognised. We have a bug because will not throw Error either. We;ll deal with that later.
+{}

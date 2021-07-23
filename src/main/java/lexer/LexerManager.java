@@ -107,7 +107,7 @@ public class LexerManager {
             } else if (charManager.currentChar() == '/') {
                 nextChar();
                 if (charManager.currentChar() == '/') {
-                    while (charManager.currentChar() != '\n')
+                    while (charManager.currentChar() != '\n' && charManager.currentChar() != '\0')
                         nextChar();
                 } else {
                     System.out.println("Division operation not supported yet .. ):");

@@ -14,8 +14,8 @@ public abstract class ASTNode  {
         typeChecker = new TypeChecker();
     }
 
-    public void semaAnalysis(Context context) {
-
+    public ASTNode semaAnalysis(Context context) {
+        return this;
     }
 
     // Very bad common APi

@@ -30,13 +30,14 @@ public class TranslationUnit extends ASTNode {
     }
 
 
-    public void semaAnalysis() {
+    public ASTNode semaAnalysis() {
         translationUnitContext = new TranslationUnitContext();
         globalMembers.getStatements().forEach(statement -> {
             // add each to the table?    not quite good ?
             statement.semaAnalysis(translationUnitContext); // this is the    compilation uit?
         });
 
+        return this;
     }
     @Override
     public String toString() {
