@@ -1,6 +1,7 @@
 package ast;
 
 import ast.type.Type;
+import compile.utils.ShapeDump;
 import semantic.Context;
 import semantic.Definition;
 import semantic.MethodContext;
@@ -25,11 +26,23 @@ public class FuncDeclNode extends Statement {  // FIXME: Should extends Declarat
     }
 
     @Override
-    public void semaAnalysis(Context context) {
+    public void semaAnalysis(Context context) { // TODO: 7/23/21 Return newNode with context
         methodContext = new MethodContext(context, returnType);
         methodContext.addEntry(getLine(), funcName, new Definition(returnType));    // example of our table [main: int] used by return statement to check
 
         funcParams.forEach(parameterNode -> {parameterNode.semaAnalysis(methodContext);});
+        funcBlock.semaAnalysis(this.methodContext);   // for one block surronding will be methodContext!
+    }
+
+    @Override
+    protected void dump(int indent) {
+        for (int i = 0; i < indent; i++) {
+            ShapeDump.spaceTreeShape(ShapeDump.BasicShape.WhiteSpace);
+        }
+        System.out.println("FuncDecl");
+        funcParams.forEach(parameterNode -> parameterNode.dump(indent + 2));
+        funcBlock.dump(indent + 4);
+
     }
 
     @Override

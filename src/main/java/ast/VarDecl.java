@@ -48,6 +48,7 @@ public class VarDecl extends Expression {
         // Fixme: for rhs expression if was variable ?
         context.addEntry(getLine(), name, new Definition(type));   // new variable declaration which means no lookup needed;
         // Fixme: As everyDecl requires init rhs expression we should separate nodes;
+
     }
 
     public Expression getInitialExpression() {

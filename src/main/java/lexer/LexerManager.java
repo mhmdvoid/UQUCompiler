@@ -103,6 +103,15 @@ public class LexerManager {
             } else if (charManager.currentChar() == ']') {
                 tokens.add(new Token(charManager.getCharPosition().row, TokenType.R_BRACKET, "]"));
                 nextChar();
+            } else if (charManager.currentChar() == '/') {
+                nextChar();
+                if (charManager.currentChar() == '/') {
+                    while (charManager.currentChar() != '\n')
+                        nextChar();
+                } else {
+                    System.out.println("Division operation not supported yet .. ):");
+                    inError = true;
+                }
             } else {
                 inError = true;
                 charManager.log(charManager.getCharPosition().column, charManager.m_idx);

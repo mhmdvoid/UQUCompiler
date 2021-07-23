@@ -91,10 +91,11 @@ public class Parser {
         consume();  // Pump the lexer;
         var line = currentToken.getLine();
         var gMembers = new GlobalScope(line);   // Fixme: see line issue;
-        while (see(TokenType.VAR) || see(TokenType.FUNC)) {
-            if (have(TokenType.VAR))
+        while (see(TokenType.FUNC) || see(TokenType.VAR)) {
+            if (see(TokenType.VAR))
                 gMembers.addStatement(parseVarDeclAssign());
-            else gMembers.addStatement(parseFuncDecl());
+            else
+                gMembers.addStatement(parseFuncDecl());
         }
 
 
@@ -113,6 +114,7 @@ public class Parser {
 
     VarDecl parseVarDeclAssign() {
         // in every node out of the way !
+        parseEat(TokenType.VAR, "var keyword missing;");
         var line = currentToken.getLine();
         parseEat(TokenType.IDENTIFIER, "variable name missing");
         var varName = skippedToken.getTokenValue();
@@ -220,11 +222,15 @@ public class Parser {
     BlockNode parseBlock() {
         var blockStartLine = currentToken.getLine();
         parseEat(TokenType.L_BRACE, "How do you want to implement func w/o block definition, Are you mad?. To fix your stupidity check line: "  + blockStartLine);
+        var statements = new ArrayList<Statement>();
+        while (!see(TokenType.R_BRACE) && !see(TokenType.EOF)) {
+            statements.add(parseVarDeclAssign());
+        }
 
         // TODO: 7/22/21 Parse rest of the block here, Statemetns of our language if-statement, for-loop, var-declaration and similar
 
         parseEat(TokenType.R_BRACE, "func end w close `}` line: " + currentToken.getLine());
-        return null;
+        return new BlockNode(blockStartLine, statements);
     }
 
     public Token token() {

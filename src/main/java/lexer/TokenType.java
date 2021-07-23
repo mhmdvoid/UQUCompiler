@@ -27,6 +27,7 @@ public enum TokenType  {
     TRUE, FALSE,
     BOOL,
     RETURN,
+    SINGLE_COMMENT,
     EOF;
 
 
