@@ -48,17 +48,17 @@ public class VarDecl extends Expression {
     public ASTNode semaAnalysis(Context context) {
 
         if (type instanceof TypeAliasKind) {    // this is very dependent on varDecl on;y
-            var def  = context.lookup(type.name);
+            var def = context.lookup(type.name); // no def.type should be alias that has underlay type?
             if (def != null) {
-                ((TypeAliasKind) type).underlay = def.getType(); // should always works depending on Java Runtime.\
-            }
-            else {
-                ((TypeAliasKind) type).underlay = new BuiltinType(BuiltinType.BuiltinContext.VOID_TYPE); // default it;
+                type = def.getType();
+            } else {
+                type= new BuiltinType(BuiltinType.BuiltinContext.VOID_TYPE); // default it;
                 System.err.println("Use of non-declared type " + type.name + " line " + getLine());
             }
+
+
         }
         context.addEntry(getLine(), name, new Definition(type));   // new variable declaration which means no lookup needed;
-        // Fixme: As everyDecl requires init rhs expression we should separate nodes;
         typeChecker.typeDeclState(this);
         return this;
 

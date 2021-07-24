@@ -4,6 +4,5 @@ typealias Bar = bool;
 var x: Bar = 10;   // will give error `x` type not match with expression Int type
 var y: FooBar = false;   // will give error `FooBar` doesn't exist and default initialExpression to int type; Undeclared Error
 var u: Foo = 10;  // Works fine;
-
-func int funcDecl(param: Bar) // No Analysis done yet , this `Bar` will not be recognised. We have a bug because will not throw Error either. We;ll deal with that later.
+func int funcDecl(param: Foo)   // param's type now is a typealias with sema analysis applied 'int'
 {}
