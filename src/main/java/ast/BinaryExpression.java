@@ -1,5 +1,7 @@
 package ast;
 
+import semantic.Context;
+
 public class BinaryExpression extends Expression {
 
     Expression lhs;
@@ -11,9 +13,7 @@ public class BinaryExpression extends Expression {
         this.lhs = lhs;
         this.operator = operator;
         this.rhs = rhs;
-        typeChecker.typeBinExpression(this);
     }
-
 
     @Override
     public String toString() {
@@ -22,6 +22,12 @@ public class BinaryExpression extends Expression {
                 ", operator='" + operator + '\'' +
                 ", rhs=" + rhs +
                 '}';
+    }
+
+    @Override
+    public ASTNode semaAnalysis(Context context) {
+        return typeChecker.typeBinExpression(this);
+
     }
 
     public Expression getLhs() {

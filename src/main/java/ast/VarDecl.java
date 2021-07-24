@@ -1,6 +1,8 @@
 package ast;
 
+import ast.type.BuiltinType;
 import ast.type.Type;
+import ast.type.TypeAliasKind;
 import compile.utils.ShapeDump;
 import semantic.Context;
 import semantic.Definition;
@@ -21,7 +23,6 @@ public class VarDecl extends Expression {
         this.name = name;
         this.type = type;   // todo: lookup the variable type, for now it's coded by the parser to refuses any type name not recognised , i.e int, bool, void.
         this.initialExpression = initialExpression;
-        typeChecker.typeDeclState(this);
 //        if (initialExpression == null) isInitialized = false;
     }
 
@@ -44,10 +45,22 @@ public class VarDecl extends Expression {
     }
 
     @Override
-    public void semaAnalysis(Context context) {
-        // Fixme: for rhs expression if was variable ?
+    public ASTNode semaAnalysis(Context context) {
+
+        if (type instanceof TypeAliasKind) {    // this is very dependent on varDecl on;y
+            var def = context.lookup(type.name); // no def.type should be alias that has underlay type?
+            if (def != null) {
+                type = def.getType();
+            } else {
+                type= new BuiltinType(BuiltinType.BuiltinContext.VOID_TYPE); // default it;
+                System.err.println("Use of non-declared type " + type.name + " line " + getLine());
+            }
+
+
+        }
         context.addEntry(getLine(), name, new Definition(type));   // new variable declaration which means no lookup needed;
-        // Fixme: As everyDecl requires init rhs expression we should separate nodes;
+        typeChecker.typeDeclState(this);
+        return this;
 
     }
 

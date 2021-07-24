@@ -14,7 +14,7 @@ public class TypeChecker {
 
 
         if (!varDeclNode.type.equalType(declInitType)) {
-            System.err.println("Variable type: ``" + varDeclNode.type + "  mismatch initial value type " + declInitType);
+            System.err.println("Variable type: ``" + varDeclNode.type + "  mismatch initial value type " + declInitType + " line " + varDeclNode.getLine());
             // fixme: give a var unresolved/ambiguous type;
         }
         return varDeclNode;

@@ -1,15 +1,11 @@
 package ast.type;
 
-enum TypeKind {
-	BUILTIN_KIND,
-	ARRAY_KIND,
-//	TYPEALIAS_KIND;  Todo
-}
 public abstract class Type {
 	private TypeKind kind;
-
-	public Type(TypeKind kind) {
+	public String name;
+	public Type(TypeKind kind, String name) {
 		this.kind = kind;
+		this.name = name;
 	}
 
 	// underlying

@@ -18,15 +18,15 @@ public class BlockNode extends ScopeNode {
     }
 
     @Override
-    public void semaAnalysis(Context context) {
+    public ASTNode semaAnalysis(Context context) {
         lContext = new LocalContext(context);   // point to methodContext, if another nested local {..} will point to yet another local-scope recursively.
 //        for (int i = 0; i < statements.size(); i++) {
 ////            statements.set(i, statements.get(i).semaAnalysis(lContext));
 //
 //        }
-        statements.forEach(statement -> statement.semaAnalysis(lContext));
+        statements.forEach(statement -> statement.semaAnalysis(lContext));    // look up?
+        return this;
     }
-
     @Override
     protected void dump(int indent) {
         for (int i = 0; i < indent; i++) {

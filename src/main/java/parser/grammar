@@ -34,6 +34,7 @@ parameter := type IDENTIFIER
 
 block := L_BRACE /*local-block*/ R_BRACE
 
+typealias := TYPEALIAS identifier EQUAL type  /*TypeAlias construct can be everywhere in the translation unit. As it belongs the current position of the definition*/
 ## TODO
 variableDeclarationStatement ::= type variableDeclarators SEMI
 

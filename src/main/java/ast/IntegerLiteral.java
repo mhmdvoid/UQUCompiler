@@ -3,6 +3,7 @@ package ast;
 
 import ast.type.BuiltinType;
 import compile.utils.ShapeDump;
+import semantic.Context;
 
 public class IntegerLiteral extends Expression {
 	
@@ -15,6 +16,7 @@ public class IntegerLiteral extends Expression {
 		super(line);
 		this.intValue = intValue;
 		typeChecker.typeConstantValue(this, BuiltinType.BuiltinContext.S_INT_32);  // a better approach to traverse !;
+
 	}
 
 

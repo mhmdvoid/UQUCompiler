@@ -2,6 +2,8 @@ package parser;
 
 import ast.type.BuiltinType;
 import ast.type.Type;
+import ast.type.TypeAliasKind;
+import ast.type.TypeKind;
 import lexer.LexerManager;
 import lexer.Token;
 import lexer.TokenType;
@@ -91,11 +93,14 @@ public class Parser {
         consume();  // Pump the lexer;
         var line = currentToken.getLine();
         var gMembers = new GlobalScope(line);   // Fixme: see line issue;
-        while (see(TokenType.FUNC) || see(TokenType.VAR)) {
-            if (see(TokenType.VAR))
-                gMembers.addStatement(parseVarDeclAssign());
-            else
-                gMembers.addStatement(parseFuncDecl());
+        while (see(TokenType.FUNC) || see(TokenType.VAR) || see(TokenType.TYPEALIAS)) { // Fixme: Should have *parseStatement(); and then branch
+            switch (currentToken.getType()) {
+                case VAR -> gMembers.addStatement(parseVarDeclAssign());
+                case FUNC -> gMembers.addStatement(parseFuncDecl());
+                case TYPEALIAS -> { have(TokenType.TYPEALIAS);gMembers.addStatement(parseTypealias());}
+                default -> System.out.println("Unknown syntax construction");
+            }
+
         }
 
 
@@ -183,12 +188,14 @@ public class Parser {
     }
 
     /*IdentifierObject*/ Type parseType() {
-
         switch (currentToken.getType()) {
             case INT_KWD -> { consume(); return new BuiltinType(BuiltinType.BuiltinContext.S_INT_32);}
             case BOOL -> { consume(); return new BuiltinType(BuiltinType.BuiltinContext.BOOL_8); }
             case VOID ->  { consume(); return new BuiltinType(BuiltinType.BuiltinContext.VOID_TYPE); }
-            default ->  { inError = true;return null; } // Todo:  if null we;ll throw an error later
+            case IDENTIFIER ->  { consume(); return new TypeAliasKind(TypeKind.TYPEALIAS_KIND, skippedToken.getTokenValue());   // Fixme
+            }
+            default ->  {
+                System.out.println("BUG");inError = true;return null; } // Todo:  if null we;ll throw an error later
         }
 
     }
@@ -233,6 +240,14 @@ public class Parser {
         return new BlockNode(blockStartLine, statements);
     }
 
+    TypeAliasDecl parseTypealias() {
+        var li = currentToken.getLine();
+        var aliasName = parseIdentifier();
+        parseEat(TokenType.ASSIGN_OP, "typealias statement requires `=` followed by type");
+        var type = parseType();
+        parseEat(TokenType.SEMICOLON, "semi missing");
+        return new TypeAliasDecl(li, aliasName, type);
+    }
     public Token token() {
         return currentToken;
     }
