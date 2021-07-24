@@ -30,15 +30,13 @@ public class ParameterNode extends ASTNode {
             var def = context.lookup(type.name); // no def.type should be alias that has underlay type?
             if (def != null) {
                 type = def.getType();
-                System.out.println(((TypeAliasKind) type).underlay);
-
             } else {
+                semaError = true;  // Todo: There should be probably sorta diagnostic-engine tool
                 type= new BuiltinType(BuiltinType.BuiltinContext.VOID_TYPE); // default it;
                 System.err.println("Use of non-declared type " + type.name + " line " + getLine());
             }
         }
-        System.out.println(type);
-        context.addEntry(getLine(), paramName, new LocalScopeDefinition(type, ((MethodContext) context).offset()));
+        context.addEntry(getLine(), paramName, new LocalScopeDefinition(type, ((MethodContext) context).offset()), this);
         return this;
     }
 
