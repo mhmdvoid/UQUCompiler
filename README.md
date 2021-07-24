@@ -13,6 +13,9 @@ Currently, UQULang is only being developed by me, Mohammed.
 
 ### Example of what UQULang should look like at the end 
 ```
+typealias BirthYear = int;
+func int calculateAge(year: BirthYear) { ... }
+
 func int main(i: int, args: string[]) {
     print("Hello, World");
     return 0;
