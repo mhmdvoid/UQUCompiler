@@ -1,0 +1,9 @@
+// Redefining semantic error
+typealias foo = int;
+typealias foo = bool;
+
+var i : int = 10;
+var i : bool = 20;
+
+func void sameName() {}
+func int sameName() {}

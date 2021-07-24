@@ -25,10 +25,12 @@ public class TypeAliasDecl extends Statement {
     public ASTNode semaAnalysis(Context context) {
         statementType = new TypeAliasKind(TypeKind.TYPEALIAS_KIND, this.thaAliasName);
         ((TypeAliasKind)statementType).underlay = underlayType;
-        if (!(underlayType instanceof BuiltinType))   // for now check here
+        if (!(underlayType instanceof BuiltinType)) { // for now check here
+            this.semaError = true;
             System.err.println("Alias for unknown type");
-        else
-            context.addEntry(getLine(), thaAliasName, new Definition(statementType));   // Again: hard-coded types no need to look them up. Fix if user-defined allowed
+        }
+
+        context.addEntry(getLine(), thaAliasName, new Definition(statementType), this);   // Again: hard-coded types no need to look them up. Fix if user-defined allowed
 
         return this;
     }

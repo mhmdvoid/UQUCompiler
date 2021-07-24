@@ -59,4 +59,6 @@ public class TranslationUnit extends ASTNode {
     public Map getTranslationUnitContext() {
         return translationUnitContext.table;
     }
+
+    public List<Statement> gTree() {return globalMembers.getStatements();}
 }

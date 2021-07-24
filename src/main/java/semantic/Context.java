@@ -1,5 +1,7 @@
 package semantic;
 
+import ast.ASTNode;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,8 +19,9 @@ public class Context {
         table = new HashMap<>();
     }
     // Todo: include line with def type for better error message;
-    public void addEntry(int line, String name, Definition definition) {
+    public void addEntry(int line, String name, Definition definition, ASTNode node) {
         if (table.containsKey(name)) {
+             node.semaError = true;  // Fixme: this is the trivial way later we'll have better OO design
             System.err.println("Redefining name: " + name + " line: " + line) ;
         } else {
             table.put(name, definition);
