@@ -14,7 +14,6 @@ public class TypeChecker {
 
 
         if (!varDeclNode.type.equalType(declInitType)) {
-            varDeclNode.semaError = true;
             System.err.println("Variable type: ``" + varDeclNode.type + "  mismatch initial value type " + declInitType + " line " + varDeclNode.getLine());
             // fixme: give a var unresolved/ambiguous type;
         }
@@ -34,7 +33,6 @@ public class TypeChecker {
             expressionNode.type = lhsInt;
             return expressionNode;
         } else {
-            expressionNode.semaError = true;
             System.err.println("Error typing!");
             expressionNode.type = new BuiltinType(null);
             return expressionNode;

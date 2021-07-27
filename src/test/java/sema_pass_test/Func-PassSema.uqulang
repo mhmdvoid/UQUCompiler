@@ -1,5 +1,0 @@
-typealias Bit = bool;
-typealias s_int32 = int;
-
-func Bit validateBits() {}
-func s_int32 checkOverflow() {}

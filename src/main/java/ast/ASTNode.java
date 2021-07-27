@@ -5,9 +5,9 @@ import semantic.TypeChecker;
 
 // Should extract common classes for all AST nodes;
 public abstract class ASTNode  {
-    public boolean semaError = false; // for testing
+
     TypeChecker typeChecker;
-    private final int line;
+    private int line;
 
     protected ASTNode(int line) {
         this.line = line;
