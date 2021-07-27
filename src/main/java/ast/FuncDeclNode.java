@@ -1,6 +1,8 @@
 package ast;
 
+import ast.type.BuiltinType;
 import ast.type.Type;
+import ast.type.TypeAliasKind;
 import compile.utils.ShapeDump;
 import semantic.Context;
 import semantic.Definition;
@@ -27,6 +29,18 @@ public class FuncDeclNode extends Statement {  // FIXME: Should extends Declarat
 
     @Override
     public ASTNode semaAnalysis(Context context) { // TODO: 7/23/21 Return newNode with context
+        if (returnType instanceof TypeAliasKind) {
+            // look it up ! it even doesn't exist !
+            var def = context.lookup(returnType.name);
+           if (def != null) {
+               returnType = def.getType();
+               System.out.println(returnType);
+           } else {
+               System.err.println("Use of undeclared Type-alias " + returnType.name);
+               returnType = new BuiltinType(BuiltinType.BuiltinContext.VOID_TYPE);
+               semaError = true;
+           }
+        }
         methodContext = new MethodContext(context, returnType);
         context.addEntry(getLine(), funcName, new Definition(returnType), this);    // example of our table [main: int] used by return statement to check
         funcParams.forEach(parameterNode -> {parameterNode.semaAnalysis(methodContext);});
