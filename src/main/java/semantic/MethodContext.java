@@ -1,6 +1,7 @@
 package semantic;
 
 import ast.type.Type;
+import ast.type.TypeAliasKind;
 
 public class MethodContext extends LocalContext {
     private Type methodReturnType;
@@ -10,6 +11,13 @@ public class MethodContext extends LocalContext {
         this.methodReturnType = type;
         this.offset = 0;
         // For now method has surrContext point translation as well as this.translation
+    }
+    public void resolveReturnType() {
+        // we need to look it up?
+        if (methodReturnType instanceof TypeAliasKind) {
+            var tp = (TypeAliasKind) methodReturnType;
+            methodReturnType = tp.underlay;
+        }
     }
 
     public void returnStatementDoesExist() {

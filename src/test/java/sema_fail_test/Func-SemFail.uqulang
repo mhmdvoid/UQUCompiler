@@ -1,0 +1,5 @@
+// import uaulang;
+
+func Foo main () {}
+func Bar main2 () {}
+func FooBar main4() {}

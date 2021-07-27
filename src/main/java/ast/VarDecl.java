@@ -58,7 +58,7 @@ public class VarDecl extends Expression {
 
 
         }
-        context.addEntry(getLine(), name, new Definition(type));   // new variable declaration which means no lookup needed;
+        context.addEntry(getLine(), name, new Definition(type), this);   // new variable declaration which means no lookup needed;
         typeChecker.typeDeclState(this);
         return this;
 
