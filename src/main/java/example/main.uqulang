@@ -1,2 +1,5 @@
-typealias Foo = int;
-func Foo returnTypealiasDefinedInScope() {}
+// import uqulang;
+
+typealais Foo = int;
+
+var y: Foo = 10;

@@ -5,6 +5,7 @@ import ast.ASTNode;
 import java.util.HashMap;
 import java.util.Map;
 
+// Fixme: Rename to Scope
 public class Context {
      Context surroundingContext;
 
