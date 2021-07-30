@@ -9,7 +9,7 @@ public class BoolLiteral extends Expression {
     public BoolLiteral(int line, String value) {
         super(line);
         this.value = value;
-        typeChecker.typeConstantValue(this, BuiltinType.BuiltinContext.BOOL_8);
+//        typeChecker.typeConstantValue(this, BuiltinType.BuiltinContext.BOOL_8);
 
     }
 

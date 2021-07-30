@@ -14,6 +14,7 @@ public class Sema {
         this.astContext = astContext;
         decl = new SemaDecl(this);
         type = new SemaType(this);
+        expr = new SemaExpr(this);
 
     }
 

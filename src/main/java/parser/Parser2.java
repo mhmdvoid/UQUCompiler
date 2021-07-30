@@ -1,8 +1,6 @@
 package parser;
 
-import ast.GlobalScope;
-import ast.NameAliasDecl;
-import ast.TranslationUnit;
+import ast.*;
 import ast.redesign.ASTInfo;
 import ast.redesign.Identifier;
 import ast.redesign.NameAliasDeclNode;
@@ -99,22 +97,60 @@ public class Parser2 {
     public TranslationUnit parseTranslateUnit() {
         consume();  // Pump the lexer;
         var line = currentToken.getLine();
-        var damn = new TranslationUnitScope();
+        var fileScope = new TranslationUnitScope();
         var gMembers = new GlobalScope(line);   // Fixme: see line issue;
-        while (see(TokenType.TYPEALIAS)) { // Fixme: Should have *parseStatement(); and then branch
+        while (see(TokenType.VAR) || see(TokenType.TYPEALIAS)) { // Fixme: Should have *parseStatement(); and then branch
             switch (currentToken.getType()) {
+                case VAR -> gMembers.addStatement(parseVarDeclAssign(fileScope));
                 case TYPEALIAS -> {
                     consume();
-                    gMembers.addStatement(parseTypeAlias(damn));
+                    gMembers.addStatement(parseTypeAlias(fileScope));
                 }
                 default -> System.err.println("Error syntax construct");
             }
         }
-
-
+        fileScope.table.forEach((s, nameAliasDeclNode) -> {
+            System.out.println(s + " " + nameAliasDeclNode);
+        });
         return new TranslationUnit(line, /*filename: should be from lexer*/ "main.uqulang", gMembers);
     }
 
+
+    VarDecl parseVarDeclAssign(Scope ctx) {
+        parseEat(TokenType.VAR, "var missing ");
+        var id = parseIdentifier();
+        parseEat(TokenType.COLON, "missing colon ");
+        var t = parseType(ctx);
+        var expression = parseInitialization();  // Sema.expre !;
+        parseEat(TokenType.SEMICOLON, "missing sim");
+        return sema.decl.varDeclSema(id, t, expression, ctx);
+    }
+
+    Expression parseInitialization() {
+        var line = currentToken.getLine();
+        parseEat(TokenType.ASSIGN_OP, "variable initialization should start with `=`");
+        return parseRhs();
+    }
+
+    Expression parseRhs() {
+        return parsePrimary();
+    }
+
+
+    private Expression parsePrimary() {
+        return parseValue();
+    }
+
+    Expression parseValue() {
+        var line = currentToken.getLine();
+        if (have(TokenType.NUMBER_LITERAL)) {
+            return sema.expr.semaNumberConstant(skippedToken.getTokenValue());// Sema.exp.actOnConstant();
+        } else if (have(TokenType.TRUE) || have(TokenType.FALSE)) {
+            return new BoolLiteral(line, skippedToken.getTokenValue());
+        }
+
+        return null;  // should never reach
+    }
     // WE should have a method called parse statementList(Scope ctx); gets called by the translation unit as well as class decl, struct decl, method decl;
     public NameAliasDeclNode parseTypeAlias(Scope ctx) {   // For every decl parsing and type parsing . decl means is this already defined /not defined at all ? type does this type even exist? this why we need scope
         // for both type and decl
@@ -147,6 +183,6 @@ public class Parser2 {
     public static void main(String[] args) {
         var parser = new Parser2("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang", new ASTInfo());
         var tu = parser.parseTranslateUnit();
-        System.out.println(tu);
+//        System.out.println(tu);
     }
 }

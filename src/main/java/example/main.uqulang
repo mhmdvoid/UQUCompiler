@@ -1,3 +1,7 @@
+var y: Foo = 10;
+var x: int = 10;
+typealias Foo = int;
+var ff: int = 10;
+var g: Foo  = 1;
 
-typealias Foo = Bar;
-typealias FooBar = int;
+// Type gets inserted in context  that's should be type?
