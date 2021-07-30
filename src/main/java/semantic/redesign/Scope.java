@@ -1,8 +1,9 @@
 package semantic.redesign;
 
-import ast.redesign.TypeAliasDecl2;
+import ast.redesign.NameAliasDeclNode;
 
-import java.util.HashMap;
+import java.util.HashMap;  // Scope data structure 'Stack/List' of hashtable.  [global{foo(): int}, methodScope{param: bool}, blockScope{c: char}]; we have a depth to distinguish levels.
+// 1 -> we're on global scope. 2 we're methodScope., 3 Local. and number of depth increases accordingly. We can put on constraints to limit the depth but that's ok alright?
 import java.util.Map;
 
 public class Scope {
@@ -10,7 +11,7 @@ public class Scope {
 
     TranslationUnitScope translationUnitScope;
 
-    public Map<String, TypeAliasDecl2> table; // node
+    public Map<String, NameAliasDeclNode> table; // node
 
     public Scope(Scope surroundingScope, TranslationUnitScope translationUnitScope) {
         this.surroundingScope = surroundingScope;
@@ -18,7 +19,7 @@ public class Scope {
         table = new HashMap<>();
     }
     // Todo: include line with def type for better error message;
-    public void addEntry(int line, String name, TypeAliasDecl2 node) {
+    public void addEntry(int line, String name, NameAliasDeclNode node) {
         if (table.containsKey(name)) {
             System.err.println("Redefining name: " + name + " line: " + line) ;
         } else {
@@ -26,7 +27,7 @@ public class Scope {
         }
     }
 
-    public TypeAliasDecl2 lookup(String name) {
+    public NameAliasDeclNode lookup(String name) {
         var definition = table.get(name);
         return definition != null ? definition
                 : surroundingScope != null ? surroundingScope.lookup(name)

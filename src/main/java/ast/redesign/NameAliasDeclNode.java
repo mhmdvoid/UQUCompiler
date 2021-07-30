@@ -1,14 +1,16 @@
 package ast.redesign;
 
+import ast.Statement;
 import ast.type.Type;
 
 // This is the SemaDecl responsibility to create Node , resolve, lookup and search and much much more !;
-public class TypeAliasDecl2 {
+public class NameAliasDeclNode extends Statement {
 
-    Type underlyingType;
+    public Type underlyingType;
     String aliasName;
 
-    public TypeAliasDecl2(Type underlyingType, String aliasName) {
+    public NameAliasDeclNode(Type underlyingType, String aliasName) {
+        super(1);
         this.underlyingType = underlyingType;
         this.aliasName = aliasName;
     }

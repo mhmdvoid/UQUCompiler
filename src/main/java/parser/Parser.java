@@ -240,13 +240,13 @@ public class Parser {
         return new BlockNode(blockStartLine, statements);
     }
 
-    TypeAliasDecl parseTypealias() {
+    NameAliasDecl parseTypealias() {
         var li = currentToken.getLine();
         var aliasName = parseIdentifier();
         parseEat(TokenType.ASSIGN_OP, "typealias statement requires `=` followed by type");
         var type = parseType();
         parseEat(TokenType.SEMICOLON, "semi missing");
-        return new TypeAliasDecl(li, aliasName, type);
+        return new NameAliasDecl(li, aliasName, type);
     }
     public Token token() {
         return currentToken;

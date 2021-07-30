@@ -10,15 +10,15 @@ import java.util.Set;
 /**
  * This class acts like a factory for all AST nodes.
  */
-// There should be allocate method to allocate all ast nodes.
-public class ASTOwn {
+// There should be allocate method to allocate all ast nodes. - See ContextObject pattern.
+public class ASTInfo {
     // id table;
     public Type int32Type;
     public Type unresolvedType;
 
     Set<String> table;
 
-    public ASTOwn() {
+    public ASTInfo() {
         int32Type = new Builtin(TypeKind.BUILTIN_32INT_KIND, "int");
         unresolvedType = new UnresolvedType(TypeKind.UNRESOLVED_KIND, ""); // Later.
         table = new HashSet<>();

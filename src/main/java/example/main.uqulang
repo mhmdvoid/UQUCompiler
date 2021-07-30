@@ -1,5 +1,3 @@
-// import uqulang;
 
-typealais Foo = int;
-
-var y: Foo = 10;
+typealias Foo = Bar;
+typealias FooBar = int;
