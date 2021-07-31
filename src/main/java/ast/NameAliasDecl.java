@@ -8,12 +8,12 @@ import compile.utils.ShapeDump;
 import semantic.Context;
 import semantic.Definition;
 
-public class TypeAliasDecl extends Statement {
+public class NameAliasDecl extends Statement {
     private Type statementType;
     String thaAliasName;
     Type underlayType;
 
-    public TypeAliasDecl(int line, String thaAliasName, Type underlayType) {
+    public NameAliasDecl(int line, String thaAliasName, Type underlayType) {
         super(line);
         this.thaAliasName = thaAliasName;
         this.underlayType = underlayType;
