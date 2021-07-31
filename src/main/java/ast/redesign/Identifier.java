@@ -6,4 +6,12 @@ public class Identifier {
     public Identifier(String name) {
         this.name = name;
     }
+
+    // if #debug:
+    @Override
+    public String toString() {
+        return "Identifier{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }

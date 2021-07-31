@@ -5,7 +5,6 @@ import ast.redesign.ASTInfo;
 import ast.redesign.Identifier;
 import ast.redesign.NameAliasDeclNode;
 import ast.type.Type;
-import ast.type.redesign.NameAliasType;
 import lexer.LexerManager;
 import lexer.Token;
 import lexer.TokenType;
@@ -13,7 +12,6 @@ import semantic.redesign.Scope;
 import semantic.redesign.Sema;
 import semantic.redesign.TranslationUnitScope;
 
-import java.util.concurrent.TransferQueue;
 
 public class Parser2 {
     private final LexerManager lexer;
@@ -159,7 +157,7 @@ public class Parser2 {
         parseEat(TokenType.ASSIGN_OP, "`=` should appear after variable name");
         var typ = parseType(ctx);
         parseEat(TokenType.SEMICOLON, "typealias should end with `;` ");  // Diagnostic;
-        return sema.decl.tpAliasSema(identifier.name, typ, ctx);
+        return sema.decl.tpAliasSema(identifier, typ, ctx);
     }
 
     public Identifier parseIdentifier() {
@@ -183,6 +181,5 @@ public class Parser2 {
     public static void main(String[] args) {
         var parser = new Parser2("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang", new ASTInfo());
         var tu = parser.parseTranslateUnit();
-//        System.out.println(tu);
     }
 }
