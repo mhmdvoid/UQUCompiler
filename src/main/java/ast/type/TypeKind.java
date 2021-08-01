@@ -5,5 +5,6 @@ public enum TypeKind {
     ARRAY_KIND,
     TYPEALIAS_KIND,
     UNRESOLVED_KIND,
+    BOOL_8_KIND,
     BUILTIN_32INT_KIND;
 }

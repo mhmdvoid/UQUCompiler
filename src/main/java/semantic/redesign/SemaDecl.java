@@ -24,6 +24,14 @@ public class SemaDecl extends SemaBase {
     public SemaDecl(Sema sema) {
         super(sema);
     }
+    // kinda get it we handleEnd , with parser we do everything from scratch, once done call other phases to pass around and similar.
+    public void handleEndOfTranslationUnit() {
+        // So name binding is responsible for unresolved type, shadowing, import, libs and this sort of stuff. Sema is for now lifting all heavy work such as addToScope, lookup, create node, redefinition detect
+        // FIXME: Nondeterminstic iteration.
+        unresolvedTypes.forEach((identifier, nameAliasDeclNode) -> {
+            System.err.println("use of undeclared type " + identifier);;
+        });
+    }
     public NameAliasDeclNode tpAliasSema(Identifier identifier, Type type, Scope ctx) {  // when see typealais decl
         var def = ctx.lookup(identifier.name);
 
@@ -34,7 +42,9 @@ public class SemaDecl extends SemaBase {
         }
         if (def.getUnderlyingType().getKind() == TypeKind.UNRESOLVED_KIND) {
             def.underlyingType = type;
+
             unresolvedTypes.remove(identifier);
+            // Fixme, Replace
             return def;
         }
         // else means redefinition?  // You;re wrong everythin is namealias you need to fucos other wise you're dead ! question remain why you would like to do such a thing?

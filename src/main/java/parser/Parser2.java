@@ -8,6 +8,7 @@ import ast.type.Type;
 import lexer.LexerManager;
 import lexer.Token;
 import lexer.TokenType;
+import semantic.redesign.NameBinder;
 import semantic.redesign.Scope;
 import semantic.redesign.Sema;
 import semantic.redesign.TranslationUnitScope;
@@ -107,10 +108,14 @@ public class Parser2 {
                 default -> System.err.println("Error syntax construct");
             }
         }
-        fileScope.table.forEach((s, nameAliasDeclNode) -> {
-            System.out.println(s + " " + nameAliasDeclNode);
-        });
-        return new TranslationUnit(line, /*filename: should be from lexer*/ "main.uqulang", gMembers);
+
+        // this is an old one and can result in lots of bugs.
+//        fileScope.table.forEach((s, nameAliasDeclNode) -> {
+//            System.out.println(s + " " + nameAliasDeclNode);
+//        });
+        var tu = new TranslationUnit(line, /*filename: should be from lexer*/ "main.uqulang", gMembers);
+        sema.decl.handleEndOfTranslationUnit();  // Replace: NameBinder.nameBinding(tu, this.sema.astContext);
+        return tu;
     }
 
 
@@ -166,16 +171,18 @@ public class Parser2 {
     }
 
     public Type parseType(Scope ctx) {
-        if (have(TokenType.INT_KWD))
+        switch (currentToken.getType()) {
+            case IDENTIFIER -> { var Id = parseIdentifier();
+                return sema.type.resolveTypename(Id, ctx); }
+            case INT_KWD -> { consume(); return sema.type.resolveIntType();
+            }
+            case BOOL -> { consume(); return sema.type.resolveBoolType(); }
+            default -> {
+                System.err.println("Must have type.." + currentToken.getLine());
 
-            return sema.type.resolveIntType();
-        // Identifier?
-        else if (see(TokenType.IDENTIFIER))
-        {
-            var Id = parseIdentifier();
-            return sema.type.resolveTypename(Id, ctx);
+            }
         }
-        return null; // not reached yet. Change to void default type;
+        return null; //  FIXME: 8/1/21 UnresolvedType
     }
 
     public static void main(String[] args) {
