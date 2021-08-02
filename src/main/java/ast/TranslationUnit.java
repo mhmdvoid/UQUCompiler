@@ -1,6 +1,7 @@
 package ast;
 
 import semantic.Context;
+import semantic.Definition;
 import semantic.TranslationUnitContext;
 
 import java.util.List;
@@ -29,16 +30,6 @@ public class TranslationUnit extends ASTNode {
         this.fileName = fileName;
     }
 
-
-    public ASTNode semaAnalysis() {
-        translationUnitContext = new TranslationUnitContext();
-        globalMembers.getStatements().forEach(statement -> {
-            // add each to the table?    not quite good ?
-            statement.semaAnalysis(translationUnitContext); // this is the    compilation uit?
-        });
-
-        return this;
-    }
     @Override
     public String toString() {
         return "TranslationUnit{" +
@@ -56,7 +47,7 @@ public class TranslationUnit extends ASTNode {
         dump(0);
     }
 
-    public Map getTranslationUnitContext() {
+    public Map<String, Definition> getTranslationUnitContext() {
         return translationUnitContext.table;
     }
 

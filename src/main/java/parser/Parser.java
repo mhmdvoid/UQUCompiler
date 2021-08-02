@@ -1,30 +1,36 @@
 package parser;
 
-import ast.type.BuiltinType;
+import ast.ASTInfo;
+import ast.Identifier;
+import ast.decl_def.TranslationUnit;
+import ast.decl_def.TypeAliasDecl;
+import ast.decl_def.VarDecl;
+import ast.expr_def.BoolLiteral;
+import ast.expr_def.Expression;
 import ast.type.Type;
-import ast.type.TypeAliasKind;
-import ast.type.TypeKind;
 import lexer.LexerManager;
 import lexer.Token;
 import lexer.TokenType;
-import ast.*;
+import semantic.Scope;
+import semantic.Sema;
+import semantic.TranslationUnitScope;
 
-import java.util.ArrayList;
 
 public class Parser {
-
     private final LexerManager lexer;
     private Token skippedToken, currentToken;
     private int idx;
     private boolean inError;
 
+    private final Sema sema;
     public boolean isInError() {
         return inError;
     }
 
-    public Parser(String srcPath) {
+    public Parser(String srcPath, ASTInfo astInfo) {
         lexer = new LexerManager(srcPath);
         idx = 0;
+        sema = new Sema(astInfo);
     }
 
     /// Helpers
@@ -89,46 +95,40 @@ public class Parser {
         }
     }
 
-    public TranslationUnit translationUnit() {
+    public TranslationUnit parseTranslateUnit() {
         consume();  // Pump the lexer;
         var line = currentToken.getLine();
-        var gMembers = new GlobalScope(line);   // Fixme: see line issue;
-        while (see(TokenType.FUNC) || see(TokenType.VAR) || see(TokenType.TYPEALIAS)) { // Fixme: Should have *parseStatement(); and then branch
+        var fileScope = new TranslationUnitScope();
+        var tu = new ast.decl_def.TranslationUnit(sema.astContext);
+//        var gMembers = new GlobalScope(line);   // Fixme: see line issue;
+        while (see(TokenType.VAR) || see(TokenType.TYPEALIAS)) { // Fixme: Should have *parseStatement(); and then branch
             switch (currentToken.getType()) {
-                case VAR -> gMembers.addStatement(parseVarDeclAssign());
-                case FUNC -> gMembers.addStatement(parseFuncDecl());
-                case TYPEALIAS -> { have(TokenType.TYPEALIAS);gMembers.addStatement(parseTypealias());}
-                default -> System.out.println("Unknown syntax construction");
+                case VAR -> tu.push(parseVarDeclAssign(fileScope));
+                case TYPEALIAS -> {
+                    consume();
+                    tu.push(parseTypeAlias(fileScope));
+                }
+                default -> System.err.println("Error syntax construct");
             }
-
         }
 
-
-        return new TranslationUnit(line, /*filename: should be from lexer*/ "main.uqulang", gMembers);
+        // this is an old one and can result in lots of bugs.
+//        fileScope.table.forEach((s, nameAliasDeclNode) -> {
+//            System.out.println(s + " " + nameAliasDeclNode);
+//        });
+        sema.decl.handleEndOfTranslationUnit();  // Replace: NameBinder.nameBinding(tu, this.sema.astContext);
+        return tu;
     }
 
-    /* AssignmentOperationNode parseAssignmentStatement() {
 
-        var line = currentToken.getLine();
-        var lhs = parseVarDecl();
-        var rhs = parseInitialization();
-        parseEat(TokenType.SEMICOLON, "assignment statement end ; ");
-        return new AssignmentOperationNode(line, lhs, rhs);
-    }
-    */
-
-    VarDecl parseVarDeclAssign() {
-        // in every node out of the way !
-        parseEat(TokenType.VAR, "var keyword missing;");
-        var line = currentToken.getLine();
-        parseEat(TokenType.IDENTIFIER, "variable name missing");
-        var varName = skippedToken.getTokenValue();
-        // we should have a diagnostic engine ? w/ type-checker;
-        parseEat(TokenType.COLON, "colon for type");
-        var varType = parseType();
-        var initial = parseInitialization();
-        parseEat(TokenType.SEMICOLON, "var decl statement missing `;` line" + line);
-        return new VarDecl(line, varName, varType, initial);
+    VarDecl parseVarDeclAssign(Scope ctx) {
+        parseEat(TokenType.VAR, "var missing ");
+        var id = parseIdentifier();
+        parseEat(TokenType.COLON, "missing colon ");
+        var t = parseType(ctx);
+        var expression = parseInitialization();  // Sema.expre !;
+        parseEat(TokenType.SEMICOLON, "missing sim");
+        return sema.decl.varDeclSema(id, t, expression, ctx);
     }
 
     Expression parseInitialization() {
@@ -138,28 +138,7 @@ public class Parser {
     }
 
     Expression parseRhs() {
-        return parseAdditive();
-    }
-
-    private Expression parseAdditive() {
-        var line = currentToken.getLine();
-        var lhs =  parseMul();
-        while (true) {
-            if (have(TokenType.ADD_OP))  {
-                lhs = new AddOpExpression(line, lhs, parseMul());
-            } else break;
-        }
-        return lhs;
-    }
-
-    private Expression parseMul() {
-        var lhs = parsePrimary();
-        while (true) {
-            if (have(TokenType.MUL_OP))
-                lhs = new MulOpExpression(currentToken.getLine(), lhs, parsePrimary());
-            else break;
-        }
-        return lhs;
+        return parsePrimary();
     }
 
 
@@ -170,91 +149,46 @@ public class Parser {
     Expression parseValue() {
         var line = currentToken.getLine();
         if (have(TokenType.NUMBER_LITERAL)) {
-            return new IntegerLiteral(line, skippedToken.getTokenValue());
+            return sema.expr.semaNumberConstant(skippedToken.getTokenValue());// Sema.exp.actOnConstant();
         } else if (have(TokenType.TRUE) || have(TokenType.FALSE)) {
-            return new BoolLiteral(line, skippedToken.getTokenValue());
+            return new BoolLiteral(skippedToken.getTokenValue());
         }
 
         return null;  // should never reach
     }
-
-
-    FuncDeclNode parseFuncDecl() {
+    // WE should have a method called parse statementList(Scope ctx); gets called by the translation unit as well as class decl, struct decl, method decl;
+    public TypeAliasDecl parseTypeAlias(Scope ctx) {   // For every decl parsing and type parsing . decl means is this already defined /not defined at all ? type does this type even exist? this why we need scope
+        // for both type and decl
         var line = currentToken.getLine();
-        if (parseEat(TokenType.FUNC, "func keyword missing; signature should start with func ")) {
-            skipTill(TokenType.SEMICOLON);
-        }
-        return new FuncDeclNode(line, parseType(), parseIdentifier(), parseParams(), parseBlock());
+        var identifier = parseIdentifier();
+        parseEat(TokenType.ASSIGN_OP, "`=` should appear after variable name");
+        var typ = parseType(ctx);
+        parseEat(TokenType.SEMICOLON, "typealias should end with `;` ");  // Diagnostic;
+        return sema.decl.tpAliasSema(identifier, typ, ctx);
     }
 
-    /*IdentifierObject*/ Type parseType() {
+    public Identifier parseIdentifier() {
+        parseEat(TokenType.IDENTIFIER, "Missing identifier");
+        return sema.astContext.getIdentifier(skippedToken.getTokenValue());  // This will store if for me; right?
+    }
+
+    public Type parseType(Scope ctx) {
         switch (currentToken.getType()) {
-            case INT_KWD -> { consume(); return new BuiltinType(BuiltinType.BuiltinContext.S_INT_32);}
-            case BOOL -> { consume(); return new BuiltinType(BuiltinType.BuiltinContext.BOOL_8); }
-            case VOID ->  { consume(); return new BuiltinType(BuiltinType.BuiltinContext.VOID_TYPE); }
-            case IDENTIFIER ->  { consume(); return new TypeAliasKind(TypeKind.TYPEALIAS_KIND, skippedToken.getTokenValue());   // Fixme
+            case IDENTIFIER -> { var Id = parseIdentifier();
+                return sema.type.resolveTypename(Id, ctx); }
+            case INT_KWD -> { consume(); return sema.type.resolveIntType();
             }
-            default ->  {
-                System.out.println("BUG");inError = true;return null; } // Todo:  if null we;ll throw an error later
+            case BOOL -> { consume(); return sema.type.resolveBoolType(); }
+            default -> {
+                System.err.println("Must have type.." + currentToken.getLine());
+
+            }
         }
-
-    }
-
-    String parseIdentifier() {
-        parseEat(TokenType.IDENTIFIER, "Missing Identifier");
-        return skippedToken.getTokenValue();
-    }
-
-    ArrayList<ParameterNode> parseParams() {
-        var params = new ArrayList<ParameterNode>();
-        parseEat(TokenType.L_PAREN, "`(` missing");
-        if (have(TokenType.R_PAREN))
-            return params;
-        do {
-            params.add(parseParameter());
-        } while (have(TokenType.COMMA));
-        parseEat(TokenType.R_PAREN, "end params list with `)`, Check line: " + currentToken.getLine());
-        return params;
-    }
-
-    ParameterNode parseParameter() {
-        var line = currentToken.getLine();
-        var idName = parseIdentifier();
-        parseEat(TokenType.COLON, "parameter should be followed by colon");
-        var type = parseType();
-
-        return new ParameterNode(line, idName, type);
-    }
-
-    BlockNode parseBlock() {
-        var blockStartLine = currentToken.getLine();
-        parseEat(TokenType.L_BRACE, "How do you want to implement func w/o block definition, Are you mad?. To fix your stupidity check line: "  + blockStartLine);
-        var statements = new ArrayList<Statement>();
-        while (!see(TokenType.R_BRACE) && !see(TokenType.EOF)) {
-            statements.add(parseVarDeclAssign());
-        }
-
-        // TODO: 7/22/21 Parse rest of the block here, Statemetns of our language if-statement, for-loop, var-declaration and similar
-
-        parseEat(TokenType.R_BRACE, "func end w close `}` line: " + currentToken.getLine());
-        return new BlockNode(blockStartLine, statements);
-    }
-
-    NameAliasDecl parseTypealias() {
-        var li = currentToken.getLine();
-        var aliasName = parseIdentifier();
-        parseEat(TokenType.ASSIGN_OP, "typealias statement requires `=` followed by type");
-        var type = parseType();
-        parseEat(TokenType.SEMICOLON, "semi missing");
-        return new NameAliasDecl(li, aliasName, type);
-    }
-    public Token token() {
-        return currentToken;
+        return null; //  FIXME: 8/1/21 UnresolvedType
     }
 
     public static void main(String[] args) {
-        var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang");
-        var program = parser.translationUnit();
-        program.semaAnalysis();
+        var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang", new ASTInfo());
+        var tu = parser.parseTranslateUnit();
     }
 }
