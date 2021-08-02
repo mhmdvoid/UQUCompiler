@@ -103,7 +103,7 @@ public class Parser {
 //        var gMembers = new GlobalScope(line);   // Fixme: see line issue;
         while (see(TokenType.VAR) || see(TokenType.TYPEALIAS)) { // Fixme: Should have *parseStatement(); and then branch
             switch (currentToken.getType()) {
-                case VAR -> tu.push(parseVarDeclAssign(fileScope));
+                case VAR -> { tu.push(parseVarDeclAssign(fileScope));}
                 case TYPEALIAS -> {
                     consume();
                     tu.push(parseTypeAlias(fileScope));
@@ -112,10 +112,8 @@ public class Parser {
             }
         }
 
-        // this is an old one and can result in lots of bugs.
-//        fileScope.table.forEach((s, nameAliasDeclNode) -> {
-//            System.out.println(s + " " + nameAliasDeclNode);
-//        });
+        System.out.println("ValueDecl " + fileScope.table);
+        System.out.println("TypeScope " + fileScope.getTypeContext().typeScope);
         sema.decl.handleEndOfTranslationUnit();  // Replace: NameBinder.nameBinding(tu, this.sema.astContext);
         return tu;
     }
@@ -126,24 +124,27 @@ public class Parser {
         var id = parseIdentifier();
         parseEat(TokenType.COLON, "missing colon ");
         var t = parseType(ctx);
-        var expression = parseInitialization();  // Sema.expre !;
+        var expression = parseExpression(ctx);  // Sema.expre !;
         parseEat(TokenType.SEMICOLON, "missing sim");
         return sema.decl.varDeclSema(id, t, expression, ctx);
     }
 
-    Expression parseInitialization() {
+    Expression parseExpression(Scope scope) {
         var line = currentToken.getLine();
         parseEat(TokenType.ASSIGN_OP, "variable initialization should start with `=`");
-        return parseRhs();
-    }
-
-    Expression parseRhs() {
-        return parsePrimary();
+        return parsePrimary(scope);
     }
 
 
-    private Expression parsePrimary() {
-        return parseValue();
+
+    private Expression parsePrimary(Scope scope) {
+        switch (currentToken.getType()) {
+            case NUMBER_LITERAL: return parseValue();
+            case IDENTIFIER: {
+                return parseIdentifierRef(scope);
+            }
+        }
+        return  null;
     }
 
     Expression parseValue() {
@@ -164,7 +165,7 @@ public class Parser {
         parseEat(TokenType.ASSIGN_OP, "`=` should appear after variable name");
         var typ = parseType(ctx);
         parseEat(TokenType.SEMICOLON, "typealias should end with `;` ");  // Diagnostic;
-        return sema.decl.tpAliasSema(identifier, typ, ctx);
+        return sema.decl.typeAliasSema(identifier, typ, ctx.getTypeContext());
     }
 
     public Identifier parseIdentifier() {
@@ -175,7 +176,7 @@ public class Parser {
     public Type parseType(Scope ctx) {
         switch (currentToken.getType()) {
             case IDENTIFIER -> { var Id = parseIdentifier();
-                return sema.type.resolveTypename(Id, ctx); }
+                return sema.type.resolveTypename(Id, ctx.getTypeContext()); }
             case INT_KWD -> { consume(); return sema.type.resolveIntType();
             }
             case BOOL -> { consume(); return sema.type.resolveBoolType(); }
@@ -185,6 +186,11 @@ public class Parser {
             }
         }
         return null; //  FIXME: 8/1/21 UnresolvedType
+    }
+
+    Expression parseIdentifierRef(Scope scope) {
+        var id = parseIdentifier();
+        return sema.expr.semaIdentifierRef(id, scope);
     }
 
     public static void main(String[] args) {

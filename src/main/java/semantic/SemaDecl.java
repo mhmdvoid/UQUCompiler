@@ -2,21 +2,20 @@ package semantic;
 
 import ast.Identifier;
 import ast.decl_def.TypeAliasDecl;
+import ast.decl_def.ValueDecl;
 import ast.decl_def.VarDecl;
 import ast.expr_def.Expression;
 import ast.type.Type;
 import ast.type.TypeKind;
 import ast.type.UnresolvedType;
+import semantic.scope.TypeContext;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-// NodeDecl creation
 public class SemaDecl extends SemaBase {
-
     //  UnresolvedTypes - This keeps track of all of the unresolved types in the AST.
     Map<Identifier, TypeAliasDecl> unresolvedTypes = new HashMap<>();
     List<TypeAliasDecl> unresolvedList = new ArrayList<>();
@@ -31,49 +30,50 @@ public class SemaDecl extends SemaBase {
             System.err.println("use of undeclared type " + identifier);;
         });
     }
-    public TypeAliasDecl tpAliasSema(Identifier identifier, Type type, Scope ctx) {  // when see typealais decl
-        var def = ctx.lookup(identifier.name);
 
+    public TypeAliasDecl typeAliasSema(Identifier identifier, Type type, TypeContext ctx) {
+        var def = ctx.lookup(identifier.name);
         if (def == null) {
             var typeAliasDecl = new TypeAliasDecl(type, identifier);
-            ctx.addEntry(0, identifier.name, typeAliasDecl);
+            ctx.addEntry(identifier.name, typeAliasDecl);
             return typeAliasDecl;
         }
         if (def.underlyingType.getKind() == TypeKind.UNRESOLVED_KIND) {
             def.underlyingType = type;
             unresolvedTypes.remove(identifier);
-            // Fixme, Replace
             return def;
         }
-        // else means redefinition?  // You;re wrong everythin is namealias you need to fucos other wise you're dead ! question remain why you would like to do such a thing?
         System.err.println("SemaError redefinition: " + identifier + " already defined");
         return def;
-        // Look it up here and then check if not exists
-        // push entry to scope so then we look it up !;
     }
 
-    public TypeAliasDecl lookupTypename(Identifier identifier, Scope ctx) {  // when see var x: foo = 10;
-        var typeDef =  ctx.lookup(identifier.name);
-        if (typeDef != null)
-            return typeDef;
+    public void addTo(Scope scope, ValueDecl valueDecl) {
+        scope.addEntry(1, valueDecl.identifier.name, valueDecl);
+    }
+
+    public ValueDecl lookupValueName(Identifier identifier, Scope ctx) {  // when see var x: foo = 10;
+        return ctx.lookup(identifier.name);
+    }
+
+    public TypeAliasDecl lookupTypename(Identifier identifier, TypeContext ctx) {
+        var typeDef = ctx.lookup(identifier.name);
+        if (typeDef != null) return typeDef;
         typeDef = new TypeAliasDecl(new UnresolvedType(TypeKind.UNRESOLVED_KIND, "unresolved"), identifier);
-        ctx.addEntry(0, identifier.name, typeDef);  // Todo: type should go into typeScope.insert(..);
+        ctx.addEntry(identifier.name, typeDef);
         unresolvedTypes.put(identifier, typeDef);
         unresolvedList.add(typeDef);
         return typeDef;
-    }
 
+    }
     public VarDecl varDeclSema(Identifier identifier, Type type, Expression init, Scope scope) {
-//        Must have a type or an expression already
-        var def = scope.lookup(identifier.name);
-        if (def != null) {
+        var valueDecl = scope.lookup(identifier.name);
+
+        if (valueDecl != null) {
             System.err.println("Redefinition");
         }
-        else {scope.addEntry(1, identifier.name, new TypeAliasDecl(type, identifier)); }
-        return new VarDecl(identifier, type, init);
-
-        // scope.lookup(identifer.name) if not null redefine !;
-        // create it and add to currentScope/ the one being sent.  // sema its type, define? exist, typelaias? and similar
-        // then return it;
+        // Null insert a new valueDecl to scope.
+        var varDecl = new VarDecl(identifier, type, init);
+        scope.addEntry(1, identifier.name, varDecl);
+        return varDecl;
     }
 }

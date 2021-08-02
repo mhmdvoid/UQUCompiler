@@ -1,6 +1,10 @@
 package semantic;
 
+import ast.Identifier;
+import ast.expr_def.Expression;
 import ast.expr_def.IntegerLiteral;
+import ast.expr_def.ReferenceDeclExpr;
+import ast.expr_def.UnresolvedReferenceExpr;
 
 public class SemaExpr extends SemaBase {
     public SemaExpr(Sema sema) {
@@ -15,5 +19,16 @@ public class SemaExpr extends SemaBase {
            3- create a new node
          */
         return new IntegerLiteral(textValue);
+    }
+
+    public Expression semaIdentifierRef(Identifier identifier, Scope scope) {
+        var valueDecl = sema.decl.lookupValueName(identifier, scope);
+        // Lookup;
+        // if (null) unresolvedRefExpression(identifier.name);
+        if (valueDecl == null) {
+            System.out.println("Unresolved " + identifier.name + " til now. Check NameBinder");
+            return new UnresolvedReferenceExpr(identifier);
+        }
+        return new ReferenceDeclExpr(valueDecl);
     }
 }
