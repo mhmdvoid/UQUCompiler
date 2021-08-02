@@ -1,4 +1,4 @@
-package semantic.redesign;
+package semantic;
 
 public class SemaBase {
     Sema sema;

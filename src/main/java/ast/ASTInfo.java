@@ -1,4 +1,4 @@
-package ast.redesign;
+package ast;
 
 import ast.type.*;
 import ast.type.Builtin;

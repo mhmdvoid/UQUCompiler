@@ -1,6 +1,6 @@
-package semantic.redesign;
+package semantic;
 
-import ast.redesign.expr_def.IntegerLiteral;
+import ast.expr_def.IntegerLiteral;
 
 public class SemaExpr extends SemaBase {
     public SemaExpr(Sema sema) {

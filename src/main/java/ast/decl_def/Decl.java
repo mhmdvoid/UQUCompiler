@@ -1,4 +1,4 @@
-package ast.redesign.decl_def;
+package ast.decl_def;
 
 // TODO
 // There should be DeclContext acts like an environment for Decl clients;

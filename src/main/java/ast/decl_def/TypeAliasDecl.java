@@ -1,6 +1,6 @@
-package ast.redesign.decl_def;
+package ast.decl_def;
 
-import ast.redesign.Identifier;
+import ast.Identifier;
 import ast.type.Type;
 import ast.type.NameAliasType;
 import compile.utils.ShapeDump;

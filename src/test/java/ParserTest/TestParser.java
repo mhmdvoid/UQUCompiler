@@ -3,8 +3,6 @@ package ParserTest;
 import junit.framework.TestCase;
 import parser.Parser;
 
-import java.io.File;
-
 public class TestParser extends TestCase {
 
     private Parser parser;

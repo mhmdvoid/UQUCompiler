@@ -1,4 +1,4 @@
-package ast.redesign.expr_def;
+package ast.expr_def;
 
 public class BinExpression extends Expression{
     public BinExpression() {

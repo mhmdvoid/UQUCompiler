@@ -1,6 +1,5 @@
-package ast.redesign;
+package ast;
 
-import ast.Statement;
 import ast.type.Type;
 import ast.type.NameAliasType;
 

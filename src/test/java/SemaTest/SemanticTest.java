@@ -2,9 +2,6 @@ package SemaTest;
 
 import ast.TranslationUnit;
 import junit.framework.TestCase;
-import parser.Parser;
-
-import java.io.File;
 
 public class SemanticTest extends TestCase  {
     private TranslationUnit program ;

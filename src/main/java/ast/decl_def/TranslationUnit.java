@@ -1,6 +1,6 @@
-package ast.redesign.decl_def;
+package ast.decl_def;
 
-import ast.redesign.ASTInfo;
+import ast.ASTInfo;
 
 import java.util.ArrayList;
 import java.util.List;

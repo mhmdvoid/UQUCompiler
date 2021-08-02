@@ -1,7 +1,6 @@
-package semantic.redesign;
+package semantic;
 
-import ast.redesign.NameAliasDeclNode;
-import ast.redesign.decl_def.TypeAliasDecl;
+import ast.decl_def.TypeAliasDecl;
 
 import java.util.HashMap;  // Scope data structure 'Stack/List' of hashtable.  [global{foo(): int}, methodScope{param: bool}, blockScope{c: char}]; we have a depth to distinguish levels.
 // 1 -> we're on global scope. 2 we're methodScope., 3 Local. and number of depth increases accordingly. We can put on constraints to limit the depth but that's ok alright?

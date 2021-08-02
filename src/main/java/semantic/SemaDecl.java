@@ -1,10 +1,9 @@
-package semantic.redesign;
+package semantic;
 
-import ast.redesign.Identifier;
-import ast.redesign.NameAliasDeclNode;
-import ast.redesign.decl_def.TypeAliasDecl;
-import ast.redesign.decl_def.VarDecl;
-import ast.redesign.expr_def.Expression;
+import ast.Identifier;
+import ast.decl_def.TypeAliasDecl;
+import ast.decl_def.VarDecl;
+import ast.expr_def.Expression;
 import ast.type.Type;
 import ast.type.TypeKind;
 import ast.type.UnresolvedType;

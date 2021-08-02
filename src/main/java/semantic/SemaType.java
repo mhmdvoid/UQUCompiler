@@ -1,6 +1,6 @@
-package semantic.redesign;
+package semantic;
 
-import ast.redesign.Identifier;
+import ast.Identifier;
 import ast.type.Type;
 
 // This assigns Type. Create type to be assigned by the parser.

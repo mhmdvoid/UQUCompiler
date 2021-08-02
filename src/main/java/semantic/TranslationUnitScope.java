@@ -1,4 +1,4 @@
-package semantic.redesign;
+package semantic;
 
 public class TranslationUnitScope extends Scope {
     public TranslationUnitScope() {

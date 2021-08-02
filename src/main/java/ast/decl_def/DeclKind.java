@@ -1,4 +1,4 @@
-package ast.redesign.decl_def;
+package ast.decl_def;
 
 public enum DeclKind {
     TranslationUnitDecl, VarDecl, AlisaDecl, FuncDecl

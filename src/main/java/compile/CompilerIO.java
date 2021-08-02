@@ -1,7 +1,5 @@
 package compile;
 
-import parser.Parser;
-
 public class CompilerIO {
 
     // Todo: bash script to run custom command for console

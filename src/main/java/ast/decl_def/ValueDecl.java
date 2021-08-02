@@ -1,7 +1,7 @@
-package ast.redesign.decl_def;
+package ast.decl_def;
 
-import ast.redesign.Identifier;
-import ast.redesign.expr_def.Expression;
+import ast.Identifier;
+import ast.expr_def.Expression;
 import ast.type.Type;
 
 public class ValueDecl extends Decl{
