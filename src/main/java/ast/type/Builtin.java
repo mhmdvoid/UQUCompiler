@@ -1,4 +1,4 @@
-package ast.type.redesign;
+package ast.type;
 
 import ast.type.Type;
 import ast.type.TypeKind;

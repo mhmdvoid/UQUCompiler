@@ -1,7 +1,9 @@
 package ast.redesign.expr_def;
 
 public class IntegerLiteral extends Expression {
-    public IntegerLiteral() {
+    String value;
+    public IntegerLiteral(String value) {
         super(ExprKind.IntegerLiteral);
+        this.value = value;
     }
 }

@@ -4,6 +4,11 @@ import ast.*;
 import ast.redesign.ASTInfo;
 import ast.redesign.Identifier;
 import ast.redesign.NameAliasDeclNode;
+import ast.redesign.decl_def.TranslationUnit;
+import ast.redesign.decl_def.TypeAliasDecl;
+import ast.redesign.decl_def.VarDecl;
+import ast.redesign.expr_def.BoolLiteral;
+import ast.redesign.expr_def.Expression;
 import ast.type.Type;
 import lexer.LexerManager;
 import lexer.Token;
@@ -97,13 +102,14 @@ public class Parser2 {
         consume();  // Pump the lexer;
         var line = currentToken.getLine();
         var fileScope = new TranslationUnitScope();
-        var gMembers = new GlobalScope(line);   // Fixme: see line issue;
+        var tu = new ast.redesign.decl_def.TranslationUnit(sema.astContext);
+//        var gMembers = new GlobalScope(line);   // Fixme: see line issue;
         while (see(TokenType.VAR) || see(TokenType.TYPEALIAS)) { // Fixme: Should have *parseStatement(); and then branch
             switch (currentToken.getType()) {
-                case VAR -> gMembers.addStatement(parseVarDeclAssign(fileScope));
+                case VAR -> tu.push(parseVarDeclAssign(fileScope));
                 case TYPEALIAS -> {
                     consume();
-                    gMembers.addStatement(parseTypeAlias(fileScope));
+                    tu.push(parseTypeAlias(fileScope));
                 }
                 default -> System.err.println("Error syntax construct");
             }
@@ -113,7 +119,6 @@ public class Parser2 {
 //        fileScope.table.forEach((s, nameAliasDeclNode) -> {
 //            System.out.println(s + " " + nameAliasDeclNode);
 //        });
-        var tu = new TranslationUnit(line, /*filename: should be from lexer*/ "main.uqulang", gMembers);
         sema.decl.handleEndOfTranslationUnit();  // Replace: NameBinder.nameBinding(tu, this.sema.astContext);
         return tu;
     }
@@ -149,13 +154,13 @@ public class Parser2 {
         if (have(TokenType.NUMBER_LITERAL)) {
             return sema.expr.semaNumberConstant(skippedToken.getTokenValue());// Sema.exp.actOnConstant();
         } else if (have(TokenType.TRUE) || have(TokenType.FALSE)) {
-            return new BoolLiteral(line, skippedToken.getTokenValue());
+            return new BoolLiteral(skippedToken.getTokenValue());
         }
 
         return null;  // should never reach
     }
     // WE should have a method called parse statementList(Scope ctx); gets called by the translation unit as well as class decl, struct decl, method decl;
-    public NameAliasDeclNode parseTypeAlias(Scope ctx) {   // For every decl parsing and type parsing . decl means is this already defined /not defined at all ? type does this type even exist? this why we need scope
+    public TypeAliasDecl parseTypeAlias(Scope ctx) {   // For every decl parsing and type parsing . decl means is this already defined /not defined at all ? type does this type even exist? this why we need scope
         // for both type and decl
         var line = currentToken.getLine();
         var identifier = parseIdentifier();

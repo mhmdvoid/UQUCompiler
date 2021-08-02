@@ -17,6 +17,6 @@ public class SemaType extends SemaBase {
 
     public Type resolveTypename(/*Type result*, Loc loc*/ Identifier identifier, Scope ctx) {
 
-        return sema.decl.lookupTypename(identifier, ctx).getUnderlyingType();
+        return sema.decl.lookupTypename(identifier, ctx).getNameAliasType();
     }
 }

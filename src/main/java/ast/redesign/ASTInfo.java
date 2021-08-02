@@ -1,8 +1,8 @@
 package ast.redesign;
 
 import ast.type.*;
-import ast.type.redesign.Builtin;
-import ast.type.redesign.UnresolvedType;
+import ast.type.Builtin;
+import ast.type.UnresolvedType;
 
 import java.util.HashSet;
 import java.util.Set;

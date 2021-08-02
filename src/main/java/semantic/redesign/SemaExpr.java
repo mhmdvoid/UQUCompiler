@@ -1,6 +1,6 @@
 package semantic.redesign;
 
-import ast.IntegerLiteral;
+import ast.redesign.expr_def.IntegerLiteral;
 
 public class SemaExpr extends SemaBase {
     public SemaExpr(Sema sema) {
@@ -14,6 +14,6 @@ public class SemaExpr extends SemaBase {
            2- assign to it a type 'built-in type'
            3- create a new node
          */
-        return new IntegerLiteral(0, textValue);
+        return new IntegerLiteral(textValue);
     }
 }

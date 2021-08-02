@@ -1,12 +1,13 @@
 package semantic.redesign;
 
-import ast.Expression;
 import ast.redesign.Identifier;
 import ast.redesign.NameAliasDeclNode;
-import ast.VarDecl;
+import ast.redesign.decl_def.TypeAliasDecl;
+import ast.redesign.decl_def.VarDecl;
+import ast.redesign.expr_def.Expression;
 import ast.type.Type;
 import ast.type.TypeKind;
-import ast.type.redesign.UnresolvedType;
+import ast.type.UnresolvedType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,8 +19,8 @@ import java.util.Map;
 public class SemaDecl extends SemaBase {
 
     //  UnresolvedTypes - This keeps track of all of the unresolved types in the AST.
-    Map<Identifier, NameAliasDeclNode> unresolvedTypes = new HashMap<>();
-    List<NameAliasDeclNode> unresolvedList = new ArrayList<>();
+    Map<Identifier, TypeAliasDecl> unresolvedTypes = new HashMap<>();
+    List<TypeAliasDecl> unresolvedList = new ArrayList<>();
 
     public SemaDecl(Sema sema) {
         super(sema);
@@ -27,22 +28,20 @@ public class SemaDecl extends SemaBase {
     // kinda get it we handleEnd , with parser we do everything from scratch, once done call other phases to pass around and similar.
     public void handleEndOfTranslationUnit() {
         // So name binding is responsible for unresolved type, shadowing, import, libs and this sort of stuff. Sema is for now lifting all heavy work such as addToScope, lookup, create node, redefinition detect
-        // FIXME: Nondeterminstic iteration.
-        unresolvedTypes.forEach((identifier, nameAliasDeclNode) -> {
+        unresolvedTypes.forEach((identifier, nameAliasDeclNode) -> { // FIXME
             System.err.println("use of undeclared type " + identifier);;
         });
     }
-    public NameAliasDeclNode tpAliasSema(Identifier identifier, Type type, Scope ctx) {  // when see typealais decl
+    public TypeAliasDecl tpAliasSema(Identifier identifier, Type type, Scope ctx) {  // when see typealais decl
         var def = ctx.lookup(identifier.name);
 
         if (def == null) {
-            var newAliasDelc = new NameAliasDeclNode(type, identifier.name);
-            ctx.addEntry(0, identifier.name, newAliasDelc);
-            return newAliasDelc;
+            var typeAliasDecl = new TypeAliasDecl(type, identifier);
+            ctx.addEntry(0, identifier.name, typeAliasDecl);
+            return typeAliasDecl;
         }
-        if (def.getUnderlyingType().getKind() == TypeKind.UNRESOLVED_KIND) {
+        if (def.underlyingType.getKind() == TypeKind.UNRESOLVED_KIND) {
             def.underlyingType = type;
-
             unresolvedTypes.remove(identifier);
             // Fixme, Replace
             return def;
@@ -54,11 +53,11 @@ public class SemaDecl extends SemaBase {
         // push entry to scope so then we look it up !;
     }
 
-    public NameAliasDeclNode lookupTypename(Identifier identifier, Scope ctx) {  // when see var x: foo = 10;
+    public TypeAliasDecl lookupTypename(Identifier identifier, Scope ctx) {  // when see var x: foo = 10;
         var typeDef =  ctx.lookup(identifier.name);
         if (typeDef != null)
             return typeDef;
-        typeDef = new NameAliasDeclNode(new UnresolvedType(TypeKind.UNRESOLVED_KIND, "unresolved"), identifier.name);
+        typeDef = new TypeAliasDecl(new UnresolvedType(TypeKind.UNRESOLVED_KIND, "unresolved"), identifier);
         ctx.addEntry(0, identifier.name, typeDef);  // Todo: type should go into typeScope.insert(..);
         unresolvedTypes.put(identifier, typeDef);
         unresolvedList.add(typeDef);
@@ -71,8 +70,8 @@ public class SemaDecl extends SemaBase {
         if (def != null) {
             System.err.println("Redefinition");
         }
-        else {scope.addEntry(1, identifier.name, new NameAliasDeclNode(type, identifier.name)); }
-        return new VarDecl(0, identifier.name, type, init);
+        else {scope.addEntry(1, identifier.name, new TypeAliasDecl(type, identifier)); }
+        return new VarDecl(identifier, type, init);
 
         // scope.lookup(identifer.name) if not null redefine !;
         // create it and add to currentScope/ the one being sent.  // sema its type, define? exist, typelaias? and similar
