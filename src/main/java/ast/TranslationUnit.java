@@ -16,9 +16,6 @@ public class TranslationUnit extends ASTNode {
 
     GlobalScope globalMembers;
 
-    /*transUnitSymbol fContext;*/
-    TranslationUnitContext translationUnitContext;
-
     // Todo: Not to be confused with struct decl as they introduce new scope of a program;
     // Todo: this is an initial of implementation. We're not taking nested scopes in account yet;
 
@@ -47,9 +44,6 @@ public class TranslationUnit extends ASTNode {
         dump(0);
     }
 
-    public Map<String, Definition> getTranslationUnitContext() {
-        return translationUnitContext.table;
-    }
 
     public List<Statement> gTree() {return globalMembers.getStatements();}
 }

@@ -22,13 +22,13 @@ public class SemaExpr extends SemaBase {
     }
 
     public Expression semaIdentifierRef(Identifier identifier, Scope scope) {
-        var valueDecl = sema.decl.lookupTypename(identifier, scope);
+        var valueDecl = sema.decl.lookupValueName(identifier, scope);
         // Lookup;
         // if (null) unresolvedRefExpression(identifier.name);
         if (valueDecl == null) {
             System.out.println("Unresolved " + identifier.name + " til now. Check NameBinder");
             return new UnresolvedReferenceExpr(identifier);
         }
-        return new ReferenceDeclExpr(null);
+        return new ReferenceDeclExpr(valueDecl);
     }
 }
