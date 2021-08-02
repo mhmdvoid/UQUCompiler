@@ -5,9 +5,9 @@ import ast.expr_def.Expression;
 import ast.type.Type;
 
 public class ValueDecl extends Decl{
-    Identifier identifier;
-    Type type;
-    Expression initial;
+    public Identifier identifier;
+    public Type type;
+    public Expression initial;
 
     public ValueDecl(DeclKind kind, Identifier identifier, Type type, Expression initial) {
         super(kind);

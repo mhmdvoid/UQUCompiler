@@ -1,3 +1,1 @@
-var x : int = 10;
-var y : Foo = 10;
-typealias Foo = int;
+var z : int = r;
