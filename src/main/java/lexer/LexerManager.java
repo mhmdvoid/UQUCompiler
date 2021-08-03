@@ -1,6 +1,7 @@
 package lexer;
 
 
+import javax.naming.spi.DirObjectFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,8 +73,14 @@ public class LexerManager {
                 tokens.add(new Token(charManager.getCharPosition().row, TokenType.ASSIGN_OP, "="));
                 nextChar();
             } else if (charManager.currentChar() == '*') {
-                tokens.add(new Token(charManager.getCharPosition().row, TokenType.MUL_OP, "*"));
                 nextChar();
+                if (charManager.currentChar() == '/') {
+                    tokens.add(new Token(charManager.getCharPosition().row, TokenType.CLOSE_MULTICOM, "*/"));
+                    nextChar();
+                }
+                else {
+                    tokens.add(new Token(charManager.getCharPosition().row, TokenType.MUL_OP, "*"));
+                }
             } else if (charManager.currentChar() == ';') {
                 tokens.add(new Token(charManager.getCharPosition().row, TokenType.SEMICOLON, ";"));
                 nextChar();
@@ -109,7 +116,10 @@ public class LexerManager {
                 if (charManager.currentChar() == '/') {
                     while (charManager.currentChar() != '\n' && charManager.currentChar() != '\0')
                         nextChar();
-                } else {
+                } else if (charManager.currentChar() == '*') {
+                    tokens.add(new Token(charManager.getCharPosition().row, TokenType.OPEN_MULTICOM, "/*"));
+                    nextChar();
+                } else{
                     System.out.println("Division operation not supported yet .. ):");
                     inError = true;
                 }
@@ -152,7 +162,6 @@ public class LexerManager {
 
     public static void main(String[] args) {
         var lexer = new LexerManager("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang");
-        System.out.println(lexer.getTokens());
     }
 
 }

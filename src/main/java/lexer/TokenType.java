@@ -29,6 +29,8 @@ public enum TokenType  {
     RETURN,
     SINGLE_COMMENT,
     TYPEALIAS,
+    OPEN_MULTICOM,
+    CLOSE_MULTICOM,
     EOF;
 
 
