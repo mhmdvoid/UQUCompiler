@@ -2,6 +2,7 @@ package parser;
 
 import ast.ASTInfo;
 import ast.Identifier;
+import ast.decl_def.MultiCommentDecl;
 import ast.decl_def.TranslationUnit;
 import ast.decl_def.TypeAliasDecl;
 import ast.decl_def.VarDecl;
@@ -101,19 +102,20 @@ public class Parser {
         var fileScope = new TranslationUnitScope();
         var tu = new ast.decl_def.TranslationUnit(sema.astContext);
 //        var gMembers = new GlobalScope(line);   // Fixme: see line issue;
-        while (see(TokenType.VAR) || see(TokenType.TYPEALIAS)) { // Fixme: Should have *parseStatement(); and then branch
+        while (see(TokenType.VAR) || see(TokenType.TYPEALIAS) || see(TokenType.OPEN_MULTICOM)) { // Fixme: Should have *parseStatement(); and then branch
             switch (currentToken.getType()) {
                 case VAR -> { tu.push(parseVarDeclAssign(fileScope));}
                 case TYPEALIAS -> {
                     consume();
                     tu.push(parseTypeAlias(fileScope));
                 }
+                case OPEN_MULTICOM -> parseMultiComment();
                 default -> System.err.println("Error syntax construct");
             }
         }
 
-        System.out.println("ValueDecl " + fileScope.table);
-        System.out.println("TypeScope " + fileScope.getTypeContext().typeScope);
+//        System.out.println("ValueDecl " + fileScope.table);
+//        System.out.println("TypeScope " + fileScope.getTypeContext().typeScope);
         sema.decl.handleEndOfTranslationUnit();  // Replace: NameBinder.nameBinding(tu, this.sema.astContext);
         return tu;
     }
@@ -122,6 +124,9 @@ public class Parser {
     VarDecl parseVarDeclAssign(Scope ctx) {
         parseEat(TokenType.VAR, "var missing ");
         var id = parseIdentifier();
+        if (id.name.equals("x99998")) {
+            System.out.println("Found");
+        }
         parseEat(TokenType.COLON, "missing colon ");
         var t = parseType(ctx);
         var expression = parseExpression(ctx);  // Sema.expre !;
@@ -191,6 +196,14 @@ public class Parser {
     Expression parseIdentifierRef(Scope scope) {
         var id = parseIdentifier();
         return sema.expr.semaIdentifierRef(id, scope);
+    }
+    MultiCommentDecl parseMultiComment() {
+        while (!see(TokenType.CLOSE_MULTICOM)) {
+            consume();
+        }
+        consume();
+        // FIXME sema.decl.process;
+        return new MultiCommentDecl();
     }
 
     public static void main(String[] args) {
