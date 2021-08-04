@@ -16,7 +16,8 @@ import semantic.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
+// parseArgType, parseArgName();  Why? Separation is always bette.
+// 2- parseArgType(globalScopeType); parseArgName(localContex);
 public class Parser {
     private final LexerManager lexer;
     private Token skippedToken, currentToken;
@@ -124,29 +125,32 @@ public class Parser {
     }
 
     FuncDecl parseFuncDecl(Scope gb) {
-        // define a new scope? write?
         var type = parseType(gb);
         var id = parseIdentifier();
         var localContext = new LocalScope(gb);  // This should do it for now ;
-        var params = parseParamDecl(localContext);
+        var params = parseParamDecl(localContext, gb);
         parseEat(TokenType.SEMICOLON, "missing ; for abstract method");
+        System.out.println(localContext.table);
         return sema.decl.funcDeclSema(type, id, gb);
 
     }
-
-    List<ParamDecl> parseParamDecl(Scope localScope) {
+    // We need to figure a better way to represent scopeLogic!; and should be notified respectfully!;  see A container !; where the default is the global !
+    List<ParamDecl> parseParamDecl(Scope localScope, Scope gb) {
         // should push them to a local scope;
         var list = new ArrayList<ParamDecl>();
         parseEat(TokenType.L_PAREN, "param should start with `(`");
         if (have(TokenType.R_PAREN)) {/*empty param*/return list; }
         do {
-            list.add(parseParam(localScope));
+            list.add(parseParam(localScope, gb));
         } while (have(TokenType.COMMA));
+        parseEat(TokenType.R_PAREN, "How to forget closing param");
         return list;
     }
-    ParamDecl parseParam(Scope localScope) {
-        return null;
-//        return sema.decl.paramDeclSema(parseIdentifier(), parseType(localScope), localScope);  // Fixme there's a bug sending localScope to type will do no good maybe later!;
+    ParamDecl parseParam(Scope localScope, Scope gb) {
+        var identifier = parseIdentifier();
+        parseEat(TokenType.COLON, "Where is the colon after param name !");
+        var paramType = parseType(gb);
+        return sema.decl.paramDeclSema(identifier, paramType, localScope);  // Fixme there's a bug sending localScope to type will do no good maybe later!;
     }
     VarDecl parseVarDeclAssign(Scope ctx) {
         parseEat(TokenType.VAR, "var missing ");

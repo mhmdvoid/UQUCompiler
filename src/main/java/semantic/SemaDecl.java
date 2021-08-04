@@ -64,6 +64,8 @@ public class SemaDecl extends SemaBase {
         return typeDef;
 
     }
+
+    // Almost all have same sort of logic ! Well that's why we should move the name-binding logic somewhere. Looking up, Shadowing. This sort of things. And use polymorphism for ValueDecl nodes.
     public VarDecl varDeclSema(Identifier identifier, Type type, Expression init, Scope scope) {
         var valueDecl = scope.lookup(identifier.name);
 
@@ -88,16 +90,16 @@ public class SemaDecl extends SemaBase {
         return (FuncDecl) funcDecl;
     }
 
-//    public ParamDecl paramDeclSema(Identifier identifier, Type type, Scope local) {
-//        // Type should be lookup through the typeScope;
-//        // bound the name to a nested scope FIXME Should be pulled to nameBinder;
-//        var paramVal = local.lookup(identifier.name);
-//        if (paramVal != null) {
-//            System.err.println("Redefinition with same name in same scope");
-//            return null; // Fixme
-//        }
-//        var newParam = new ParamDecl(identifier, type);
-//        local.addEntry(0, identifier.name, newParam);
-//        return newParam;
-//    }
+    public ParamDecl paramDeclSema(Identifier identifier, Type type, Scope local) {
+        // Type should be lookup through the typeScope;
+        // bound the name to a nested scope FIXME Should be pulled to nameBinder;
+        var paramVal = local.lookup(identifier.name);
+        if (paramVal != null) {
+            System.err.println("Redefinition with same name in same scope");
+            return null; // Fixme
+        }
+        var newParam = new ParamDecl(identifier, type);
+        local.addEntry(0, identifier.name, newParam);
+        return newParam;
+    }
 }

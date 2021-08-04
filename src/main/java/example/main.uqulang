@@ -1,4 +1,1 @@
-var b: Foo = 10;
-var s: Foo = b;
-func Foo bar();   // method should have their own scope to store only their name!; so var bar : ; func bar() should work for now it's not possible
-typealias Foo = int;
+func int bar(x: int, bar: int);
