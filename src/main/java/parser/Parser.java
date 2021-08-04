@@ -2,19 +2,19 @@ package parser;
 
 import ast.ASTInfo;
 import ast.Identifier;
-import ast.decl_def.MultiCommentDecl;
-import ast.decl_def.TranslationUnit;
-import ast.decl_def.TypeAliasDecl;
-import ast.decl_def.VarDecl;
+import ast.decl_def.*;
 import ast.expr_def.BoolLiteral;
 import ast.expr_def.Expression;
+import ast.expr_def.FuncBlockExpr;
+import ast.redesign.ASTNode;
 import ast.type.Type;
 import lexer.LexerManager;
 import lexer.Token;
 import lexer.TokenType;
-import semantic.Scope;
-import semantic.Sema;
-import semantic.TranslationUnitScope;
+import semantic.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Parser {
@@ -97,30 +97,57 @@ public class Parser {
     }
 
     public TranslationUnit parseTranslateUnit() {
+        // Todo: We should have parseTopLevelDecl() && parseStatement(withScope: Scope);
         consume();  // Pump the lexer;
         var line = currentToken.getLine();
         var fileScope = new TranslationUnitScope();
         var tu = new ast.decl_def.TranslationUnit(sema.astContext);
 //        var gMembers = new GlobalScope(line);   // Fixme: see line issue;
-        while (see(TokenType.VAR) || see(TokenType.TYPEALIAS) || see(TokenType.OPEN_MULTICOM)) { // Fixme: Should have *parseStatement(); and then branch
+        while (see(TokenType.VAR) || see(TokenType.FUNC) || see(TokenType.TYPEALIAS) || see(TokenType.OPEN_MULTICOM)) { // Fixme: Should have *parseStatement(); and then branch
             switch (currentToken.getType()) {
-                case VAR -> { tu.push(parseVarDeclAssign(fileScope));}
+                case FUNC -> {
+                    consume(); tu.push(parseFuncDecl(fileScope));
+                }
                 case TYPEALIAS -> {
                     consume();
                     tu.push(parseTypeAlias(fileScope));
-                }
+                } case VAR -> tu.push(parseVarDeclAssign(fileScope));
                 case OPEN_MULTICOM -> parseMultiComment();
                 default -> System.err.println("Error syntax construct");
             }
         }
 
-//        System.out.println("ValueDecl " + fileScope.table);
-//        System.out.println("TypeScope " + fileScope.getTypeContext().typeScope);
+        System.out.println("ValueDecl " + fileScope.table);
+        System.out.println("TypeScope " + fileScope.getTypeContext().typeScope);
         sema.decl.handleEndOfTranslationUnit();  // Replace: NameBinder.nameBinding(tu, this.sema.astContext);
         return tu;
     }
 
+    FuncDecl parseFuncDecl(Scope gb) {
+        // define a new scope? write?
+        var type = parseType(gb);
+        var id = parseIdentifier();
+        var localContext = new LocalScope(gb);  // This should do it for now ;
+        var params = parseParamDecl(localContext);
+        parseEat(TokenType.SEMICOLON, "missing ; for abstract method");
+        return sema.decl.funcDeclSema(type, id, gb);
 
+    }
+
+    List<ParamDecl> parseParamDecl(Scope localScope) {
+        // should push them to a local scope;
+        var list = new ArrayList<ParamDecl>();
+        parseEat(TokenType.L_PAREN, "param should start with `(`");
+        if (have(TokenType.R_PAREN)) {/*empty param*/return list; }
+        do {
+            list.add(parseParam(localScope));
+        } while (have(TokenType.COMMA));
+        return list;
+    }
+    ParamDecl parseParam(Scope localScope) {
+        return null;
+//        return sema.decl.paramDeclSema(parseIdentifier(), parseType(localScope), localScope);  // Fixme there's a bug sending localScope to type will do no good maybe later!;
+    }
     VarDecl parseVarDeclAssign(Scope ctx) {
         parseEat(TokenType.VAR, "var missing ");
         var id = parseIdentifier();
@@ -147,7 +174,7 @@ public class Parser {
             case NUMBER_LITERAL: return parseValue();
             case IDENTIFIER: {
                 return parseIdentifierRef(scope);
-            }
+            } /*case L_BRACE: {consume(); return parseBlockExpr(scope);}*/
         }
         return  null;
     }
@@ -206,6 +233,12 @@ public class Parser {
         return new MultiCommentDecl();
     }
 
+//    FuncBlockExpr parseBlockExpr(Scope nestedScope) {
+//        var list = new ArrayList<ASTNode>();
+//        while (!see(TokenType.R_BRACE) && !see(TokenType.EOF)) {
+//            // look for var type alias and similar !;  parseTopDecl but with a different scope?
+//        }
+//    }
     public static void main(String[] args) {
         var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang", new ASTInfo());
         var tu = parser.parseTranslateUnit();

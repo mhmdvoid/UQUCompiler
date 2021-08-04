@@ -1,6 +1,8 @@
 package ast.state_def;
 
-public class Statement {
+import ast.redesign.ASTNode;
+
+public class Statement extends ASTNode {
     StateKind kind;
 
     public Statement(StateKind kind) {

@@ -1,8 +1,9 @@
 package ast.expr_def;
 
+import ast.redesign.ASTNode;
 import ast.type.Type;
 
-public class Expression {
+public class Expression extends ASTNode {
 
     ExprKind kind;   // This tells us subclasses . It's a design pattern used for polymorphism rather Switch statement.
     public Type type;
