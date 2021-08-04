@@ -1,7 +1,5 @@
 package lexer;
 
-
-import javax.naming.spi.DirObjectFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;

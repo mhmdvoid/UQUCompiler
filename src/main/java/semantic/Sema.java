@@ -10,12 +10,13 @@ public class Sema {
     public SemaDecl decl;
     public SemaExpr expr;
     public SemaType type;
+    public SemaState statement;
     public Sema(ASTInfo astContext) {
         this.astContext = astContext;
         decl = new SemaDecl(this);
         type = new SemaType(this);
         expr = new SemaExpr(this);
-
+        statement = new SemaState(this);
     }
 
 }
