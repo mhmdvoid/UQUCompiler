@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class FuncBlockExpr extends Expression {
     public List<ASTNode> body;
-    public FuncBlockExpr(ExprKind kind) {
+    public FuncBlockExpr(List<ASTNode> body) {
         super(ExprKind.FuncBlock);
     }
 }

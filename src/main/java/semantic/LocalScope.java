@@ -1,5 +1,6 @@
 package semantic;
 
+import semantic.scope.LocalTypeContext;
 import semantic.scope.TypeContext;
 
 public class LocalScope extends Scope {
@@ -9,6 +10,6 @@ public class LocalScope extends Scope {
 
     @Override
     public TypeContext getTypeContext() {
-        return null; // Fixme: implement here LocalTypeContext;
+        return new LocalTypeContext(surroundingScope.getTypeContext()); // Fixme: implement here LocalTypeContext;
     }
 }
