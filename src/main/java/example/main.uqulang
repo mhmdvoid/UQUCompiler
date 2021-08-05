@@ -1,3 +1,10 @@
-var y: Foo = 10;
-var z : int = r;
 typealias Foo = int;
+func int bar(x: int, bar: int) { // bar param is bound to different scope than barFunc name;
+    // typealias Foo = bool;   here we should handle shadowing , i.e bind Foo to be boolean type and be used as bool for all localDecl inside bar.  You got it just learn about
+    var i : int = 10;
+    var foo : Foo = 10;  // Typechecking error Foo is an alias for boolean value.  This what bound to nearest nested scope
+}
+
+func int fooBar(foo: Foo) {
+    var localFoo : Foo = 10;
+}

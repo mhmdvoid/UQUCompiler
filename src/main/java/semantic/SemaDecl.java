@@ -1,10 +1,9 @@
 package semantic;
 
 import ast.Identifier;
-import ast.decl_def.TypeAliasDecl;
-import ast.decl_def.ValueDecl;
-import ast.decl_def.VarDecl;
+import ast.decl_def.*;
 import ast.expr_def.Expression;
+import ast.expr_def.FuncBlockExpr;
 import ast.type.Type;
 import ast.type.TypeKind;
 import ast.type.UnresolvedType;
@@ -65,15 +64,42 @@ public class SemaDecl extends SemaBase {
         return typeDef;
 
     }
+
+    // Almost all have same sort of logic ! Well that's why we should move the name-binding logic somewhere. Looking up, Shadowing. This sort of things. And use polymorphism for ValueDecl nodes.
     public VarDecl varDeclSema(Identifier identifier, Type type, Expression init, Scope scope) {
         var valueDecl = scope.lookup(identifier.name);
 
         if (valueDecl != null) {
-            System.err.println("Redefinition");
+            System.err.println("Redefinition");return null;
         }
         // Null insert a new valueDecl to scope.
-        var varDecl = new VarDecl(identifier, type, init);
-        scope.addEntry(1, identifier.name, varDecl);
-        return varDecl;
+        valueDecl = new VarDecl(identifier, type, init);
+        scope.addEntry(1, identifier.name, valueDecl);
+        return (VarDecl) valueDecl;
+    }
+
+    public FuncDecl funcDeclSema(Type type, Identifier identifier,/*, FuncBlockExpr block,*/ Scope globalScope) {
+        var funcDecl = globalScope.lookup(identifier.name);
+
+        if (funcDecl != null) {
+            System.err.println("Redefinition");return null;
+        }
+        // Null insert a new valueDecl to scope.
+        funcDecl = new FuncDecl(identifier, type);
+        globalScope.addEntry(1, identifier.name, funcDecl);
+        return (FuncDecl) funcDecl;
+    }
+
+    public ParamDecl paramDeclSema(Identifier identifier, Type type, Scope local) {
+        // Type should be lookup through the typeScope;
+        // bound the name to a nested scope FIXME Should be pulled to nameBinder;
+        var paramVal = local.lookup(identifier.name);
+        if (paramVal != null) {
+            System.err.println("Redefinition with same name in same scope");
+            return null; // Fixme
+        }
+        var newParam = new ParamDecl(identifier, type);
+        local.addEntry(0, identifier.name, newParam);
+        return newParam;
     }
 }
