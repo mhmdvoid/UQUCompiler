@@ -105,7 +105,7 @@ public class Parser {
         var fileScope = new TranslationUnitScope();
         var tu = new ast.decl_def.TranslationUnit(sema.astContext);
 //        var gMembers = new GlobalScope(line);   // Fixme: see line issue;
-        while (see(TokenType.VAR) || see(TokenType.FUNC) || see(TokenType.TYPEALIAS) || see(TokenType.OPEN_MULTICOM)) { // Fixme: Should have *parseStatement(); and then branch
+        while (see(TokenType.IMPORT) || see(TokenType.VAR) || see(TokenType.FUNC) || see(TokenType.TYPEALIAS) || see(TokenType.OPEN_MULTICOM)) { // Fixme: Should have *parseStatement(); and then branch
             switch (currentToken.getType()) {
                 case FUNC -> {
                     consume();
@@ -117,6 +117,9 @@ public class Parser {
                 }
                 case VAR -> tu.push(parseVarDeclAssign(fileScope));
                 case OPEN_MULTICOM -> parseMultiComment();
+                case IMPORT ->  {
+                    tu.push(parseImportDecl());
+                }
                 default -> System.err.println("Error syntax construct");
             }
         }
@@ -127,6 +130,12 @@ public class Parser {
         return tu;
     }
 
+    ImportDecl parseImportDecl() {
+        // var loc
+        parseEat(TokenType.IMPORT, "import keyword missing");
+        var identifier = parseIdentifier();
+        return sema.decl.importDeclSema(identifier);
+    }
     ASTNode parseFuncState(LocalScope scope) {
         switch (currentToken.getType()) {
             case VAR:
@@ -280,4 +289,5 @@ public class Parser {
         var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang", new ASTInfo());
         var tu = parser.parseTranslateUnit();
     }
+
 }

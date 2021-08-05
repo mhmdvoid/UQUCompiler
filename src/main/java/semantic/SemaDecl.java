@@ -102,4 +102,8 @@ public class SemaDecl extends SemaBase {
         local.addEntry(0, identifier.name, newParam);
         return newParam;
     }
+
+    public ImportDecl importDeclSema(Identifier module) {
+        return new ImportDecl(module);
+    }
 }
