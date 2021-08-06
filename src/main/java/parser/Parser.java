@@ -7,7 +7,9 @@ import ast.expr_def.BoolLiteral;
 import ast.expr_def.Expression;
 import ast.expr_def.FuncBlockExpr;
 import ast.redesign.ASTNode;
+import ast.type.NameAliasType;
 import ast.type.Type;
+import ast.type.TypeKind;
 import lexer.LexerManager;
 import lexer.Token;
 import lexer.TokenType;
@@ -123,7 +125,7 @@ public class Parser {
                 default -> System.err.println("Error syntax construct");
             }
         }
-
+        tu.tuScope = fileScope;
         System.out.println("Global ValueDecl " + fileScope.table);
         System.out.println("Global TypeScope " + fileScope.getTypeContext().typeScope);
         sema.decl.handleEndOfTranslationUnit(tu);  // Replace: NameBinder.nameBinding(tu, this.sema.astContext);

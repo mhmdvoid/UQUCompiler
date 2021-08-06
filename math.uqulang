@@ -1,1 +1,1 @@
-typealias Foo = int;
+typealias Foo = bool;

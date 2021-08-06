@@ -1,10 +1,7 @@
 package semantic;
 
 import ast.Identifier;
-import ast.decl_def.Decl;
-import ast.decl_def.ImportDecl;
-import ast.decl_def.TranslationUnit;
-import ast.decl_def.ValueDecl;
+import ast.decl_def.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,5 +28,11 @@ public class Module {
         }
         return this.decls.get(identifier);
 
+    }
+
+    // If we have classDecl, structDecl, then we may send a scope to look in;
+    public TypeAliasDecl lookupTypename(Identifier identifier) {
+        var t = translationUnit.tuScope.getTypeContext().lookup(identifier.name);
+        return t; // Could be null;
     }
 }

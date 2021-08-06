@@ -2,13 +2,13 @@ package semantic;
 
 import ast.Identifier;
 import ast.ASTInfo;
-import ast.decl_def.Decl;
-import ast.decl_def.ImportDecl;
-import ast.decl_def.TranslationUnit;
-import ast.decl_def.ValueDecl;
+import ast.decl_def.*;
 import ast.expr_def.Expression;
 import ast.expr_def.ReferenceDeclExpr;
 import ast.expr_def.UnresolvedReferenceExpr;
+import ast.type.Type;
+import ast.type.TypeKind;
+import ast.type.UnresolvedType;
 import parser.Parser;
 
 import java.io.File;
@@ -30,7 +30,7 @@ import java.util.Map;
 public class NameBinder {
     public ASTInfo astInfo;
     List<Module> modules;
-    Map<Identifier, ValueDecl> valueDecls;
+    Map<Identifier, ValueDecl> valueDecls;  // Value decls of `Yours` source code not other imported
     Map<ImportDecl, Module> imports;
 
     private NameBinder(ASTInfo astInfo) {
@@ -72,9 +72,9 @@ public class NameBinder {
             }
         }
 
-        // We before reporting an error should resolve them from imports.
+        // We before reporting an error should resolve them from imports. // We should do exactly the same?
         tu.unresolvedTypeList.forEach(unresolvedType -> {
-            System.err.println("Unresolved types " + unresolvedType.identifier.name);
+            unresolvedType.underlyingType = binder.bindTypeDecl(unresolvedType.identifier); // Fixme : Replace
         });
     }
 
@@ -115,6 +115,24 @@ public class NameBinder {
         System.out.println("use of unresolved identifier " + identifier.name);
         return new UnresolvedReferenceExpr(identifier);
 
+    }
+
+    // Fixme: Detect circular redefinition. WE NOT SUPPORTING NAMESPACE
+    Type bindTypeDecl(Identifier identifier) {
+        // Since SemaDecl resolves typeDecl in the whole source code,
+        // So here we'll have unresolved types because %100 don't appear in `Yours` source code
+        // So for now we just try to look them up in the import module, if found return ResolvedTypeAlias;
+        for (Map.Entry<ImportDecl, Module> entry : imports.entrySet()) {
+            ImportDecl importDecl = entry.getKey();
+            Module module = entry.getValue();
+            var taDecl = module.lookupTypename(identifier);
+            if (taDecl != null) {  // We should removed tu.unresolvedTypes ,clear them!;
+                System.out.println("Found resolved type in other module " + taDecl.identifier.name);
+                return taDecl.underlyingType;
+            }
+        }
+        System.err.println("Not found in module as well");
+        return new UnresolvedType(TypeKind.UNRESOLVED_KIND, identifier.name);
     }
 
     Expression bindNames(Expression expression, NameBinder binder) {
