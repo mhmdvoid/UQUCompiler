@@ -3,31 +3,26 @@ package semantic;
 import ast.Identifier;
 import ast.decl_def.*;
 import ast.expr_def.Expression;
-import ast.expr_def.FuncBlockExpr;
 import ast.type.Type;
 import ast.type.TypeKind;
 import ast.type.UnresolvedType;
 import semantic.scope.TypeContext;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SemaDecl extends SemaBase {
     //  UnresolvedTypes - This keeps track of all of the unresolved types in the AST.
     Map<Identifier, TypeAliasDecl> unresolvedTypes = new HashMap<>();
-    List<TypeAliasDecl> unresolvedList = new ArrayList<>();
+    List<TypeAliasDecl> unresolvedTypeList = new ArrayList<>();
 
     public SemaDecl(Sema sema) {
         super(sema);
     }
     // kinda get it we handleEnd , with parser we do everything from scratch, once done call other phases to pass around and similar.
-    public void handleEndOfTranslationUnit() {
-        // So name binding is responsible for unresolved type, shadowing, import, libs and this sort of stuff. Sema is for now lifting all heavy work such as addToScope, lookup, create node, redefinition detect
-        unresolvedTypes.forEach((identifier, nameAliasDeclNode) -> { // FIXME
-            System.err.println("use of undeclared type " + identifier);;
-        });
+    public void handleEndOfTranslationUnit(TranslationUnit tu) {
+        // Move unresolvedTypes to TU so we can access them in NameBinding
+        unresolvedTypeList.removeIf(aliasDecl -> aliasDecl.underlyingType.getKind() != TypeKind.UNRESOLVED_KIND);
+        tu.unresolvedTypeList.addAll(unresolvedTypeList);
     }
 
     public TypeAliasDecl typeAliasSema(Identifier identifier, Type type, TypeContext ctx) {
@@ -60,7 +55,7 @@ public class SemaDecl extends SemaBase {
         typeDef = new TypeAliasDecl(new UnresolvedType(TypeKind.UNRESOLVED_KIND, "unresolved"), identifier);
         ctx.addEntry(identifier.name, typeDef);
         unresolvedTypes.put(identifier, typeDef);
-        unresolvedList.add(typeDef);
+        unresolvedTypeList.add(typeDef);
         return typeDef;
 
     }

@@ -71,6 +71,11 @@ public class NameBinder {
                     ((ValueDecl) decl).initial = binder.bindNames(((ValueDecl) decl).initial, binder);  // Fixme
             }
         }
+
+        // We before reporting an error should resolve them from imports.
+        tu.unresolvedTypeList.forEach(unresolvedType -> {
+            System.err.println("Unresolved types " + unresolvedType.identifier.name);
+        });
     }
 
     private Module getModule(Identifier moduleName) {

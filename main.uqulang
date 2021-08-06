@@ -1,3 +1,2 @@
 import math
-var x: int = y; // Shadowing Conflicts. Which y? math module has y variable, so we need to return the one defined in source code and ignore 1-pass through module names.
-var y: int = 0;
+var x: Foo = 10;
