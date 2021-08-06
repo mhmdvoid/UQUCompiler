@@ -41,6 +41,7 @@ public class LexerManager {
         keywords.put("string", TokenType.STRING_KWD);
         keywords.put("void", TokenType.VOID);
         keywords.put("typealias", TokenType.TYPEALIAS);
+        keywords.put("import", TokenType.IMPORT);
     }
 
     public LexerManager(String srcPath) {

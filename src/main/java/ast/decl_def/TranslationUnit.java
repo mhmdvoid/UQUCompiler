@@ -1,18 +1,22 @@
 package ast.decl_def;
 
 import ast.ASTInfo;
+import semantic.Scope;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TranslationUnit {
-    ASTInfo astInfo;
+    public ASTInfo astInfo;
     // Loc startOfFile;
     private final List<Decl> decls;
 
+    public Scope tuScope;
+    public List<TypeAliasDecl> unresolvedTypeList;
     public TranslationUnit(ASTInfo astInfo) {
         this.astInfo = astInfo;
         decls = new ArrayList<>();
+        unresolvedTypeList = new ArrayList<>();
     }
 
     public boolean push(Decl decl) {

@@ -31,6 +31,7 @@ public enum TokenType  {
     TYPEALIAS,
     OPEN_MULTICOM,
     CLOSE_MULTICOM,
+    IMPORT,
     EOF;
 
 

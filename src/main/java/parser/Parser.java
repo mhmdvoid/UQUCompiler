@@ -7,7 +7,9 @@ import ast.expr_def.BoolLiteral;
 import ast.expr_def.Expression;
 import ast.expr_def.FuncBlockExpr;
 import ast.redesign.ASTNode;
+import ast.type.NameAliasType;
 import ast.type.Type;
+import ast.type.TypeKind;
 import lexer.LexerManager;
 import lexer.Token;
 import lexer.TokenType;
@@ -105,7 +107,7 @@ public class Parser {
         var fileScope = new TranslationUnitScope();
         var tu = new ast.decl_def.TranslationUnit(sema.astContext);
 //        var gMembers = new GlobalScope(line);   // Fixme: see line issue;
-        while (see(TokenType.VAR) || see(TokenType.FUNC) || see(TokenType.TYPEALIAS) || see(TokenType.OPEN_MULTICOM)) { // Fixme: Should have *parseStatement(); and then branch
+        while (see(TokenType.IMPORT) || see(TokenType.VAR) || see(TokenType.FUNC) || see(TokenType.TYPEALIAS) || see(TokenType.OPEN_MULTICOM)) { // Fixme: Should have *parseStatement(); and then branch
             switch (currentToken.getType()) {
                 case FUNC -> {
                     consume();
@@ -117,16 +119,25 @@ public class Parser {
                 }
                 case VAR -> tu.push(parseVarDeclAssign(fileScope));
                 case OPEN_MULTICOM -> parseMultiComment();
+                case IMPORT ->  {
+                    tu.push(parseImportDecl());
+                }
                 default -> System.err.println("Error syntax construct");
             }
         }
-
+        tu.tuScope = fileScope;
         System.out.println("Global ValueDecl " + fileScope.table);
         System.out.println("Global TypeScope " + fileScope.getTypeContext().typeScope);
-        sema.decl.handleEndOfTranslationUnit();  // Replace: NameBinder.nameBinding(tu, this.sema.astContext);
+        sema.decl.handleEndOfTranslationUnit(tu);  // Replace: NameBinder.nameBinding(tu, this.sema.astContext);
         return tu;
     }
 
+    ImportDecl parseImportDecl() {
+        // var loc
+        parseEat(TokenType.IMPORT, "import keyword missing");
+        var identifier = parseIdentifier();
+        return sema.decl.importDeclSema(identifier);
+    }
     ASTNode parseFuncState(LocalScope scope) {
         switch (currentToken.getType()) {
             case VAR:
@@ -277,7 +288,9 @@ public class Parser {
     }
 
     public static void main(String[] args) {
-        var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang", new ASTInfo());
+        var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/main.uqulang", new ASTInfo());
         var tu = parser.parseTranslateUnit();
+        NameBinder.nameBinding(tu, tu.astInfo);
     }
+
 }

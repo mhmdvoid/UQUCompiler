@@ -9,7 +9,7 @@ public class TypeAliasDecl extends Decl {
     public Type underlyingType;
 
     NameAliasType nameAliasType;
-    Identifier identifier;
+    public Identifier identifier;
 
     public TypeAliasDecl(Type underlyingType, Identifier identifier) {
         super(DeclKind.AlisaDecl);
