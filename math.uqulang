@@ -1,0 +1,4 @@
+var y: int = 10;
+func int sum(a: int, b: int) {
+    // For now this should be a wrapper for runtime
+}

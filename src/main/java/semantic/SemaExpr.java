@@ -26,7 +26,7 @@ public class SemaExpr extends SemaBase {
         // Lookup;
         // if (null) unresolvedRefExpression(identifier.name);
         if (valueDecl == null) {
-            System.out.println("Unresolved " + identifier.name + " til now. Check NameBinder");
+//            System.out.println("Unresolved " + identifier.name + " til now. Check NameBinder");
             return new UnresolvedReferenceExpr(identifier);
         }
         return new ReferenceDeclExpr(valueDecl);

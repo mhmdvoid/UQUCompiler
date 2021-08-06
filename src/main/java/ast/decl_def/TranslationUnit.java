@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TranslationUnit {
-    ASTInfo astInfo;
+    public ASTInfo astInfo;
     // Loc startOfFile;
     private final List<Decl> decls;
 

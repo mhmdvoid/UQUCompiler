@@ -286,8 +286,9 @@ public class Parser {
     }
 
     public static void main(String[] args) {
-        var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang", new ASTInfo());
+        var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/main.uqulang", new ASTInfo());
         var tu = parser.parseTranslateUnit();
+        NameBinder.nameBinding(tu, tu.astInfo);
     }
 
 }
