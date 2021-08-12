@@ -49,6 +49,7 @@ public class LexerManager {
 
     public LexerManager(String srcPath) {
         this(new SourceManager(srcPath));
+        var s = SManagerSingleton.shared(srcPath);
     }
 
     // Low-level system level?
@@ -76,7 +77,7 @@ public class LexerManager {
                         charManager.getCharPosition().row, TokenType.ASSIGN_OP, "="));
                 nextChar();
             } else if (charManager.currentChar() == '*') {
-                var loc = new Position(charManager.getCharPosition().row, charManager.getCharPosition().index);
+                var loc = new Position(charManager.getCharPosition().row, charManager.getCharPosition().index, charManager.getCharPosition().column);
                 nextChar();
                 if (charManager.currentChar() == '/') {
                     tokens.add(new Token(loc, TokenType.CLOSE_MULTICOM, "*/"));
@@ -149,7 +150,7 @@ public class LexerManager {
 
     private void lexIdentifier() {
         var buffer = new StringBuilder();
-        var identifierLoc = new Position(charManager.getCharPosition().row, charManager.getCharPosition().newColumn());
+        var identifierLoc = new Position(charManager.getCharPosition().row, charManager.getCharPosition().newColumn(), charManager.getCharPosition().column);
 
         do {
             buffer.append(charManager.currentChar());

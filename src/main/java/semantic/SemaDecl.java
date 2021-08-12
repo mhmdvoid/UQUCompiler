@@ -6,7 +6,8 @@ import ast.expr_def.Expression;
 import ast.type.Type;
 import ast.type.TypeKind;
 import ast.type.UnresolvedType;
-import lexer.Position;
+import lex_erro_log.ErrorLogger;
+import lexer.SManagerSingleton;
 import semantic.scope.TypeContext;
 
 import java.util.*;
@@ -39,9 +40,13 @@ public class SemaDecl extends SemaBase {
             unresolvedTypes.remove(identifier);
             return def;
         }
-        System.err.print("Your definition here line: " + identifier.location);
-        System.err.println(" SemaError redefinition: " + identifier + " already defined here line: "  + def.identifier.location);
 
+        System.out.println("invalid redeclaration: " + identifier.location);
+
+        ErrorLogger.log(SManagerSingleton.shared().srcCode(), identifier.location.column, identifier.location.newColumn());
+
+        System.out.println("Note; previous declaration here " + def.identifier.location);
+        ErrorLogger.log(SManagerSingleton.shared().srcCode(), def.identifier.location.column, def.identifier.location.newColumn());
         return def;
     }
 

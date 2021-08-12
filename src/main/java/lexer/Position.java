@@ -2,12 +2,13 @@ package lexer;
 
 public class Position {
     public int row = 1;
-    int column;  // should be private ? write ?
+    public int column;  // should be private ? write ?
     public int index;
 
-    public Position(int row, int index) {
+    public Position(int row, int index, int column) {
         this.row = row;
         this.index = index;
+        this.column = column;
     }
 
     public Position() {

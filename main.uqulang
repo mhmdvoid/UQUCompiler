@@ -1,4 +1,4 @@
-typealias Foo = int;
+typealias Foo = int; var x: int = 10;
 
 
 
