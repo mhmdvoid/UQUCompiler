@@ -10,7 +10,9 @@ import ast.redesign.ASTNode;
 import ast.type.NameAliasType;
 import ast.type.Type;
 import ast.type.TypeKind;
+import lex_erro_log.ErrorLogger;
 import lexer.LexerManager;
+import lexer.SManagerSingleton;
 import lexer.Token;
 import lexer.TokenType;
 import semantic.*;
@@ -123,6 +125,9 @@ public class Parser {
                 }
                 default -> System.err.println("Error syntax construct");
             }
+        }
+        if (parseEat(TokenType.EOF, "Expected decl...")) {
+            ErrorLogger.log(SManagerSingleton.shared().srcCode(), currentToken.getPosition().column, currentToken.getPosition().newColumn());
         }
         tu.tuScope = fileScope;
         System.out.println("Global ValueDecl " + fileScope.table);
