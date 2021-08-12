@@ -1,6 +1,8 @@
 package lexer;
 
+import java.lang.module.FindException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,8 +15,8 @@ public class LexerManager {
     private boolean inError = false;
 
     String bufferSource;
-
-    private Map<String, TokenType> keywords;
+    Position currentTokenPos;
+    private final Map<String, TokenType> keywords;
     private final ArrayList<Token> tokens = new ArrayList<>();
 
 
@@ -27,7 +29,8 @@ public class LexerManager {
 
 
         this.lex();
-        tokens.add(new Token(Integer.MAX_VALUE,TokenType.EOF, "\0"));
+        tokens.add(new Token(charManager.getCharPosition().index,
+                charManager.getCharPosition().column, TokenType.EOF, "\0"));
     }
 
     private void fillKwds() {
@@ -69,46 +72,58 @@ public class LexerManager {
             } else if (Character.isDigit(charManager.currentChar())) {
                 lexNumber();
             } else if (charManager.currentChar() == '=') {
-                tokens.add(new Token(charManager.getCharPosition().row, TokenType.ASSIGN_OP, "="));
+                tokens.add(new Token(charManager.getCharPosition().index,
+                        charManager.getCharPosition().row, TokenType.ASSIGN_OP, "="));
                 nextChar();
             } else if (charManager.currentChar() == '*') {
+                var loc = new Position(charManager.getCharPosition().row, charManager.getCharPosition().index);
                 nextChar();
                 if (charManager.currentChar() == '/') {
-                    tokens.add(new Token(charManager.getCharPosition().row, TokenType.CLOSE_MULTICOM, "*/"));
+                    tokens.add(new Token(loc, TokenType.CLOSE_MULTICOM, "*/"));
                     nextChar();
                 }
                 else {
-                    tokens.add(new Token(charManager.getCharPosition().row, TokenType.MUL_OP, "*"));
+                    tokens.add(new Token(loc, TokenType.MUL_OP, "*"));
                 }
             } else if (charManager.currentChar() == ';') {
-                tokens.add(new Token(charManager.getCharPosition().row, TokenType.SEMICOLON, ";"));
+                tokens.add(new Token(charManager.getCharPosition().index,
+                        charManager.getCharPosition().row, TokenType.SEMICOLON, ";"));
                 nextChar();
             } else if (charManager.currentChar() == '{') {
-                tokens.add(new Token(charManager.getCharPosition().row, TokenType.L_BRACE, "{"));
+                tokens.add(new Token(charManager.getCharPosition().index,
+                        charManager.getCharPosition().row, TokenType.L_BRACE, "{"));
                 nextChar();
             } else if (charManager.currentChar() == '}') {
-                tokens.add(new Token(charManager.getCharPosition().row, TokenType.R_BRACE, "}"));
+                tokens.add(new Token(charManager.getCharPosition().index,
+                        charManager.getCharPosition().row, TokenType.R_BRACE, "}"));
                 nextChar();
             } else if (charManager.currentChar() == ',') {
-                tokens.add(new Token(charManager.getCharPosition().row, TokenType.COMMA, ","));
+                tokens.add(new Token(charManager.getCharPosition().index,
+                        charManager.getCharPosition().row, TokenType.COMMA, ","));
                 nextChar();
             } else if (charManager.currentChar() == '+') {
-                tokens.add(new Token(charManager.getCharPosition().row, TokenType.ADD_OP, "+"));
+                tokens.add(new Token(charManager.getCharPosition().index,
+                        charManager.getCharPosition().row, TokenType.ADD_OP, "+"));
                 nextChar();
             } else if (charManager.currentChar() == '(') {
-                tokens.add(new Token(charManager.getCharPosition().row, TokenType.L_PAREN, "("));
+                tokens.add(new Token(charManager.getCharPosition().index,
+                        charManager.getCharPosition().row, TokenType.L_PAREN, "("));
                 nextChar();
             } else if (charManager.currentChar() == ')') {
-                tokens.add(new Token(charManager.getCharPosition().row, TokenType.R_PAREN, ")"));
+                tokens.add(new Token(charManager.getCharPosition().index,
+                        charManager.getCharPosition().row, TokenType.R_PAREN, ")"));
                 nextChar();
             } else if (charManager.currentChar() == ':') {
-                tokens.add(new Token(charManager.getCharPosition().row, TokenType.COLON, ":"));
+                tokens.add(new Token(charManager.getCharPosition().index,
+                        charManager.getCharPosition().row, TokenType.COLON, ":"));
                 nextChar();
             } else if (charManager.currentChar() == '[') {
-                tokens.add(new Token(charManager.getCharPosition().row, TokenType.L_BRACKET, "["));
+                tokens.add(new Token(charManager.getCharPosition().index,
+                        charManager.getCharPosition().row, TokenType.L_BRACKET, "["));
                 nextChar();
             } else if (charManager.currentChar() == ']') {
-                tokens.add(new Token(charManager.getCharPosition().row, TokenType.R_BRACKET, "]"));
+                tokens.add(new Token(charManager.getCharPosition().index,
+                        charManager.getCharPosition().row, TokenType.R_BRACKET, "]"));
                 nextChar();
             } else if (charManager.currentChar() == '/') {
                 nextChar();
@@ -116,7 +131,8 @@ public class LexerManager {
                     while (charManager.currentChar() != '\n' && charManager.currentChar() != '\0')
                         nextChar();
                 } else if (charManager.currentChar() == '*') {
-                    tokens.add(new Token(charManager.getCharPosition().row, TokenType.OPEN_MULTICOM, "/*"));
+                    tokens.add(new Token(charManager.getCharPosition().index,
+                            charManager.getCharPosition().row, TokenType.OPEN_MULTICOM, "/*"));
                     nextChar();
                 } else{
                     System.out.println("Division operation not supported yet .. ):");
@@ -124,7 +140,7 @@ public class LexerManager {
                 }
             } else {
                 inError = true;
-                charManager.log(charManager.getCharPosition().column, charManager.m_idx);
+                charManager.log(charManager.getCharPosition().column, charManager.getCharPosition().newColumn());
                 System.out.println("Unsupported symbol yet `" + charManager.currentChar() + "`, Found index: " + charManager.getCharPosition().column + " line: " + charManager.getCharPosition().row);
                 break; // maybe?
             }
@@ -133,13 +149,20 @@ public class LexerManager {
 
     private void lexIdentifier() {
         var buffer = new StringBuilder();
+        var identifierLoc = new Position(charManager.getCharPosition().row, charManager.getCharPosition().newColumn());
 
         do {
             buffer.append(charManager.currentChar());
             nextChar();
         } while (Character.isJavaIdentifierPart(charManager.currentChar()) && charManager.currentChar() != '\0') ;
-        tokens.add(new Token(charManager.getCharPosition().row, keywords.getOrDefault(buffer.toString(), TokenType.IDENTIFIER), buffer.toString()));
+        if (keywords.containsKey(buffer.toString())) {
+//            tokens.add(new Token(identifierLoc));
+            tokens.add(new Token(identifierLoc, keywords.get(buffer.toString()), buffer.toString()));
+        }
+        else
+//            tokens.add(new Token(identifierLoc));
 
+            tokens.add(new Token(identifierLoc, TokenType.IDENTIFIER, buffer.toString()));
     }
 
     private void lexNumber() {
@@ -148,7 +171,8 @@ public class LexerManager {
             buffer.append(charManager.currentChar());
             nextChar();
         }
-        tokens.add(new Token(charManager.getCharPosition().row, TokenType.NUMBER_LITERAL, buffer.toString()));
+        tokens.add(new Token(charManager.getCharPosition().index,
+                charManager.getCharPosition().column, TokenType.NUMBER_LITERAL, buffer.toString()));
     }
 
     public ArrayList<Token> getTokens() {
@@ -160,7 +184,8 @@ public class LexerManager {
     }
 
     public static void main(String[] args) {
-        var lexer = new LexerManager("/Users/engmoht/IdeaProjects/UQULexer/src/main/java/example/main.uqulang");
+        var lexer = new LexerManager("/Users/engmoht/IdeaProjects/UQULexer/main.uqulang");
+        System.out.println(lexer.getTokens());
     }
 
 }

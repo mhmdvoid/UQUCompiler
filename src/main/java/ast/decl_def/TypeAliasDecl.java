@@ -4,8 +4,10 @@ import ast.Identifier;
 import ast.type.Type;
 import ast.type.NameAliasType;
 import compile.utils.ShapeDump;
+import lexer.Position;
 
 public class TypeAliasDecl extends Decl {
+    public Position location;  // typealias word loc.
     public Type underlyingType;
 
     NameAliasType nameAliasType;

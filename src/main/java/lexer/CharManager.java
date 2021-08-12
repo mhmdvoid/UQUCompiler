@@ -13,7 +13,6 @@ public class CharManager {
     private final LexLog lexLog;
     private final Position charPosition;
 
-    public int m_idx;
     public CharManager(String source, LexLog lexLog) {
         this.charPosition = new Position();
         this.source = source;
@@ -32,9 +31,9 @@ public class CharManager {
         //          ^
         if (charPosition.column < source.length()) {
             wrappedChar = source.charAt(charPosition.column ++);
-            m_idx ++;
+            charPosition.index ++;
             if (wrappedChar == '\n') {
-                m_idx = 0;
+                charPosition.index = 0;
                 charPosition.row ++;
             }
             return true;

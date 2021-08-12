@@ -6,6 +6,7 @@ import ast.expr_def.Expression;
 import ast.type.Type;
 import ast.type.TypeKind;
 import ast.type.UnresolvedType;
+import lexer.Position;
 import semantic.scope.TypeContext;
 
 import java.util.*;
@@ -25,10 +26,11 @@ public class SemaDecl extends SemaBase {
         tu.unresolvedTypeList.addAll(unresolvedTypeList);
     }
 
-    public TypeAliasDecl typeAliasSema(Identifier identifier, Type type, TypeContext ctx) {
+    public TypeAliasDecl typeAliasSema(/*Position loc*/ Identifier identifier, Type type, TypeContext ctx) {
         var def = ctx.lookup(identifier.name);
         if (def == null) {
             var typeAliasDecl = new TypeAliasDecl(type, identifier);
+//            typeAliasDecl.location = loc;
             ctx.addEntry(identifier.name, typeAliasDecl);
             return typeAliasDecl;
         }
@@ -37,7 +39,9 @@ public class SemaDecl extends SemaBase {
             unresolvedTypes.remove(identifier);
             return def;
         }
-        System.err.println("SemaError redefinition: " + identifier + " already defined");
+        System.err.print("Your definition here line: " + identifier.location);
+        System.err.println(" SemaError redefinition: " + identifier + " already defined here line: "  + def.identifier.location);
+
         return def;
     }
 
