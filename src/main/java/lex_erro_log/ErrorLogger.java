@@ -1,21 +1,16 @@
 package lex_erro_log;
 
-public class LexerErrorDiag implements LexLog {
+public class ErrorLogger {
 
-    
-    private final String buffer;
+    private ErrorLogger() {  }
 
-    public LexerErrorDiag(String buffer) {
-        this.buffer = buffer;
-    }
-
-    @Override
-    public boolean log(int actualIdx, int newLineIdx) { // can throw? right?
+    public static boolean log(String buffer, int actualIdx, int newLineIdx) { // can throw? right?
         try {
             var beginIdx = actualIdx - newLineIdx;
+            if (beginIdx < 0) beginIdx *= -1;
             var cutErrorText = buffer.substring(beginIdx); // int x: 10\n other lines right?
             int i = 0;
-            for (;i < cutErrorText.length(); i++) {
+            for (; i < cutErrorText.length(); i++) {
                 if (cutErrorText.charAt(i) == '\n')
                     break;
             }
@@ -28,9 +23,5 @@ public class LexerErrorDiag implements LexLog {
         } catch (IndexOutOfBoundsException exception) {
             return false;
         }
-    }
-
-    public String buffer() {
-        return buffer;
     }
 }

@@ -1,7 +1,7 @@
 package lexer;
 
 import lex_erro_log.LexLog;
-import lex_erro_log.LexerErrorDiag;
+import lex_erro_log.ErrorLogger;
 
 public class CharManager {
 
@@ -10,21 +10,16 @@ public class CharManager {
 
     private final String source;
 
-    private final LexLog lexLog;
     private final Position charPosition;
 
-    public int m_idx;
-    public CharManager(String source, LexLog lexLog) {
+    public CharManager(String source) {
         this.charPosition = new Position();
         this.source = source;
-        this.lexLog = lexLog;
 
         advance();
     }
 
-    public CharManager(String src) {
-        this(src, new LexerErrorDiag(src));
-    }
+
 
 
     public boolean advance() {
@@ -32,9 +27,9 @@ public class CharManager {
         //          ^
         if (charPosition.column < source.length()) {
             wrappedChar = source.charAt(charPosition.column ++);
-            m_idx ++;
+            charPosition.index ++;
             if (wrappedChar == '\n') {
-                m_idx = 0;
+                charPosition.index = 0;
                 charPosition.row ++;
             }
             return true;
@@ -53,7 +48,7 @@ public class CharManager {
 
     // Todo: return a logger instance and check for null test;
     public boolean log(int actualIdx, int newLineIdx) { // can throw? right?
-        return lexLog.log(actualIdx, newLineIdx);
+        return ErrorLogger.log(source, actualIdx, newLineIdx);
     }
 
     public char getWrappedChar() {

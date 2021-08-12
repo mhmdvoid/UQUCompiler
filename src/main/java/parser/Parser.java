@@ -103,7 +103,6 @@ public class Parser {
     public TranslationUnit parseTranslateUnit() {
         // Todo: We should have parseTopLevelDecl() && parseStatement(withScope: Scope);
         consume();  // Pump the lexer;
-        var line = currentToken.getLine();
         var fileScope = new TranslationUnitScope();
         var tu = new ast.decl_def.TranslationUnit(sema.astContext);
 //        var gMembers = new GlobalScope(line);   // Fixme: see line issue;
@@ -114,7 +113,7 @@ public class Parser {
                     tu.push(parseFuncDecl(fileScope));
                 }
                 case TYPEALIAS -> {
-                    consume();
+                    System.out.println("YOURE" + currentToken.getPosition());
                     tu.push(parseTypeAlias(fileScope));
                 }
                 case VAR -> tu.push(parseVarDeclAssign(fileScope));
@@ -196,7 +195,6 @@ public class Parser {
     }
 
     Expression parseExpression(Scope scope) {
-        var line = currentToken.getLine();
         parseEat(TokenType.ASSIGN_OP, "variable initialization should start with `=`");
         return parsePrimary(scope);
     }
@@ -214,7 +212,6 @@ public class Parser {
     }
 
     Expression parseValue() {
-        var line = currentToken.getLine();
         if (have(TokenType.NUMBER_LITERAL)) {
             return sema.expr.semaNumberConstant(skippedToken.getTokenValue());// Sema.exp.actOnConstant();
         } else if (have(TokenType.TRUE) || have(TokenType.FALSE)) {
@@ -226,18 +223,24 @@ public class Parser {
 
     // WE should have a method called parse statementList(Scope ctx); gets called by the translation unit as well as class decl, struct decl, method decl;
     public TypeAliasDecl parseTypeAlias(Scope ctx) {   // For every decl parsing and type parsing . decl means is this already defined /not defined at all ? type does this type even exist? this why we need scope
-        // for both type and decl
-        var line = currentToken.getLine();
+        var loc = currentToken.getPosition();
+
+        parseEat(TokenType.TYPEALIAS, "...");
         var identifier = parseIdentifier();
         parseEat(TokenType.ASSIGN_OP, "`=` should appear after variable name");
         var typ = parseType(ctx);
         parseEat(TokenType.SEMICOLON, "typealias should end with `;` ");  // Diagnostic;
-        return sema.decl.typeAliasSema(identifier, typ, ctx.getTypeContext());
+        var node = sema.decl.typeAliasSema(/*loc,*/ identifier, typ, ctx.getTypeContext());
+        node.location = loc;
+        return node;
     }
 
     public Identifier parseIdentifier() {
+        var loc = currentToken.getPosition();
         parseEat(TokenType.IDENTIFIER, "Missing identifier");
-        return sema.astContext.getIdentifier(skippedToken.getTokenValue());  // This will store if for me; right?
+        var identifier = sema.astContext.getIdentifier(skippedToken.getTokenValue());  // This will store if for me; right?
+        identifier.location = loc;
+        return identifier;
     }
 
     public Type parseType(Scope ctx) {
@@ -255,7 +258,7 @@ public class Parser {
                 return sema.type.resolveBoolType();
             }
             default -> {
-                System.err.println("Must have type.." + currentToken.getLine());
+                System.err.println("Must have type.." + currentToken.getPosition());
 
             }
         }

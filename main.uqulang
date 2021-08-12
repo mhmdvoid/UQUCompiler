@@ -1,3 +1,10 @@
-import math
-var x: Foo = 10;
-// typealias Foo = int;  here no shadowing !; should be circular definition as we don't have namespace;
+typealias Foo = int; var x: int = 10;
+
+
+
+
+
+
+
+
+typealias Foo = int;

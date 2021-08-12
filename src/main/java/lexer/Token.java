@@ -3,17 +3,33 @@ package lexer;
 
 public class Token {
 
-    private final TokenType type;
+    private  TokenType type;
 
 
-    private final String tokenValue;
+    private  String tokenValue;
 
-    private final int line;
-    public Token(int line, TokenType type, String tokenValue) {
-        this.line = line;
+    private int line;
+    private final Position position;
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public Token(int index, int row, TokenType type, String tokenValue) {
+        this.position = new Position();
+        position.row = row;
+        position.index = index;  // actual
+
         this.type = type;
         this.tokenValue = tokenValue;
     }
+    public Token(Position position, TokenType type, String tokenValue) {
+        this.position = position;
+
+        this.type = type;
+        this.tokenValue = tokenValue;
+    }
+
 
 
 
@@ -28,16 +44,17 @@ public class Token {
         return tokenValue;
     }
 
-    public int getLine() {
-        return line;
-    }
+//    public int getLine() {
+//        return position.row;
+//    }
+//    public int getIndex() { return position.index; }
 
     @Override
     public String toString() {
         return "Token{" +
                 "type=" + type +
                 ", tokenValue='" + tokenValue + '\'' +
-                ", line=" + line +
+                ", position" + position +
                 '}';
     }
 

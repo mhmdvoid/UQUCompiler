@@ -1,10 +1,12 @@
 package ast;
 
+import lexer.Position;
+
 import java.util.Objects;
 
 public class Identifier {
     public String name;
-
+    public Position location;
     public Identifier(String name) {
         this.name = name;
     }

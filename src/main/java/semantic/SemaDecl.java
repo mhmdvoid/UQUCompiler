@@ -6,6 +6,8 @@ import ast.expr_def.Expression;
 import ast.type.Type;
 import ast.type.TypeKind;
 import ast.type.UnresolvedType;
+import lex_erro_log.ErrorLogger;
+import lexer.SManagerSingleton;
 import semantic.scope.TypeContext;
 
 import java.util.*;
@@ -25,10 +27,11 @@ public class SemaDecl extends SemaBase {
         tu.unresolvedTypeList.addAll(unresolvedTypeList);
     }
 
-    public TypeAliasDecl typeAliasSema(Identifier identifier, Type type, TypeContext ctx) {
+    public TypeAliasDecl typeAliasSema(/*Position loc*/ Identifier identifier, Type type, TypeContext ctx) {
         var def = ctx.lookup(identifier.name);
         if (def == null) {
             var typeAliasDecl = new TypeAliasDecl(type, identifier);
+//            typeAliasDecl.location = loc;
             ctx.addEntry(identifier.name, typeAliasDecl);
             return typeAliasDecl;
         }
@@ -37,7 +40,13 @@ public class SemaDecl extends SemaBase {
             unresolvedTypes.remove(identifier);
             return def;
         }
-        System.err.println("SemaError redefinition: " + identifier + " already defined");
+
+        System.out.println("invalid redeclaration: " + identifier.location);
+
+        ErrorLogger.log(SManagerSingleton.shared().srcCode(), identifier.location.column, identifier.location.newColumn());
+
+        System.out.println("Note; previous declaration here " + def.identifier.location);
+        ErrorLogger.log(SManagerSingleton.shared().srcCode(), def.identifier.location.column, def.identifier.location.newColumn());
         return def;
     }
 
