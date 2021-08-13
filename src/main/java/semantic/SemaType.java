@@ -2,7 +2,7 @@ package semantic;
 
 import ast.Identifier;
 import ast.type.Type;
-import semantic.scope.TypeContext;
+import semantic.scope.type_scope.TypeContext;
 
 // This assigns Type. Create type to be assigned by the parser.
 public class SemaType extends SemaBase {

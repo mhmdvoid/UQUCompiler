@@ -1,10 +1,7 @@
-package semantic.scope;
+package semantic.scope.type_scope;
 
-import ast.ASTNode;
 import ast.decl_def.TypeAliasDecl;
-import semantic.Definition;
 
-import javax.lang.model.element.TypeElement;
 import java.util.HashMap;
 import java.util.Map;
 

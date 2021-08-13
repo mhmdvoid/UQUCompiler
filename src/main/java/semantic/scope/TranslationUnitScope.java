@@ -1,6 +1,6 @@
-package semantic;
+package semantic.scope;
 
-import semantic.scope.TypeContext;
+import semantic.scope.type_scope.TypeContext;
 
 public class TranslationUnitScope extends Scope {
     TypeContext typeContext; // FIXME
