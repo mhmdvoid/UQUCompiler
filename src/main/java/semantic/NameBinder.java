@@ -9,6 +9,8 @@ import ast.expr_def.UnresolvedReferenceExpr;
 import ast.type.Type;
 import ast.type.TypeKind;
 import ast.type.UnresolvedType;
+import lex_erro_log.ErrorLogger;
+import lexer.SManagerSingleton;
 import parser.Parser;
 
 import java.io.File;
@@ -111,7 +113,7 @@ public class NameBinder {
                 return new ReferenceDeclExpr(v);
             }
         }
-
+        ErrorLogger.log(SManagerSingleton.shared().srcCode(), identifier.location.column, identifier.location.newColumn());
         System.out.println("use of unresolved identifier " + identifier.name);
         return new UnresolvedReferenceExpr(identifier);
 
@@ -131,6 +133,7 @@ public class NameBinder {
                 return taDecl.underlyingType;
             }
         }
+        ErrorLogger.log(SManagerSingleton.shared().srcCode(), identifier.location.column, identifier.location.newColumn());
         System.err.println("Not found in module as well");
         return new UnresolvedType(TypeKind.UNRESOLVED_KIND, identifier.name);
     }

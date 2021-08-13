@@ -29,8 +29,9 @@ public class LexerManager {
 
 
         this.lex();
+
         tokens.add(new Token(charManager.getCharPosition().index,
-                charManager.getCharPosition().column, TokenType.EOF, "\0"));
+                charManager.getCharPosition().row, charManager.getCharPosition().column, TokenType.EOF, "\0"));
     }
 
     private void fillKwds() {
@@ -74,7 +75,7 @@ public class LexerManager {
                 lexNumber();
             } else if (charManager.currentChar() == '=') {
                 tokens.add(new Token(charManager.getCharPosition().index,
-                        charManager.getCharPosition().row, TokenType.ASSIGN_OP, "="));
+                        charManager.getCharPosition().row, charManager.getCharPosition().column, TokenType.ASSIGN_OP, "="));
                 nextChar();
             } else if (charManager.currentChar() == '*') {
                 var loc = new Position(charManager.getCharPosition().row, charManager.getCharPosition().index, charManager.getCharPosition().column);
@@ -88,43 +89,43 @@ public class LexerManager {
                 }
             } else if (charManager.currentChar() == ';') {
                 tokens.add(new Token(charManager.getCharPosition().index,
-                        charManager.getCharPosition().row, TokenType.SEMICOLON, ";"));
+                        charManager.getCharPosition().row,  charManager.getCharPosition().column,TokenType.SEMICOLON, ";"));
                 nextChar();
             } else if (charManager.currentChar() == '{') {
                 tokens.add(new Token(charManager.getCharPosition().index,
-                        charManager.getCharPosition().row, TokenType.L_BRACE, "{"));
+                        charManager.getCharPosition().row,  charManager.getCharPosition().column,TokenType.L_BRACE, "{"));
                 nextChar();
             } else if (charManager.currentChar() == '}') {
                 tokens.add(new Token(charManager.getCharPosition().index,
-                        charManager.getCharPosition().row, TokenType.R_BRACE, "}"));
+                        charManager.getCharPosition().row,  charManager.getCharPosition().column,TokenType.R_BRACE, "}"));
                 nextChar();
             } else if (charManager.currentChar() == ',') {
                 tokens.add(new Token(charManager.getCharPosition().index,
-                        charManager.getCharPosition().row, TokenType.COMMA, ","));
+                        charManager.getCharPosition().row,  charManager.getCharPosition().column,TokenType.COMMA, ","));
                 nextChar();
             } else if (charManager.currentChar() == '+') {
                 tokens.add(new Token(charManager.getCharPosition().index,
-                        charManager.getCharPosition().row, TokenType.ADD_OP, "+"));
+                        charManager.getCharPosition().row,  charManager.getCharPosition().column,TokenType.ADD_OP, "+"));
                 nextChar();
             } else if (charManager.currentChar() == '(') {
                 tokens.add(new Token(charManager.getCharPosition().index,
-                        charManager.getCharPosition().row, TokenType.L_PAREN, "("));
+                        charManager.getCharPosition().row,  charManager.getCharPosition().column,TokenType.L_PAREN, "("));
                 nextChar();
             } else if (charManager.currentChar() == ')') {
                 tokens.add(new Token(charManager.getCharPosition().index,
-                        charManager.getCharPosition().row, TokenType.R_PAREN, ")"));
+                        charManager.getCharPosition().row,  charManager.getCharPosition().column,TokenType.R_PAREN, ")"));
                 nextChar();
             } else if (charManager.currentChar() == ':') {
                 tokens.add(new Token(charManager.getCharPosition().index,
-                        charManager.getCharPosition().row, TokenType.COLON, ":"));
+                        charManager.getCharPosition().row,  charManager.getCharPosition().column,TokenType.COLON, ":"));
                 nextChar();
             } else if (charManager.currentChar() == '[') {
                 tokens.add(new Token(charManager.getCharPosition().index,
-                        charManager.getCharPosition().row, TokenType.L_BRACKET, "["));
+                        charManager.getCharPosition().row,  charManager.getCharPosition().column,TokenType.L_BRACKET, "["));
                 nextChar();
             } else if (charManager.currentChar() == ']') {
                 tokens.add(new Token(charManager.getCharPosition().index,
-                        charManager.getCharPosition().row, TokenType.R_BRACKET, "]"));
+                        charManager.getCharPosition().row, charManager.getCharPosition().column, TokenType.R_BRACKET, "]"));
                 nextChar();
             } else if (charManager.currentChar() == '/') {
                 nextChar();
@@ -133,7 +134,7 @@ public class LexerManager {
                         nextChar();
                 } else if (charManager.currentChar() == '*') {
                     tokens.add(new Token(charManager.getCharPosition().index,
-                            charManager.getCharPosition().row, TokenType.OPEN_MULTICOM, "/*"));
+                            charManager.getCharPosition().row, charManager.getCharPosition().column, TokenType.OPEN_MULTICOM, "/*"));
                     nextChar();
                 } else{
                     System.out.println("Division operation not supported yet .. ):");
@@ -168,12 +169,12 @@ public class LexerManager {
 
     private void lexNumber() {
         var buffer = new StringBuilder();
+        var numberLoc = new Position(charManager.getCharPosition().row, charManager.getCharPosition().newColumn(), charManager.getCharPosition().column);
         while (Character.isDigit(charManager.currentChar()) && charManager.currentChar() != '\0') {
             buffer.append(charManager.currentChar());
             nextChar();
         }
-        tokens.add(new Token(charManager.getCharPosition().index,
-                charManager.getCharPosition().column, TokenType.NUMBER_LITERAL, buffer.toString()));
+        tokens.add(new Token(numberLoc, TokenType.NUMBER_LITERAL, buffer.toString()));
     }
 
     public ArrayList<Token> getTokens() {

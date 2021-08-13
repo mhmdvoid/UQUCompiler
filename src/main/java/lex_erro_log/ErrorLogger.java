@@ -18,7 +18,7 @@ public class ErrorLogger {
             for (int j = 1; j < newLineIdx; j++) {
                 System.out.print(' ');
             }
-            System.out.println("~");
+            System.out.println("^");
             return true;
         } catch (IndexOutOfBoundsException exception) {
             return false;

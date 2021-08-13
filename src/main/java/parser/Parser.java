@@ -7,12 +7,9 @@ import ast.expr_def.BoolLiteral;
 import ast.expr_def.Expression;
 import ast.expr_def.FuncBlockExpr;
 import ast.redesign.ASTNode;
-import ast.type.NameAliasType;
 import ast.type.Type;
-import ast.type.TypeKind;
-import lexer.LexerManager;
-import lexer.Token;
-import lexer.TokenType;
+import lex_erro_log.ErrorLogger;
+import lexer.*;
 import semantic.*;
 
 import java.util.ArrayList;
@@ -88,14 +85,14 @@ public class Parser {
      * @param tokenType TokenType
      * @return true if parse error occurs, consume and return false otherwise
      */
-    boolean parseEat(TokenType tokenType, String parseErrorMsg) {
+    boolean parseEat(TokenType tokenType, Position loc) {
         if (see(tokenType)) {
             consume();
             return false;
         } else {
             inError = true;
-            System.out.println(parseErrorMsg);
-            System.err.println("Expected " + tokenType + " Got " + currentToken);
+            System.out.println("Expected " + tokenType + " at " + loc);
+            ErrorLogger.log(SManagerSingleton.shared().srcCode(), loc.column, loc.newColumn());
             return true;
         }
     }
@@ -105,25 +102,19 @@ public class Parser {
         consume();  // Pump the lexer;
         var fileScope = new TranslationUnitScope();
         var tu = new ast.decl_def.TranslationUnit(sema.astContext);
-//        var gMembers = new GlobalScope(line);   // Fixme: see line issue;
         while (see(TokenType.IMPORT) || see(TokenType.VAR) || see(TokenType.FUNC) || see(TokenType.TYPEALIAS) || see(TokenType.OPEN_MULTICOM)) { // Fixme: Should have *parseStatement(); and then branch
             switch (currentToken.getType()) {
-                case FUNC -> {
-                    consume();
-                    tu.push(parseFuncDecl(fileScope));
-                }
-                case TYPEALIAS -> {
-                    System.out.println("YOURE" + currentToken.getPosition());
-                    tu.push(parseTypeAlias(fileScope));
-                }
-                case VAR -> tu.push(parseVarDeclAssign(fileScope));
+                case IMPORT -> tu.push(parseImportDecl());
+                case VAR -> tu.push(parseVarDecl(fileScope));
+                case FUNC -> { consume(); tu.push(parseFuncDecl(fileScope)); }
+                case TYPEALIAS -> tu.push(parseTypeAlias(fileScope));
                 case OPEN_MULTICOM -> parseMultiComment();
-                case IMPORT ->  {
-                    tu.push(parseImportDecl());
-                }
                 default -> System.err.println("Error syntax construct");
             }
         }
+//        if (parseEat(TokenType.EOF, "Expected decl...")) {
+//            ErrorLogger.log(SManagerSingleton.shared().srcCode(), currentToken.getPosition().column, currentToken.getPosition().newColumn());
+//        }
         tu.tuScope = fileScope;
         System.out.println("Global ValueDecl " + fileScope.table);
         System.out.println("Global TypeScope " + fileScope.getTypeContext().typeScope);
@@ -132,73 +123,61 @@ public class Parser {
     }
 
     ImportDecl parseImportDecl() {
-        // var loc
-        parseEat(TokenType.IMPORT, "import keyword missing");
+        var loc = currentToken.loc();
+        parseEat(TokenType.IMPORT, loc);
         var identifier = parseIdentifier();
         return sema.decl.importDeclSema(identifier);
     }
-    ASTNode parseFuncState(LocalScope scope) {
-        switch (currentToken.getType()) {
-            case VAR:
-                return parseVarDeclAssign(scope);
-            default:
-                System.err.println("Unexpected construct token ");
-                return null;
-        }
+
+    public Identifier parseIdentifier() {
+        var loc = currentToken.loc();
+        parseEat(TokenType.IDENTIFIER,  loc);
+        var identifier = sema.astContext.getIdentifier(skippedToken.getTokenValue());  // This will store if for me; right?
+        identifier.location = loc;
+        return identifier;
     }
 
-    FuncDecl parseFuncDecl(Scope gb) {
-        var type = parseType(gb);
+    VarDecl parseVarDecl(Scope ctx) {
+        var loc = currentToken.loc();
+        parseEat(TokenType.VAR, loc);  // Should be consumed by client. not implementor as it's top-level decl kind of nodes.
         var id = parseIdentifier();
-        var localContext = new LocalScope(gb);  // This should do it for now ;
-        var params = parseParamDecl(localContext, gb);
-        var block = parseBlockExpr(localContext);
-        System.out.println("Local ValueDecl " + localContext.table);
-        System.out.println("LocalTypeScope: " + localContext.getTypeContext().typeScope);
-        return sema.decl.funcDeclSema(type, id, gb);
-
-    }
-
-    // We need to figure a better way to represent scopeLogic!; and should be notified respectfully!;  see A container !; where the default is the global !
-    List<ParamDecl> parseParamDecl(Scope localScope, Scope gb) {
-        // should push them to a local scope;
-        var list = new ArrayList<ParamDecl>();
-        parseEat(TokenType.L_PAREN, "param should start with `(`");
-        if (have(TokenType.R_PAREN)) {/*empty param*/
-            return list;
-        }
-        do {
-            list.add(parseParam(localScope, gb));
-        } while (have(TokenType.COMMA));
-        parseEat(TokenType.R_PAREN, "How to forget closing param");
-        return list;
-    }
-
-    ParamDecl parseParam(Scope localScope, Scope gb) {
-        var identifier = parseIdentifier();
-        parseEat(TokenType.COLON, "Where is the colon after param name !");
-        var paramType = parseType(gb);
-        return sema.decl.paramDeclSema(identifier, paramType, localScope);  // Fixme there's a bug sending localScope to type will do no good maybe later!;
-    }
-
-    VarDecl parseVarDeclAssign(Scope ctx) {
-        parseEat(TokenType.VAR, "var missing ");
-        var id = parseIdentifier();
-        if (id.name.equals("x99998")) {
-            System.out.println("Found");
-        }
-        parseEat(TokenType.COLON, "missing colon ");
+        parseEat(TokenType.COLON, currentToken.loc());
+//            ErrorLogger.log(SManagerSingleton.shared().srcCode(), currentToken.getPosition().column, currentToken.getPosition().newColumn());
         var t = parseType(ctx);
         var expression = parseExpression(ctx);  // Sema.expre !;
-        parseEat(TokenType.SEMICOLON, "missing sim");
+        parseEat(TokenType.SEMICOLON, currentToken.loc());  // we need to even advance loc
         return sema.decl.varDeclSema(id, t, expression, ctx);
     }
 
-    Expression parseExpression(Scope scope) {
-        parseEat(TokenType.ASSIGN_OP, "variable initialization should start with `=`");
-        return parsePrimary(scope);
+    public Type parseType(Scope ctx) {
+        var loc = currentToken.loc();
+        switch (currentToken.getType()) {
+            case IDENTIFIER -> {
+                var Id = parseIdentifier();
+                return sema.type.resolveTypename(Id, ctx.getTypeContext());
+            }
+            case INT_KWD -> {
+                consume();
+                return sema.type.resolveIntType();
+            }
+            case BOOL -> {
+                consume();
+                return sema.type.resolveBoolType();
+            }
+            default -> {
+                System.err.println("Must have type.." + loc);
+
+            }
+        }
+        return null; //  FIXME: 8/1/21 UnresolvedType
     }
 
+    Expression parseExpression(Scope scope) {
+        var loc = currentToken.loc();
+        parseEat(TokenType.ASSIGN_OP,  loc);
+
+        return parsePrimary(scope);
+    }
 
     private Expression parsePrimary(Scope scope) {
         switch (currentToken.getType()) {
@@ -221,49 +200,70 @@ public class Parser {
         return null;  // should never reach
     }
 
+    ASTNode parseFuncState(LocalScope scope) {
+        switch (currentToken.getType()) {
+            case VAR:
+                return parseVarDecl(scope);
+            default:
+                System.err.println("Unexpected construct token ");
+                return null;
+        }
+    }
+
+    FuncDecl parseFuncDecl(Scope gb) {
+        var type = parseType(gb);
+        var id = parseIdentifier();
+        var localContext = new LocalScope(gb);  // This should do it for now ;
+        var params = parseParamDecl(localContext, gb);
+        var block = parseBlockExpr(localContext);
+        System.out.println("Local ValueDecl " + localContext.table);
+        System.out.println("LocalTypeScope: " + localContext.getTypeContext().typeScope);
+        return sema.decl.funcDeclSema(type, id, gb);
+
+    }
+
+    // We need to figure a better way to represent scopeLogic!; and should be notified respectfully!;  see A container !; where the default is the global !
+    List<ParamDecl> parseParamDecl(Scope localScope, Scope gb) {
+        // should push them to a local scope;
+        var list = new ArrayList<ParamDecl>();
+        parseEat(TokenType.L_PAREN, currentToken.loc());
+        if (have(TokenType.R_PAREN)) {/*empty param*/
+            return list;
+        }
+        do {
+            list.add(parseParam(localScope, gb));
+        } while (have(TokenType.COMMA));
+        parseEat(TokenType.R_PAREN, currentToken.loc());
+        return list;
+    }
+
+    ParamDecl parseParam(Scope localScope, Scope gb) {
+        var identifier = parseIdentifier();
+        parseEat(TokenType.COLON, currentToken.loc());
+        var paramType = parseType(gb);
+        return sema.decl.paramDeclSema(identifier, paramType, localScope);  // Fixme there's a bug sending localScope to type will do no good maybe later!;
+    }
+
+
+
+
+
+
     // WE should have a method called parse statementList(Scope ctx); gets called by the translation unit as well as class decl, struct decl, method decl;
     public TypeAliasDecl parseTypeAlias(Scope ctx) {   // For every decl parsing and type parsing . decl means is this already defined /not defined at all ? type does this type even exist? this why we need scope
-        var loc = currentToken.getPosition();
+        var loc = currentToken.loc();
 
-        parseEat(TokenType.TYPEALIAS, "...");
+        parseEat(TokenType.TYPEALIAS, loc);
         var identifier = parseIdentifier();
-        parseEat(TokenType.ASSIGN_OP, "`=` should appear after variable name");
+        parseEat(TokenType.ASSIGN_OP, currentToken.loc());
         var typ = parseType(ctx);
-        parseEat(TokenType.SEMICOLON, "typealias should end with `;` ");  // Diagnostic;
+        parseEat(TokenType.SEMICOLON, currentToken.loc());  // Diagnostic;
         var node = sema.decl.typeAliasSema(/*loc,*/ identifier, typ, ctx.getTypeContext());
         node.location = loc;
         return node;
     }
 
-    public Identifier parseIdentifier() {
-        var loc = currentToken.getPosition();
-        parseEat(TokenType.IDENTIFIER, "Missing identifier");
-        var identifier = sema.astContext.getIdentifier(skippedToken.getTokenValue());  // This will store if for me; right?
-        identifier.location = loc;
-        return identifier;
-    }
 
-    public Type parseType(Scope ctx) {
-        switch (currentToken.getType()) {
-            case IDENTIFIER -> {
-                var Id = parseIdentifier();
-                return sema.type.resolveTypename(Id, ctx.getTypeContext());
-            }
-            case INT_KWD -> {
-                consume();
-                return sema.type.resolveIntType();
-            }
-            case BOOL -> {
-                consume();
-                return sema.type.resolveBoolType();
-            }
-            default -> {
-                System.err.println("Must have type.." + currentToken.getPosition());
-
-            }
-        }
-        return null; //  FIXME: 8/1/21 UnresolvedType
-    }
 
     Expression parseIdentifierRef(Scope scope) {
         var id = parseIdentifier();
@@ -280,18 +280,20 @@ public class Parser {
     }
 
     FuncBlockExpr parseBlockExpr(LocalScope nestedScope) {
-        parseEat(TokenType.L_BRACE, "block should start with `{`");
+        var bLoc = currentToken.loc();
+        parseEat(TokenType.L_BRACE, bLoc);
         var list = new ArrayList<ASTNode>();
         while (!see(TokenType.R_BRACE) && !see(TokenType.EOF)) {
             list.add(parseFuncState(nestedScope));   // NOTE: function statements are handled here. lookup, and all simple semantic resolution process is already done through sending nestedScope as param
         }
-        parseEat(TokenType.R_BRACE, "Forgot to close the function? `}`");
+        parseEat(TokenType.R_BRACE, currentToken.loc());
         return new FuncBlockExpr(list); // FIXME to do differently on blockExpr Why?, as semantic analysis is done for the function body through parseFuncState i.e they got into a local scope and everything;
         // now this block should be injected into a different scope and give it a type. as of now it doesn't hold a type!
     }
 
     public static void main(String[] args) {
         var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/main.uqulang", new ASTInfo());
+
         var tu = parser.parseTranslateUnit();
         NameBinder.nameBinding(tu, tu.astInfo);
     }

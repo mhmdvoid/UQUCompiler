@@ -1,10 +1,1 @@
-typealias Foo = int; var x: int = 10;
-
-
-
-
-
-
-
-
-typealias Foo = int;
+var x = 1;
