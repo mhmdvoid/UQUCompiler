@@ -11,15 +11,15 @@ public class Token {
     private int line;
     private final Position position;
 
-    public Position getPosition() {
+    public Position loc() {
         return position;
     }
 
-    public Token(int index, int row, TokenType type, String tokenValue) {
+    public Token(int index, int row, int column, TokenType type, String tokenValue) {
         this.position = new Position();
         position.row = row;
         position.index = index;  // actual
-
+        position.column = column;
         this.type = type;
         this.tokenValue = tokenValue;
     }
