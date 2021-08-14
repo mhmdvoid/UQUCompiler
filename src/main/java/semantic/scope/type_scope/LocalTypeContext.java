@@ -1,4 +1,4 @@
-package semantic.scope;
+package semantic.scope.type_scope;
 
 public class LocalTypeContext extends TypeContext  {
 

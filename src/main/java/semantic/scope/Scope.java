@@ -1,16 +1,15 @@
-package semantic;
+package semantic.scope;
 
-import ast.decl_def.TypeAliasDecl;
 import ast.decl_def.ValueDecl;
-import semantic.scope.TypeContext;
+import semantic.scope.type_scope.TypeContext;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Scope {
-    Scope surroundingScope;
+    public Scope surroundingScope;
 
-    TranslationUnitScope translationUnitScope;
+    public TranslationUnitScope translationUnitScope;
 
     public Map<String, ValueDecl> table; // node
 
@@ -34,6 +33,5 @@ public abstract class Scope {
                 : surroundingScope != null ? surroundingScope.lookup(name)
                 : null;
     }
-
     public abstract TypeContext getTypeContext() ;
 }

@@ -8,7 +8,9 @@ import ast.type.TypeKind;
 import ast.type.UnresolvedType;
 import lex_erro_log.ErrorLogger;
 import lexer.SManagerSingleton;
-import semantic.scope.TypeContext;
+import semantic.scope.FuncScope;
+import semantic.scope.Scope;
+import semantic.scope.type_scope.TypeContext;
 
 import java.util.*;
 
@@ -94,15 +96,9 @@ public class SemaDecl extends SemaBase {
         return (FuncDecl) funcDecl;
     }
 
-    public ParamDecl paramDeclSema(Identifier identifier, Type type, Scope local) {
-        // Type should be lookup through the typeScope;
+    public ParamDecl paramDeclSema(Identifier identifier, Type type, FuncScope local) {
         // bound the name to a nested scope FIXME Should be pulled to nameBinder;
-        var paramVal = local.lookup(identifier.name);
-        if (paramVal != null) {
-            System.err.println("Redefinition with same name in same scope");
-            return null; // Fixme
-        }
-        var newParam = new ParamDecl(identifier, type);
+        var newParam = new ParamDecl(identifier, type, local.nextOffset());
         local.addEntry(0, identifier.name, newParam);
         return newParam;
     }

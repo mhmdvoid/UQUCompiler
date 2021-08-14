@@ -5,6 +5,7 @@ import ast.expr_def.Expression;
 import ast.expr_def.IntegerLiteral;
 import ast.expr_def.ReferenceDeclExpr;
 import ast.expr_def.UnresolvedReferenceExpr;
+import semantic.scope.Scope;
 
 public class SemaExpr extends SemaBase {
     public SemaExpr(Sema sema) {

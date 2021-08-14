@@ -1,7 +1,7 @@
 package ast.decl_def;
 
 import ast.ASTInfo;
-import semantic.Scope;
+import semantic.scope.Scope;
 
 import java.util.ArrayList;
 import java.util.List;

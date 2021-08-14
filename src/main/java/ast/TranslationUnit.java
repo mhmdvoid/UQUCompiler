@@ -1,11 +1,6 @@
 package ast;
 
-import semantic.Context;
-import semantic.Definition;
-import semantic.TranslationUnitContext;
-
 import java.util.List;
-import java.util.Map;
 
 /**
  * Root Node in our AST

@@ -11,6 +11,10 @@ import ast.type.Type;
 import lex_erro_log.ErrorLogger;
 import lexer.*;
 import semantic.*;
+import semantic.scope.FuncScope;
+import semantic.scope.LocalScope;
+import semantic.scope.Scope;
+import semantic.scope.TranslationUnitScope;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -210,20 +214,23 @@ public class Parser {
         }
     }
 
-    FuncDecl parseFuncDecl(Scope gb) {
-        var type = parseType(gb);
+    FuncDecl parseFuncDecl(Scope tuScope) {
+        var type = parseType(tuScope);  // resolving funcType to be in TUScope
         var id = parseIdentifier();
-        var localContext = new LocalScope(gb);  // This should do it for now ;
-        var params = parseParamDecl(localContext, gb);
-        var block = parseBlockExpr(localContext);
-        System.out.println("Local ValueDecl " + localContext.table);
-        System.out.println("LocalTypeScope: " + localContext.getTypeContext().typeScope);
-        return sema.decl.funcDeclSema(type, id, gb);
+        var funcArgsScope = new FuncScope(tuScope);  // This should do it for now ;
+        var blockScope = new LocalScope(funcArgsScope);
+//        blockScope.surroundingScope ;// this is the funcArgsScope
+//        blockScope.translationUnitScope
+        var params = parseParamDecl(funcArgsScope);
+        var block = parseBlockExpr(blockScope);
+        System.out.println("Local ValueDecl " + funcArgsScope.table);
+        System.out.println("LocalTypeScope: " + funcArgsScope.getTypeContext().typeScope);
+        return sema.decl.funcDeclSema(type, id, tuScope);
 
     }
 
     // We need to figure a better way to represent scopeLogic!; and should be notified respectfully!;  see A container !; where the default is the global !
-    List<ParamDecl> parseParamDecl(Scope localScope, Scope gb) {
+    List<ParamDecl> parseParamDecl(FuncScope funcScope) {
         // should push them to a local scope;
         var list = new ArrayList<ParamDecl>();
         parseEat(TokenType.L_PAREN, currentToken.loc());
@@ -231,17 +238,17 @@ public class Parser {
             return list;
         }
         do {
-            list.add(parseParam(localScope, gb));
+            list.add(parseParam(funcScope));
         } while (have(TokenType.COMMA));
         parseEat(TokenType.R_PAREN, currentToken.loc());
         return list;
     }
 
-    ParamDecl parseParam(Scope localScope, Scope gb) {
+    ParamDecl parseParam(FuncScope funcScope) {
         var identifier = parseIdentifier();
         parseEat(TokenType.COLON, currentToken.loc());
-        var paramType = parseType(gb);
-        return sema.decl.paramDeclSema(identifier, paramType, localScope);  // Fixme there's a bug sending localScope to type will do no good maybe later!;
+        var paramType = parseType(funcScope.translationUnitScope);
+        return sema.decl.paramDeclSema(identifier, paramType, funcScope);  // Fixme there's a bug sending funcScope to type will do no good maybe later!;
     }
 
 
