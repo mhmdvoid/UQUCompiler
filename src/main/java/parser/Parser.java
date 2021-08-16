@@ -22,7 +22,7 @@ import java.util.List;
 // parseArgType, parseArgName();  Why? Separation is always bette.
 // 2- parseArgType(globalScopeType); parseArgName(localContex);
 public class Parser {
-    private final LexerManager lexer;
+    private final Lexer lexer;
     private Token skippedToken, currentToken;
     private int idx;
     private boolean inError;
@@ -34,7 +34,7 @@ public class Parser {
     }
 
     public Parser(String srcPath, ASTInfo astInfo) {
-        lexer = new LexerManager(srcPath);
+        lexer = new Lexer(srcPath);
         idx = 0;
         sema = new Sema(astInfo);
     }

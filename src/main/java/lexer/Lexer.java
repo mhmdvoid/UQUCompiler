@@ -1,12 +1,10 @@
 package lexer;
 
-import java.lang.module.FindException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LexerManager {
+public class Lexer {
 
 
     private final CharManager charManager;
@@ -20,7 +18,7 @@ public class LexerManager {
     private final ArrayList<Token> tokens = new ArrayList<>();
 
 
-    public LexerManager(SourceManager bufferManager) {
+    public Lexer(SourceManager bufferManager) {
         this.bufferManager = bufferManager;
         bufferSource = bufferManager.getBufferContent().toString();
         charManager = new CharManager(bufferSource);
@@ -48,7 +46,7 @@ public class LexerManager {
         keywords.put("import", TokenType.IMPORT);
     }
 
-    public LexerManager(String srcPath) {
+    public Lexer(String srcPath) {
         this(new SourceManager(srcPath));
         var s = SManagerSingleton.shared(srcPath);
     }
@@ -186,7 +184,7 @@ public class LexerManager {
     }
 
     public static void main(String[] args) {
-        var lexer = new LexerManager("/Users/engmoht/IdeaProjects/UQULexer/main.uqulang");
+        var lexer = new Lexer("/Users/engmoht/IdeaProjects/UQULexer/main.uqulang");
         System.out.println(lexer.getTokens());
     }
 
