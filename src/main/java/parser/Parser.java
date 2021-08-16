@@ -116,9 +116,7 @@ public class Parser {
                 default -> System.err.println("Error syntax construct");
             }
         }
-//        if (parseEat(TokenType.EOF, "Expected decl...")) {
-//            ErrorLogger.log(SManagerSingleton.shared().srcCode(), currentToken.getPosition().column, currentToken.getPosition().newColumn());
-//        }
+        parseEat(TokenType.EOF, currentToken.loc());
         tu.tuScope = fileScope;
         System.out.println("Global ValueDecl " + fileScope.table);
         System.out.println("Global TypeScope " + fileScope.getTypeContext().typeScope);
@@ -185,7 +183,7 @@ public class Parser {
 
     private Expr parsePrimary(Scope scope) {
         switch (currentToken.getType()) {
-            case NUMBER_LITERAL:
+            case NUMBER_LITERAL , TRUE, FALSE:
                 return parseValue();
             case IDENTIFIER: {
                 return parseIdentifierRef(scope);
@@ -302,8 +300,8 @@ public class Parser {
         var parser = new Parser("/Users/engmoht/IdeaProjects/UQUCompiler/main.uqulang", new ASTInfo());
 
         var tu = parser.parseTranslateUnit();
-        tu.dump();
-        NameBinder.nameBinding(tu, tu.astInfo);
+//        tu.dump();
+//        NameBinder.nameBinding(tu, tu.astInfo);
     }
 
 }

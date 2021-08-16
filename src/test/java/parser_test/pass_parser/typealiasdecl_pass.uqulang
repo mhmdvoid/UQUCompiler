@@ -1,0 +1,4 @@
+typealias Foo = int;
+typealias Bar = bool;
+typealias Foo_Bar = Foo;
+typealias SUCCESS = Foo_Bar;

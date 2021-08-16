@@ -9,7 +9,7 @@ import java.util.Objects;
 public class TestLexer extends TestCase {
     private Lexer lexer_under_test;
 
-    public void testLexerShouldPass() {
+    public void testLexingShouldPass() {
         var errorHappened = false;
         var passDir = new File("/Users/engmoht/IdeaProjects/UQUCompiler/src/test/java/lexer_test/pass_lexer");
         assert passDir.isDirectory();
@@ -19,7 +19,7 @@ public class TestLexer extends TestCase {
         }
         assertFalse(errorHappened);
     }
-    public void testLexerShouldFail() {
+    public void testLexingShouldFail() {
         var errorHappened = false;
         var failDir = new File("/Users/engmoht/IdeaProjects/UQUCompiler/src/test/java/lexer_test/fail_lexer");
         assert failDir.isDirectory();
