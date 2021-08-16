@@ -1,8 +1,8 @@
 package semantic.type_checking;
 
-import ast.ASTInfo;
-import ast.decl_def.TranslationUnit;
-import ast.decl_def.Decl;
+import ast.nodes.ASTInfo;
+import ast.nodes.declaration.TranslationUnit;
+import ast.nodes.declaration.Decl;
 import ast.type.Type;
 
 public abstract class TypeChecker {

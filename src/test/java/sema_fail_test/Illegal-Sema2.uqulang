@@ -1,4 +1,0 @@
-typealias MarriageStatus = bool;
-var foobar : MarriageStatus = 10;  // mismatch-type error as foobar is aliasTo bool, and express is number
-typealias Integer = int;  // alias to int
-var bar : Integer = false; // use as it was alias to bool error check

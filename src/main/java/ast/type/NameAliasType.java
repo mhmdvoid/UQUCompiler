@@ -1,6 +1,6 @@
 package ast.type;
 
-import ast.decl_def.TypeAliasDecl;
+import ast.nodes.declaration.TypeAliasDecl;
 
 public class NameAliasType extends Type {
     public final TypeAliasDecl aliasDeclNode;

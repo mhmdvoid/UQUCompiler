@@ -1,4 +1,0 @@
-typealias Bar = Person;   // for-now this illegal unknown type;
-typealias RR =  Int;  // unknown Int !;
-var x: Foo = 10;  // Same error non-declared Foo type !;
-

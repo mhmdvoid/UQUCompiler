@@ -1,6 +1,0 @@
-func int test() {
-
-
-    var foo : int = 10;
-    return foo;
-}

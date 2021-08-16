@@ -1,6 +1,6 @@
 package semantic.scope.type_scope;
 
-import ast.decl_def.TypeAliasDecl;
+import ast.nodes.declaration.TypeAliasDecl;
 
 import java.util.HashMap;
 import java.util.Map;

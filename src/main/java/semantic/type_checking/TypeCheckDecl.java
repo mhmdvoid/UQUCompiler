@@ -1,6 +1,6 @@
 package semantic.type_checking;
 
-import ast.NameAliasDeclNode;
+import ast.nodes.declaration.TypeAliasDecl;
 
 public class TypeCheckDecl {
     TypeChecker typeChecker;
@@ -8,7 +8,7 @@ public class TypeCheckDecl {
     public TypeCheckDecl(TypeChecker typeChecker) {
         this.typeChecker = typeChecker;
     }
-    public void visitTypeAlias(NameAliasDeclNode nameAliasDeclNode) {
-        typeChecker.validateType(nameAliasDeclNode.getUnderlyingType());
+    public void visitTypeAlias(TypeAliasDecl typeAliasDecl) {
+//        typeChecker.validateType(nameAliasDeclNode.getUnderlyingType());
     }
 }

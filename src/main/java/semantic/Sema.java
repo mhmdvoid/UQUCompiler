@@ -1,6 +1,6 @@
 package semantic;
 
-import ast.ASTInfo;
+import ast.nodes.ASTInfo;
 
 // S.dec.actOn(); <- Create a new node saved in ASTOwn;
 public class Sema {

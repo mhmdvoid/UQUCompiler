@@ -1,6 +1,6 @@
 package semantic.scope;
 
-import ast.decl_def.ValueDecl;
+import ast.nodes.declaration.ValueDecl;
 import semantic.scope.type_scope.TypeContext;
 
 import java.util.HashMap;
