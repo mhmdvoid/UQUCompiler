@@ -26,4 +26,13 @@ public class TranslationUnit {
     public List<Decl> getDecls() {
         return decls;
     }
+
+    private void dump(int indent) {
+        System.out.println("TranslationUnit");
+        for (Decl decl : decls)
+            decl.dump(indent + 2);
+    }
+    public void dump() {
+        dump(0);
+    }
 }

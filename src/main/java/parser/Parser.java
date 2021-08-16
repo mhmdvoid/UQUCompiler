@@ -302,6 +302,7 @@ public class Parser {
         var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/main.uqulang", new ASTInfo());
 
         var tu = parser.parseTranslateUnit();
+        tu.dump();
         NameBinder.nameBinding(tu, tu.astInfo);
     }
 

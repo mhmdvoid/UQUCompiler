@@ -6,4 +6,9 @@ public class BoolLiteral extends Expression {
         super(ExprKind.BoolLiteral);
         this.value = value;
     }
+
+    @Override
+    public void dump(int indent) {
+
+    }
 }
