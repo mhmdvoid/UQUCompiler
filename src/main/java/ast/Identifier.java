@@ -1,5 +1,7 @@
 package ast;
 
+import compile.utils.IndentationKind;
+import compile.utils.Indenter;
 import lexer.Position;
 
 import java.util.Objects;
@@ -30,5 +32,10 @@ public class Identifier {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    public void dump(int indent) {
+        Indenter.indentWithShape(indent, IndentationKind.WhiteSpace);
+        System.out.println(name);
     }
 }

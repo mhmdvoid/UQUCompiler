@@ -1,3 +1,4 @@
 import math
 typealias Foo = int;
 var x: Foo = 10;
+func int main(x: int, u: int) {}
