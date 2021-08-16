@@ -1,0 +1,4 @@
+var foo : int = 10;
+var FOO : int = 10;
+var _F : int = 10;
+var bar: bool = true;

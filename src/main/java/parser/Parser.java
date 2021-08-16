@@ -1,12 +1,12 @@
 package parser;
 
-import ast.ASTInfo;
-import ast.Identifier;
-import ast.decl_def.*;
-import ast.expr_def.BoolLiteral;
-import ast.expr_def.Expression;
-import ast.expr_def.FuncBlockExpr;
-import ast.redesign.ASTNode;
+import ast.nodes.ASTInfo;
+import ast.nodes.Identifier;
+import ast.nodes.declaration.*;
+import ast.nodes.expression.BoolLiteral;
+import ast.nodes.expression.Expr;
+import ast.nodes.expression.FuncBlockExpr;
+import ast.nodes.ASTNode;
 import ast.type.Type;
 import lex_erro_log.ErrorLogger;
 import lexer.*;
@@ -22,7 +22,7 @@ import java.util.List;
 // parseArgType, parseArgName();  Why? Separation is always bette.
 // 2- parseArgType(globalScopeType); parseArgName(localContex);
 public class Parser {
-    private final LexerManager lexer;
+    private final Lexer lexer;
     private Token skippedToken, currentToken;
     private int idx;
     private boolean inError;
@@ -34,7 +34,7 @@ public class Parser {
     }
 
     public Parser(String srcPath, ASTInfo astInfo) {
-        lexer = new LexerManager(srcPath);
+        lexer = new Lexer(srcPath);
         idx = 0;
         sema = new Sema(astInfo);
     }
@@ -105,7 +105,7 @@ public class Parser {
         // Todo: We should have parseTopLevelDecl() && parseStatement(withScope: Scope);
         consume();  // Pump the lexer;
         var fileScope = new TranslationUnitScope();
-        var tu = new ast.decl_def.TranslationUnit(sema.astContext);
+        var tu = new ast.nodes.declaration.TranslationUnit(sema.astContext);
         while (see(TokenType.IMPORT) || see(TokenType.VAR) || see(TokenType.FUNC) || see(TokenType.TYPEALIAS) || see(TokenType.OPEN_MULTICOM)) { // Fixme: Should have *parseStatement(); and then branch
             switch (currentToken.getType()) {
                 case IMPORT -> tu.push(parseImportDecl());
@@ -116,9 +116,7 @@ public class Parser {
                 default -> System.err.println("Error syntax construct");
             }
         }
-//        if (parseEat(TokenType.EOF, "Expected decl...")) {
-//            ErrorLogger.log(SManagerSingleton.shared().srcCode(), currentToken.getPosition().column, currentToken.getPosition().newColumn());
-//        }
+        parseEat(TokenType.EOF, currentToken.loc());
         tu.tuScope = fileScope;
         System.out.println("Global ValueDecl " + fileScope.table);
         System.out.println("Global TypeScope " + fileScope.getTypeContext().typeScope);
@@ -176,16 +174,16 @@ public class Parser {
         return null; //  FIXME: 8/1/21 UnresolvedType
     }
 
-    Expression parseExpression(Scope scope) {
+    Expr parseExpression(Scope scope) {
         var loc = currentToken.loc();
         parseEat(TokenType.ASSIGN_OP,  loc);
 
         return parsePrimary(scope);
     }
 
-    private Expression parsePrimary(Scope scope) {
+    private Expr parsePrimary(Scope scope) {
         switch (currentToken.getType()) {
-            case NUMBER_LITERAL:
+            case NUMBER_LITERAL , TRUE, FALSE:
                 return parseValue();
             case IDENTIFIER: {
                 return parseIdentifierRef(scope);
@@ -194,7 +192,7 @@ public class Parser {
         return null;
     }
 
-    Expression parseValue() {
+    Expr parseValue() {
         if (have(TokenType.NUMBER_LITERAL)) {
             return sema.expr.semaNumberConstant(skippedToken.getTokenValue());// Sema.exp.actOnConstant();
         } else if (have(TokenType.TRUE) || have(TokenType.FALSE)) {
@@ -272,7 +270,7 @@ public class Parser {
 
 
 
-    Expression parseIdentifierRef(Scope scope) {
+    Expr parseIdentifierRef(Scope scope) {
         var id = parseIdentifier();
         return sema.expr.semaIdentifierRef(id, scope);
     }
@@ -299,11 +297,11 @@ public class Parser {
     }
 
     public static void main(String[] args) {
-        var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/main.uqulang", new ASTInfo());
+        var parser = new Parser("/Users/engmoht/IdeaProjects/UQUCompiler/main.uqulang", new ASTInfo());
 
         var tu = parser.parseTranslateUnit();
-        tu.dump();
-        NameBinder.nameBinding(tu, tu.astInfo);
+//        tu.dump();
+//        NameBinder.nameBinding(tu, tu.astInfo);
     }
 
 }

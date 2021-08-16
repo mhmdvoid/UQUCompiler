@@ -1,7 +1,7 @@
 package semantic;
 
-import ast.Identifier;
-import ast.decl_def.*;
+import ast.nodes.Identifier;
+import ast.nodes.declaration.*;
 
 import java.util.HashMap;
 import java.util.Map;

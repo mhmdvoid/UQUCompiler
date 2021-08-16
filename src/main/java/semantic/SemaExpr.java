@@ -1,10 +1,10 @@
 package semantic;
 
-import ast.Identifier;
-import ast.expr_def.Expression;
-import ast.expr_def.IntegerLiteral;
-import ast.expr_def.ReferenceDeclExpr;
-import ast.expr_def.UnresolvedReferenceExpr;
+import ast.nodes.Identifier;
+import ast.nodes.expression.Expr;
+import ast.nodes.expression.IntegerLiteral;
+import ast.nodes.expression.ReferenceDeclExpr;
+import ast.nodes.expression.UnresolvedReferenceExpr;
 import semantic.scope.Scope;
 
 public class SemaExpr extends SemaBase {
@@ -22,7 +22,7 @@ public class SemaExpr extends SemaBase {
         return new IntegerLiteral(textValue);
     }
 
-    public Expression semaIdentifierRef(Identifier identifier, Scope scope) {
+    public Expr semaIdentifierRef(Identifier identifier, Scope scope) {
         var valueDecl = sema.decl.lookupValueName(identifier, scope);
         // Lookup;
         // if (null) unresolvedRefExpression(identifier.name);

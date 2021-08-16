@@ -1,11 +1,11 @@
 package semantic;
 
-import ast.Identifier;
-import ast.ASTInfo;
-import ast.decl_def.*;
-import ast.expr_def.Expression;
-import ast.expr_def.ReferenceDeclExpr;
-import ast.expr_def.UnresolvedReferenceExpr;
+import ast.nodes.Identifier;
+import ast.nodes.ASTInfo;
+import ast.nodes.declaration.*;
+import ast.nodes.expression.Expr;
+import ast.nodes.expression.ReferenceDeclExpr;
+import ast.nodes.expression.UnresolvedReferenceExpr;
 import ast.type.Type;
 import ast.type.TypeKind;
 import ast.type.UnresolvedType;
@@ -96,7 +96,7 @@ public class NameBinder {
         }
     }
 
-    Expression bindValueDeclName(Identifier identifier) {
+    Expr bindValueDeclName(Identifier identifier) {
         var s = valueDecls.get(identifier);
         if (s != null) {
             System.out.println("We found a resolved one in your source code no need to look through imports " + s.identifier);
@@ -138,7 +138,7 @@ public class NameBinder {
         return new UnresolvedType(TypeKind.UNRESOLVED_KIND, identifier.name);
     }
 
-    Expression bindNames(Expression expression, NameBinder binder) {
+    Expr bindNames(Expr expression, NameBinder binder) {
         var unresolvedExpr = (UnresolvedReferenceExpr) expression;
         return binder.bindValueDeclName(unresolvedExpr.identifier);
     }

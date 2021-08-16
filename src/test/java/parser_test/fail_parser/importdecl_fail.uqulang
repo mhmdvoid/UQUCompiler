@@ -1,0 +1,2 @@
+import math;
+// import math.sum   // should fail. ignore it now as we're not supporting static/scope stuff. should just load a whole file

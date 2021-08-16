@@ -1,8 +1,8 @@
 package semantic;
 
-import ast.Identifier;
-import ast.decl_def.*;
-import ast.expr_def.Expression;
+import ast.nodes.Identifier;
+import ast.nodes.declaration.*;
+import ast.nodes.expression.Expr;
 import ast.type.Type;
 import ast.type.TypeKind;
 import ast.type.UnresolvedType;
@@ -72,7 +72,7 @@ public class SemaDecl extends SemaBase {
     }
 
     // Almost all have same sort of logic ! Well that's why we should move the name-binding logic somewhere. Looking up, Shadowing. This sort of things. And use polymorphism for ValueDecl nodes.
-    public VarDecl varDeclSema(Identifier identifier, Type type, Expression init, Scope scope) {
+    public VarDecl varDeclSema(Identifier identifier, Type type, Expr init, Scope scope) {
         var valueDecl = scope.lookup(identifier.name);
 
         if (valueDecl != null) {

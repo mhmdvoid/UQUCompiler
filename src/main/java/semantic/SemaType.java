@@ -1,6 +1,6 @@
 package semantic;
 
-import ast.Identifier;
+import ast.nodes.Identifier;
 import ast.type.Type;
 import semantic.scope.type_scope.TypeContext;
 

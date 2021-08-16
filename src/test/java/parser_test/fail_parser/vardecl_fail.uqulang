@@ -1,0 +1,7 @@
+x: int = 10;
+let x: int = 10;
+var y: bool = ;
+var foo: = 10;
+var bar = 10;
+var variable : int;
+var foo_bar : int = 10
