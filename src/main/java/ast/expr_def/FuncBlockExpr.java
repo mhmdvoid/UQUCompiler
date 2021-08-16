@@ -12,4 +12,9 @@ public class FuncBlockExpr extends Expression {
     public FuncBlockExpr(List<ASTNode> body) {
         super(ExprKind.FuncBlock);
     }
+
+    @Override
+    public void dump(int indent) {
+
+    }
 }

@@ -84,14 +84,14 @@ public class SemaDecl extends SemaBase {
         return (VarDecl) valueDecl;
     }
 
-    public FuncDecl funcDeclSema(Type type, Identifier identifier,/*, FuncBlockExpr block,*/ Scope globalScope) {
+    public FuncDecl funcDeclSema(Type type, Identifier identifier, List<ParamDecl> paramDecls, /*, FuncBlockExpr block,*/ Scope globalScope) {
         var funcDecl = globalScope.lookup(identifier.name);
 
         if (funcDecl != null) {
             System.err.println("Redefinition");return null;
         }
         // Null insert a new valueDecl to scope.
-        funcDecl = new FuncDecl(identifier, type);
+        funcDecl = new FuncDecl(identifier, type, paramDecls);
         globalScope.addEntry(1, identifier.name, funcDecl);
         return (FuncDecl) funcDecl;
     }

@@ -9,4 +9,9 @@ public class ReferenceDeclExpr extends Expression {
         super(ExprKind.ReferenceDecl);
         this.valueDecl = valueDecl;
     }
+
+    @Override
+    public void dump(int indent) {
+
+    }
 }

@@ -1,6 +1,8 @@
 package ast.decl_def;
 
 import ast.Identifier;
+import compile.utils.IndentationKind;
+import compile.utils.Indenter;
 import lexer.Position;
 
 public class ImportDecl extends Decl {
@@ -12,4 +14,9 @@ public class ImportDecl extends Decl {
         name = identifier;
     }
 
+    @Override
+    public void dump(int indent) {
+        Indenter.indentWithShape(indent, IndentationKind.WhiteSpace);//
+        System.out.println("ImportDecl");
+    }
 }

@@ -16,4 +16,6 @@ public abstract class Decl extends ASTNode {
     public Decl(DeclKind kind) {
         this.kind = kind;
     }
+
+    public abstract void dump(int indent);
 }

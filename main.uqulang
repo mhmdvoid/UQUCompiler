@@ -1,8 +1,4 @@
-var x: int = 10;
-var y: int = 9992;
-func int main(x: int, y: int, z: int) {}
-func int mai(x: int) {
-
-}
-// LocalVarDecl && Param increase the same
-// offsets for runtime organization.
+import math
+typealias Foo = int;
+var x: Foo = 10;
+func int main(x: int, u: int) {}

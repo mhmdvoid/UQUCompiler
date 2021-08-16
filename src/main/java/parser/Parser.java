@@ -225,7 +225,7 @@ public class Parser {
         var block = parseBlockExpr(blockScope);
         System.out.println("Local ValueDecl " + funcArgsScope.table);
         System.out.println("LocalTypeScope: " + funcArgsScope.getTypeContext().typeScope);
-        return sema.decl.funcDeclSema(type, id, tuScope);
+        return sema.decl.funcDeclSema(type, id, params, tuScope);
 
     }
 
@@ -302,6 +302,7 @@ public class Parser {
         var parser = new Parser("/Users/engmoht/IdeaProjects/UQULexer/main.uqulang", new ASTInfo());
 
         var tu = parser.parseTranslateUnit();
+        tu.dump();
         NameBinder.nameBinding(tu, tu.astInfo);
     }
 

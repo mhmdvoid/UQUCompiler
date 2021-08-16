@@ -20,4 +20,10 @@ public class ParamDecl extends ValueDecl {
                 ", type=" + type +
                 '}';
     }
+
+    @Override
+    public void dump(int indent) {
+        super.dump(indent);
+        identifier.dump(indent + 2);
+    }
 }

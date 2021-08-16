@@ -10,4 +10,9 @@ public class UnresolvedReferenceExpr extends Expression {
         super(ExprKind.UnresolvedReferenceExpr);
         this.identifier = identifier;
     }
+
+    @Override
+    public void dump(int indent) {
+
+    }
 }

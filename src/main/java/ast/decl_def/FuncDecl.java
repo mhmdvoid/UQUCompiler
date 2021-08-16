@@ -10,11 +10,20 @@ import java.util.List;
 // All AST nodes should be declared as private constructor !;
 public class FuncDecl extends ValueDecl {
     List<ParamDecl> paramDecls;
-    public FuncDecl(Identifier identifier, Type type/*, Expression initial*/) {
+    public FuncDecl(Identifier identifier, Type type, List<ParamDecl> paramDecls/*, Expression initial*/) {
         super(DeclKind.FuncDecl, identifier, type, null);  // Initial = funcBlock
+        this.paramDecls = paramDecls;
     }
 
     public FuncBlockExpr getBlock() {
         return (FuncBlockExpr) initial;
+    }
+
+    @Override
+    public void dump(int indent) {
+        super.dump(indent);
+        for (ParamDecl paramDecl : paramDecls) {
+            paramDecl.dump(indent + 2);
+        }
     }
 }
