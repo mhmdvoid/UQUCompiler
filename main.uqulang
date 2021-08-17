@@ -1,1 +1,1 @@
-var x: bool = true;
+var x: int = 5000000000000; // should now give us compile-error type as the value is too large to fit in 32bit signed integer in MIPS
