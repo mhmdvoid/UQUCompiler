@@ -1,5 +1,9 @@
 package ast.nodes.expression;
 
+import ast.nodes.visitor.ExprVisitor;
+
+import java.util.Optional;
+
 public class BoolLiteral extends Expr {
     String value;
     public BoolLiteral(String value) {
@@ -10,5 +14,10 @@ public class BoolLiteral extends Expr {
     @Override
     public void dump(int indent) {
 
+    }
+
+    @Override
+    public Optional<Expr> accept(ExprVisitor visitor) {
+        return visitor.visitBoolLiteral(this);
     }
 }
