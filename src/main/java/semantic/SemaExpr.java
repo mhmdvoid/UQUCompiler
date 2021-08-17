@@ -8,18 +8,26 @@ import ast.nodes.expression.UnresolvedReferenceExpr;
 import semantic.scope.Scope;
 
 public class SemaExpr extends SemaBase {
+    public boolean inError;
     public SemaExpr(Sema sema) {
         super(sema);
     }
 
     public IntegerLiteral semaNumberConstant(String textValue) {
-
-        // this is the sema part. assigning type, lookup, create node, redefinition error and similar;
-        /* 1- We check integer fits in 32-bits for mips otherwise compile-error value too large;
-           2- assign to it a type 'built-in type'
-           3- create a new node
-         */
-        return new IntegerLiteral(textValue);
+        // Parser && Lexer did a great job to ensure textValue is in a numerical representation, so we can parse it easily to Integer
+        // We'll use JVM help for now to check value fits in signed 32bit
+        // FIXME - Do the algorithm and don't throw
+        try {
+            var ignored = Integer.parseInt(textValue);  // evaluates fits or throw an error
+        } catch (Exception e) {
+            System.err.println("Compile-error: number is too large for int type...");  // FIXME - pass the location of the integer node with the function
+            inError = true;
+            textValue = "1";
+        }
+        // We're good here.
+        var intNode = new IntegerLiteral(textValue);
+        intNode.type = sema.astContext.int32Type;
+        return intNode;
     }
 
     public Expr semaIdentifierRef(Identifier identifier, Scope scope) {
