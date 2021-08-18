@@ -301,7 +301,7 @@ public class Parser {
 
         var tu = parser.parseTranslateUnit();
 //        tu.dump();
-//        NameBinder.nameBinding(tu, tu.astInfo);
+        NameBinder.nameBinding(tu, tu.astInfo);
     }
 
 }

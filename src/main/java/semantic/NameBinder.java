@@ -6,6 +6,8 @@ import ast.nodes.declaration.*;
 import ast.nodes.expression.Expr;
 import ast.nodes.expression.ReferenceDeclExpr;
 import ast.nodes.expression.UnresolvedReferenceExpr;
+import ast.nodes.visitor.FunctionalWalker;
+import ast.nodes.visitor.WalkOrder;
 import ast.type.Type;
 import ast.type.TypeKind;
 import ast.type.UnresolvedType;
@@ -69,12 +71,12 @@ public class NameBinder {
         // All source code valueDecl inserted we can check unresolvedExpr;
         for (Decl decl : tu.getDecls()) {
             if (decl instanceof ValueDecl) {
-                if (((ValueDecl) decl).initial instanceof UnresolvedReferenceExpr)
-                    ((ValueDecl) decl).initial = binder.bindNames(((ValueDecl) decl).initial, binder);  // Fixme
+                if (((ValueDecl) decl).initial != null)
+                    ((ValueDecl) decl).initial = ((ValueDecl) decl).initial.walk(new BindName(), binder);
             }
         }
 
-        // We before reporting an error should resolve them from imports. // We should do exactly the same?
+        // before reporting an error should resolve them from imports. // We should do exactly the same?
         tu.unresolvedTypeList.forEach(unresolvedType -> {
             unresolvedType.underlyingType = binder.bindTypeDecl(unresolvedType.identifier); // Fixme : Replace
         });
@@ -137,9 +139,22 @@ public class NameBinder {
         System.err.println("Not found in module as well");
         return new UnresolvedType(TypeKind.UNRESOLVED_KIND, identifier.name);
     }
+}
 
-    Expr bindNames(Expr expression, NameBinder binder) {
-        var unresolvedExpr = (UnresolvedReferenceExpr) expression;
-        return binder.bindValueDeclName(unresolvedExpr.identifier);
+class BindName implements FunctionalWalker {
+
+    @Override
+    public <T> Expr act(Expr expr, WalkOrder order, T data) {
+        assert data instanceof NameBinder;
+        var binder = (NameBinder) data;
+
+        // For down subExpr tree, preOrder is a leaf for most expression just return the leaf, and wait for any non-leaf calls up from walkExpr w/ PostOrder algorithm
+        if (order == WalkOrder.PreOrder) return expr;
+
+        // Ignore every other expr, Except unresolved ones
+        if (!(expr instanceof UnresolvedReferenceExpr unresolvedDeclRef)) return expr;
+
+        return binder.bindValueDeclName(unresolvedDeclRef.identifier);
     }
+
 }
