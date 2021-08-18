@@ -16,7 +16,7 @@ public class TestParser extends TestCase {
         var errorHappened = false;
         for (File file : Objects.requireNonNull(passDir.listFiles())) {
             parser_under_test = new Parser(file.getAbsolutePath(), new ASTInfo());
-            parser_under_test.parseTranslateUnit();
+            parser_under_test.parseTranslateUnitDecl();
             System.out.println(file.getName());
             errorHappened |= parser_under_test.isInError();
         }
@@ -29,7 +29,7 @@ public class TestParser extends TestCase {
         var errorHappened = false;
         for (File file : Objects.requireNonNull(failDir.listFiles())) {
             parser_under_test = new Parser(file.getAbsolutePath(), new ASTInfo());
-            parser_under_test.parseTranslateUnit();
+            parser_under_test.parseTranslateUnitDecl();
             errorHappened |= parser_under_test.isInError();
         }
         assertTrue(errorHappened);

@@ -1,0 +1,13 @@
+var x: int = 10 + x * y;
+
+// x: binType(ADD);  10 + bin(x, y, mul);
+tree is exactly like this now;
+    +
+  /   \
+10     *
+      / \
+     x   y
+
+// using post order algorithm:  will be left, right, root
+
+will be 10 then right 10xy*+; this is how it's, and then we need kinda a stack for postfix to analyze it.

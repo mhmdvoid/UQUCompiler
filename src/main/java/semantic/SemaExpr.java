@@ -1,10 +1,7 @@
 package semantic;
 
 import ast.nodes.Identifier;
-import ast.nodes.expression.Expr;
-import ast.nodes.expression.IntegerLiteral;
-import ast.nodes.expression.ReferenceDeclExpr;
-import ast.nodes.expression.UnresolvedReferenceExpr;
+import ast.nodes.expression.*;
 import semantic.scope.Scope;
 
 public class SemaExpr extends SemaBase {
@@ -30,6 +27,11 @@ public class SemaExpr extends SemaBase {
         return intNode;
     }
 
+    public BoolLiteral semaBoolLiteral(String textValue) {
+        var boolValue = new BoolLiteral(textValue);
+        boolValue.type = sema.astContext.bool8Type;
+        return boolValue;
+    }
     public Expr semaIdentifierRef(Identifier identifier, Scope scope) {
         var valueDecl = sema.decl.lookupValueName(identifier, scope);
         // Lookup;

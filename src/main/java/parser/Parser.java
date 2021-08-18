@@ -3,6 +3,7 @@ package parser;
 import ast.nodes.ASTInfo;
 import ast.nodes.Identifier;
 import ast.nodes.declaration.*;
+import ast.nodes.expression.BinExpr;
 import ast.nodes.expression.BoolLiteral;
 import ast.nodes.expression.Expr;
 import ast.nodes.expression.FuncBlockExpr;
@@ -101,7 +102,15 @@ public class Parser {
         }
     }
 
-    public TranslationUnit parseTranslateUnit() {
+    private boolean isExpr(TokenType tokenType) {
+        return tokenType == TokenType.NUMBER_LITERAL || tokenType == TokenType.TRUE
+               || tokenType == TokenType.FALSE || tokenType == TokenType.IDENTIFIER;
+    }
+
+    /*  ----------------------------------------------------------------------
+         Parse Decls
+        ----------------------------------------------------------------------   */
+    public TranslationUnit parseTranslateUnitDecl() {
         // Todo: We should have parseTopLevelDecl() && parseStatement(withScope: Scope);
         consume();  // Pump the lexer;
         var fileScope = new TranslationUnitScope();
@@ -111,7 +120,7 @@ public class Parser {
                 case IMPORT -> tu.push(parseImportDecl());
                 case VAR -> tu.push(parseVarDecl(fileScope));
                 case FUNC -> { consume(); tu.push(parseFuncDecl(fileScope)); }
-                case TYPEALIAS -> tu.push(parseTypeAlias(fileScope));
+                case TYPEALIAS -> tu.push(parseTypeAliasDecl(fileScope));
                 case OPEN_MULTICOM -> parseMultiComment();
                 default -> System.err.println("Error syntax construct");
             }
@@ -131,6 +140,19 @@ public class Parser {
         return sema.decl.importDeclSema(identifier);
     }
 
+    VarDecl parseVarDecl(Scope ctx) {
+        var loc = currentToken.loc();
+        parseEat(TokenType.VAR, loc);  // Should be consumed by client. not implementor as it's top-level decl kind of nodes.
+        var id = parseIdentifier();
+        parseEat(TokenType.COLON, currentToken.loc());
+//            ErrorLogger.log(SManagerSingleton.shared().srcCode(), currentToken.getPosition().column, currentToken.getPosition().newColumn());
+        var t = parseType(ctx);
+        var expression = parseInitializer(ctx);  // Sema.expre !;
+        parseEat(TokenType.SEMICOLON, currentToken.loc());  // we need to even advance loc
+        return sema.decl.varDeclSema(id, t, expression, ctx);
+    }
+
+
     public Identifier parseIdentifier() {
         var loc = currentToken.loc();
         parseEat(TokenType.IDENTIFIER,  loc);
@@ -139,78 +161,6 @@ public class Parser {
         return identifier;
     }
 
-    VarDecl parseVarDecl(Scope ctx) {
-        var loc = currentToken.loc();
-        parseEat(TokenType.VAR, loc);  // Should be consumed by client. not implementor as it's top-level decl kind of nodes.
-        var id = parseIdentifier();
-        parseEat(TokenType.COLON, currentToken.loc());
-//            ErrorLogger.log(SManagerSingleton.shared().srcCode(), currentToken.getPosition().column, currentToken.getPosition().newColumn());
-        var t = parseType(ctx);
-        var expression = parseExpression(ctx);  // Sema.expre !;
-        parseEat(TokenType.SEMICOLON, currentToken.loc());  // we need to even advance loc
-        return sema.decl.varDeclSema(id, t, expression, ctx);
-    }
-
-    public Type parseType(Scope ctx) {
-        var loc = currentToken.loc();
-        switch (currentToken.getType()) {
-            case IDENTIFIER -> {
-                var Id = parseIdentifier();
-                return sema.type.resolveTypename(Id, ctx.getTypeContext());
-            }
-            case INT_KWD -> {
-                consume();
-                return sema.type.resolveIntType();
-            }
-            case BOOL -> {
-                consume();
-                return sema.type.resolveBoolType();
-            }
-            default -> {
-                System.err.println("Must have type.." + loc);
-
-            }
-        }
-        return null; //  FIXME: 8/1/21 UnresolvedType
-    }
-
-    Expr parseExpression(Scope scope) {
-        var loc = currentToken.loc();
-        parseEat(TokenType.ASSIGN_OP,  loc);
-
-        return parsePrimary(scope);
-    }
-
-    private Expr parsePrimary(Scope scope) {
-        switch (currentToken.getType()) {
-            case NUMBER_LITERAL , TRUE, FALSE:
-                return parseValue();
-            case IDENTIFIER: {
-                return parseIdentifierRef(scope);
-            } /*case L_BRACE: {consume(); return parseBlockExpr(scope);}*/
-        }
-        return null;
-    }
-
-    Expr parseValue() {
-        if (have(TokenType.NUMBER_LITERAL)) {
-            return sema.expr.semaNumberConstant(skippedToken.getTokenValue());// Sema.exp.actOnConstant();
-        } else if (have(TokenType.TRUE) || have(TokenType.FALSE)) {
-            return new BoolLiteral(skippedToken.getTokenValue());
-        }
-
-        return null;  // should never reach
-    }
-
-    ASTNode parseFuncState(LocalScope scope) {
-        switch (currentToken.getType()) {
-            case VAR:
-                return parseVarDecl(scope);
-            default:
-                System.err.println("Unexpected construct token ");
-                return null;
-        }
-    }
 
     FuncDecl parseFuncDecl(Scope tuScope) {
         var type = parseType(tuScope);  // resolving funcType to be in TUScope
@@ -249,13 +199,8 @@ public class Parser {
         return sema.decl.paramDeclSema(identifier, paramType, funcScope);  // Fixme there's a bug sending funcScope to type will do no good maybe later!;
     }
 
-
-
-
-
-
     // WE should have a method called parse statementList(Scope ctx); gets called by the translation unit as well as class decl, struct decl, method decl;
-    public TypeAliasDecl parseTypeAlias(Scope ctx) {   // For every decl parsing and type parsing . decl means is this already defined /not defined at all ? type does this type even exist? this why we need scope
+    public TypeAliasDecl parseTypeAliasDecl(Scope ctx) {   // For every decl parsing and type parsing . decl means is this already defined /not defined at all ? type does this type even exist? this why we need scope
         var loc = currentToken.loc();
 
         parseEat(TokenType.TYPEALIAS, loc);
@@ -268,20 +213,99 @@ public class Parser {
         return node;
     }
 
+    /*  ----------------------------------------------------------------------
+        Parse Type
+        ----------------------------------------------------------------------   */
+    public Type parseType(Scope ctx) {
+        var loc = currentToken.loc();
+        switch (currentToken.getType()) {
+            case IDENTIFIER -> {
+                var Id = parseIdentifier();
+                return sema.type.resolveTypename(Id, ctx.getTypeContext());
+            }
+            case INT_KWD -> {
+                consume();
+                return sema.type.resolveIntType();
+            }
+            case BOOL -> {
+                consume();
+                return sema.type.resolveBoolType();
+            }
+            default -> {
+                System.err.println("Must have type.." + loc);
 
+            }
+        }
+        return null; //  FIXME: 8/1/21 UnresolvedType
+    }
+
+
+    /*  ----------------------------------------------------------------------
+        Parse Expr
+        ----------------------------------------------------------------------   */
+
+    Expr parseInitializer(Scope ctx) {
+        var eqLoc = currentToken.loc();
+        parseEat(TokenType.ASSIGN_OP, eqLoc);
+        return parseExpression(ctx);
+    }
+
+    Expr parseExpression(Scope scope) {
+        Expr expr;
+        do {
+            expr = parseExprPrimary(scope);
+        } while (isExpr(currentToken.getType()));
+
+        return expr;
+    }
+    Expr parseExprPrimary(Scope scope) {
+        var pmLoc = currentToken.loc();
+        Expr expr;  // should be named lhs?
+        switch (currentToken.getType()) {
+            case NUMBER_LITERAL: {
+                expr = sema.expr.semaNumberConstant(currentToken.getTokenValue());
+                consume();
+                break;
+            }
+            case TRUE:
+            case FALSE: {
+                expr = sema.expr.semaBoolLiteral(currentToken.getTokenValue());
+                consume();
+                break;
+            }
+            case IDENTIFIER:
+                expr = parseIdentifierRef(scope);
+                break;
+            default:
+                System.out.println("Expected Expr got: " + currentToken.getTokenValue() + " At: " + currentToken.loc());
+                consume();
+                return null;
+        }
+        // for sure we have here *
+        while (have(TokenType.MUL_OP)) {
+            expr = parseMultiplication(expr, scope);
+        }
+        while (have(TokenType.ADD_OP) || have(TokenType.SUB)) {
+            expr = parseAddition(expr, scope);
+        }
+        return expr;
+
+    }
+
+    Expr parseMultiplication(Expr expr, Scope scope) {
+        expr = new BinExpr(expr, parseExprPrimary(scope), BinExpr.BinExprKind.Multi); // 10 * 10 * x;
+        return expr;
+    }
+
+    Expr parseAddition(Expr expr, Scope scope) {
+        var kind = skippedToken.getType() == TokenType.ADD_OP ? BinExpr.BinExprKind.Add : BinExpr.BinExprKind.Sub;
+        expr = new BinExpr(expr, parseExprPrimary(scope), kind);  // We may use the kind as we walk
+        return expr;
+    }
 
     Expr parseIdentifierRef(Scope scope) {
         var id = parseIdentifier();
         return sema.expr.semaIdentifierRef(id, scope);
-    }
-
-    MultiCommentDecl parseMultiComment() {
-        while (!see(TokenType.CLOSE_MULTICOM)) {
-            consume();
-        }
-        consume();
-        // FIXME sema.decl.process;
-        return new MultiCommentDecl();
     }
 
     FuncBlockExpr parseBlockExpr(LocalScope nestedScope) {
@@ -296,12 +320,37 @@ public class Parser {
         // now this block should be injected into a different scope and give it a type. as of now it doesn't hold a type!
     }
 
+
+    /*
+    ////////////////// FIXME: These two should be moved/removed/redesigned
+     */
+    ASTNode parseFuncState(LocalScope scope) {
+        switch (currentToken.getType()) {
+            case VAR:
+                return parseVarDecl(scope);
+            default:
+                System.err.println("Unexpected construct token ");
+                return null;
+        }
+    }
+
+    MultiCommentDecl parseMultiComment() {
+        while (!see(TokenType.CLOSE_MULTICOM)) {
+            consume();
+        }
+        consume();
+        // FIXME sema.decl.process;
+        return new MultiCommentDecl();
+    }
+
+
+
     public static void main(String[] args) {
         var parser = new Parser("/Users/engmoht/IdeaProjects/UQUCompiler/main.uqulang", new ASTInfo());
 
-        var tu = parser.parseTranslateUnit();
+        var tu = parser.parseTranslateUnitDecl();
 //        tu.dump();
-        NameBinder.nameBinding(tu, tu.astInfo);
+//        NameBinder.nameBinding(tu, tu.astInfo);  FIXME: Bug is reduced by ExprWalker due to WalkBinExpr Now returns empty Expr and have nullptr exception
     }
 
 }
