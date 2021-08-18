@@ -88,7 +88,7 @@ public class NameBinder {
         var file = new File(name);
         try {
             var fis = new FileInputStream(file);
-            var tu = new Parser(file.getAbsolutePath(), new ASTInfo()).parseTranslateUnit();
+            var tu = new Parser(file.getAbsolutePath(), new ASTInfo()).parseTranslateUnitDecl();
             var mod = new Module(tu, moduleName.name);
             modules.add(mod);
             return mod;
