@@ -36,7 +36,20 @@ public class ExprWalker implements ExprVisitor {
 
     @Override
     public Optional<Expr> visitBinExpr(BinExpr binExpr) {
-        return Optional.empty();
+        // Before processing we may have unresolved nodes
+        // Our goal out of walking to fix and have more correct programs
+        // the idea is when done walking we check for nullptr, And other maybe invalid reasons for a node
+        // if everything is valid and not null ? we can take the expr as whole and fix it with new process leaves.
+
+        var fixedExpr = processEach(binExpr.lhs);
+        if (fixedExpr == null) return Optional.empty();
+
+        binExpr.lhs = fixedExpr; // save fixedExpr to lhs, So can be mutated.
+        fixedExpr = processEach(binExpr.rhs);
+        if (fixedExpr == null) return Optional.empty();
+
+        binExpr.rhs = fixedExpr;
+        return Optional.of(binExpr);
     }
 
     public Expr doIt(Expr dispatch) {
