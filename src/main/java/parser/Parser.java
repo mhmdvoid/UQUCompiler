@@ -350,7 +350,7 @@ public class Parser {
 
         var tu = parser.parseTranslateUnitDecl();
 //        tu.dump();
-//        NameBinder.nameBinding(tu, tu.astInfo);  FIXME: Bug is reduced by ExprWalker due to WalkBinExpr Now returns empty Expr and have nullptr exception
+        NameBinder.nameBinding(tu, tu.astInfo);
     }
 
 }
