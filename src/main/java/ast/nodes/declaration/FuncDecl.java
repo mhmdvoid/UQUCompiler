@@ -1,7 +1,7 @@
 package ast.nodes.declaration;
 
 import ast.nodes.Identifier;
-import ast.nodes.expression.FuncBlockExpr;
+import ast.nodes.expression.BlockExpr;
 import ast.type.Type;
 
 import java.util.List;
@@ -14,8 +14,8 @@ public class FuncDecl extends ValueDecl {
         this.paramDecls = paramDecls;
     }
 
-    public FuncBlockExpr getBlock() {
-        return (FuncBlockExpr) initial;
+    public BlockExpr getBlock() {
+        return (BlockExpr) initial;
     }
 
     @Override

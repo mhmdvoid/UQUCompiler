@@ -103,6 +103,13 @@ public class SemaDecl extends SemaBase {
         return newParam;
     }
 
+    // funcDecl should be already constructed and missing initial body
+    public FuncDecl funcBodySema(FuncDecl funcDecl, Expr block) {
+        // assert funcDecl and body not null;
+        funcDecl.initial = block;
+        return funcDecl;
+    }
+
     public ImportDecl importDeclSema(Identifier module) {
         return new ImportDecl(module);
     }
