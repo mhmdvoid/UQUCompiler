@@ -1,1 +1,6 @@
-var x: int = 10 + x * y;
+typealias Foo = int;
+
+func int bar() {
+    var x: Foo = 10;
+    return x;
+}

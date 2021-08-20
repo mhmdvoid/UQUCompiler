@@ -1,6 +1,7 @@
 package ast.nodes.declaration;
 
 import ast.nodes.Identifier;
+import ast.nodes.expression.Expr;
 import ast.type.Type;
 import ast.type.NameAliasType;
 import lexer.Position;
@@ -27,5 +28,10 @@ public class TypeAliasDecl extends Decl {
         for (int i = 0; i < indent; i++)
             System.out.print(" ");
         System.out.println("TypeAlias");
+    }
+
+    @Override
+    public Expr getExpr() {
+        return null;  // FIXME
     }
 }

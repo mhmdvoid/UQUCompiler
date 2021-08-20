@@ -2,7 +2,7 @@ package ast.nodes.statement;
 
 import ast.nodes.ASTNode;
 
-public class Statement extends ASTNode {
+public abstract class Statement implements ASTNode {
     StateKind kind;
 
     public Statement(StateKind kind) {

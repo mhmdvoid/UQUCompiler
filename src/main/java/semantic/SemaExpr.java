@@ -1,8 +1,10 @@
 package semantic;
 
+import ast.nodes.ASTNode;
 import ast.nodes.Identifier;
 import ast.nodes.expression.*;
 import semantic.scope.Scope;
+import java.util.List;
 
 public class SemaExpr extends SemaBase {
     public boolean inError;
@@ -41,5 +43,10 @@ public class SemaExpr extends SemaBase {
             return new UnresolvedReferenceExpr(identifier);
         }
         return new ReferenceDeclExpr(valueDecl);
+    }
+
+    public BlockExpr semaBlockExpr(/*Position loc*/ List<ASTNode> elements) {
+        // Do any type semantic for the block return type
+        return new BlockExpr(elements);
     }
 }

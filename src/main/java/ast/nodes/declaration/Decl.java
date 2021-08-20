@@ -10,7 +10,7 @@ import ast.nodes.ASTNode;
  *  Class defines all DeclNodes subclasses - Variable, Function, Similar.
  * This should allow us to walk different nodes easily.
  */
-public abstract class Decl extends ASTNode {
+public abstract class Decl implements ASTNode {
     DeclKind kind;
 
     public Decl(DeclKind kind) {

@@ -4,10 +4,10 @@ import ast.nodes.ASTInfo;
 import ast.nodes.Identifier;
 import ast.nodes.declaration.*;
 import ast.nodes.expression.BinExpr;
-import ast.nodes.expression.BoolLiteral;
 import ast.nodes.expression.Expr;
-import ast.nodes.expression.FuncBlockExpr;
+import ast.nodes.expression.BlockExpr;
 import ast.nodes.ASTNode;
+import ast.nodes.statement.ReturnState;
 import ast.type.Type;
 import lex_erro_log.ErrorLogger;
 import lexer.*;
@@ -18,6 +18,7 @@ import semantic.scope.Scope;
 import semantic.scope.TranslationUnitScope;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 // parseArgType, parseArgName();  Why? Separation is always bette.
@@ -42,7 +43,7 @@ public class Parser {
 
     /// Helpers
 
-    void skipTill(TokenType tokenType) {
+    void skipTill(TokenType tokenType) {  // For simple error recovery instead of having chain of errors
 
         while (currentToken.isNot(tokenType) && currentToken.isNot(TokenType.EOF))
             // Todo: Switch on tokens;
@@ -167,13 +168,14 @@ public class Parser {
         var id = parseIdentifier();
         var funcArgsScope = new FuncScope(tuScope);  // This should do it for now ;
         var blockScope = new LocalScope(funcArgsScope);
-//        blockScope.surroundingScope ;// this is the funcArgsScope
-//        blockScope.translationUnitScope
         var params = parseParamDecl(funcArgsScope);
+        var missingBlock = sema.decl.funcDeclSema(type, id, params, tuScope);
         var block = parseBlockExpr(blockScope);
-        System.out.println("Local ValueDecl " + funcArgsScope.table);
-        System.out.println("LocalTypeScope: " + funcArgsScope.getTypeContext().typeScope);
-        return sema.decl.funcDeclSema(type, id, params, tuScope);
+        if (block == null) {
+            System.err.println("For now function should have body " + currentToken.loc());
+            skipTill(TokenType.EOF);
+        }
+        return sema.decl.funcBodySema(missingBlock, block);
 
     }
 
@@ -308,15 +310,17 @@ public class Parser {
         return sema.expr.semaIdentifierRef(id, scope);
     }
 
-    FuncBlockExpr parseBlockExpr(LocalScope nestedScope) {
+    BlockExpr parseBlockExpr(LocalScope nestedScope) {
         var bLoc = currentToken.loc();
-        parseEat(TokenType.L_BRACE, bLoc);
-        var list = new ArrayList<ASTNode>();
+        if (parseEat(TokenType.L_BRACE, bLoc)) {
+            return null;
+        }
+        var blockElements = new ArrayList<ASTNode>();
         while (!see(TokenType.R_BRACE) && !see(TokenType.EOF)) {
-            list.add(parseFuncState(nestedScope));   // NOTE: function statements are handled here. lookup, and all simple semantic resolution process is already done through sending nestedScope as param
+            blockElements.add(parseBlockElem(nestedScope));   // NOTE: function statements are handled here. lookup, and all simple semantic resolution process is already done through sending nestedScope as param
         }
         parseEat(TokenType.R_BRACE, currentToken.loc());
-        return new FuncBlockExpr(list); // FIXME to do differently on blockExpr Why?, as semantic analysis is done for the function body through parseFuncState i.e they got into a local scope and everything;
+        return sema.expr.semaBlockExpr(blockElements); // FIXME to do differently on blockExpr Why?, as semantic analysis is done for the function body through parseFuncState i.e they got into a local scope and everything;
         // now this block should be injected into a different scope and give it a type. as of now it doesn't hold a type!
     }
 
@@ -324,12 +328,20 @@ public class Parser {
     /*
     ////////////////// FIXME: These two should be moved/removed/redesigned
      */
-    ASTNode parseFuncState(LocalScope scope) {
+    ASTNode parseBlockElem(LocalScope scope) {
         switch (currentToken.getType()) {
             case VAR:
                 return parseVarDecl(scope);
+            case TYPEALIAS:
+                return parseTypeAliasDecl(scope);
+            case RETURN: // return x; return 10 + 10; return 1;
+                consume();
+                Expr expr = null;
+                if (isExpr(currentToken.getType()))
+                    expr = parseExpression(scope);
+                parseEat(TokenType.SEMICOLON, currentToken.loc()); // if not? eat to r_brace of course don't just chain problem tokens
+                return new ReturnState(expr);
             default:
-                System.err.println("Unexpected construct token ");
                 return null;
         }
     }
