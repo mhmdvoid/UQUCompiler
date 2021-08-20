@@ -59,6 +59,7 @@ public class Token {
     }
 
     public boolean isNot(TokenType tokenType) {
-        return tokenType == this.type;
+        return tokenType != this.type;
     }
+    public boolean is(TokenType tokenType) { return tokenType == this.type; }
 }

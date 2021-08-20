@@ -44,13 +44,16 @@ public class Parser {
     /// Helpers
 
     void skipTill(TokenType tokenType) {  // For simple error recovery instead of having chain of errors
+        if (tokenType == null) return;
 
         while (currentToken.isNot(tokenType) && currentToken.isNot(TokenType.EOF))
             // Todo: Switch on tokens;
             consume();
-
     }
 
+     void skipTill() {
+        skipTill(null);
+     }
     boolean consume() {
         if (idx < lexer.getTokens().size()) {
             skippedToken = currentToken;
@@ -103,6 +106,24 @@ public class Parser {
         }
     }
 
+    // used for symbolic token `:, ), {, }, (, "," ,`
+    boolean parseToken(TokenType tokenType, TokenType skipToToken) {
+        if (currentToken.is(tokenType)) {
+            consume();
+            return false;
+        }
+        // logError;
+
+        // recover
+        skipTill(skipToToken);
+        if (tokenType == skipToToken && currentToken.is(skipToToken))
+            consume();
+        return true;
+    }
+
+    boolean parseToken(TokenType tokenType) {
+        return parseToken(tokenType, null);
+    }
     private boolean isExpr(TokenType tokenType) {
         return tokenType == TokenType.NUMBER_LITERAL || tokenType == TokenType.TRUE
                || tokenType == TokenType.FALSE || tokenType == TokenType.IDENTIFIER;
