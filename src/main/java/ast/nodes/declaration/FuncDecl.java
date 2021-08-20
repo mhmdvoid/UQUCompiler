@@ -14,6 +14,7 @@ public class FuncDecl extends ValueDecl {
         this.paramDecls = paramDecls;
     }
 
+    // BlocExpr can never be null by definition of our grammar. Can be empty though.
     public BlockExpr getBlock() {
         return (BlockExpr) initial;
     }

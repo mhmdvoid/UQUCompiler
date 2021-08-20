@@ -20,7 +20,7 @@ public class IntegerLiteral extends Expr {
     }
 
     @Override
-    public Optional<Expr> accept(ExprVisitor visitor) {
+    public Expr accept(ExprVisitor visitor) {
         return visitor.visitIntegerLiteral(this);
     }
 }

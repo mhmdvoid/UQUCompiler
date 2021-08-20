@@ -8,7 +8,7 @@ import ast.type.Type;
 
 import java.util.Optional;
 
-public abstract class Expr extends ASTNode {
+public abstract class Expr {
 
     ExprKind kind;   // This tells us subclasses . It's a design pattern used for polymorphism rather Switch statement.
     public Type type;
@@ -16,7 +16,7 @@ public abstract class Expr extends ASTNode {
         this.kind = kind;
     }
     public abstract void dump(int indent);
-    public abstract Optional<Expr> accept(ExprVisitor visitor);
+    public abstract Expr accept(ExprVisitor visitor);
 
     // The interface for other services to walk the expr & subExpr. So other clients won't need to do : subExpr.accept(Visitor visitor);
     public Expr walk(FunctionalWalker function, Object data) {

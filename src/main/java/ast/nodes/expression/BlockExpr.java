@@ -27,8 +27,8 @@ public class BlockExpr extends Expr {
     public int numElems() { return elements.size(); }
 
     @Override
-    public Optional<Expr> accept(ExprVisitor visitor) {
-        // TODO
-        return Optional.empty();
+    public Expr accept(ExprVisitor visitor) {
+        return visitor.visitBlockExpr(this);
     }
+
 }

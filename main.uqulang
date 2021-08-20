@@ -1,6 +1,6 @@
 typealias Foo = int;
 
 func int bar() {
-    typealias Foo2 = bool;
     var x: Foo = 10;
+    return x;
 }

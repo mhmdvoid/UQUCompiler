@@ -7,6 +7,7 @@ import ast.nodes.expression.BinExpr;
 import ast.nodes.expression.Expr;
 import ast.nodes.expression.BlockExpr;
 import ast.nodes.ASTNode;
+import ast.nodes.statement.ReturnState;
 import ast.type.Type;
 import lex_erro_log.ErrorLogger;
 import lexer.*;
@@ -17,6 +18,7 @@ import semantic.scope.Scope;
 import semantic.scope.TranslationUnitScope;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 // parseArgType, parseArgName();  Why? Separation is always bette.
@@ -169,8 +171,10 @@ public class Parser {
         var params = parseParamDecl(funcArgsScope);
         var missingBlock = sema.decl.funcDeclSema(type, id, params, tuScope);
         var block = parseBlockExpr(blockScope);
-//        if (block == null) funcDeclaration
-
+        if (block == null) {
+            System.err.println("For now function should have body " + currentToken.loc());
+            skipTill(TokenType.EOF);
+        }
         return sema.decl.funcBodySema(missingBlock, block);
 
     }
@@ -308,7 +312,9 @@ public class Parser {
 
     BlockExpr parseBlockExpr(LocalScope nestedScope) {
         var bLoc = currentToken.loc();
-        parseEat(TokenType.L_BRACE, bLoc);
+        if (parseEat(TokenType.L_BRACE, bLoc)) {
+            return null;
+        }
         var blockElements = new ArrayList<ASTNode>();
         while (!see(TokenType.R_BRACE) && !see(TokenType.EOF)) {
             blockElements.add(parseBlockElem(nestedScope));   // NOTE: function statements are handled here. lookup, and all simple semantic resolution process is already done through sending nestedScope as param
@@ -328,6 +334,13 @@ public class Parser {
                 return parseVarDecl(scope);
             case TYPEALIAS:
                 return parseTypeAliasDecl(scope);
+            case RETURN: // return x; return 10 + 10; return 1;
+                consume();
+                Expr expr = null;
+                if (isExpr(currentToken.getType()))
+                    expr = parseExpression(scope);
+                parseEat(TokenType.SEMICOLON, currentToken.loc()); // if not? eat to r_brace of course don't just chain problem tokens
+                return new ReturnState(expr);
             default:
                 return null;
         }

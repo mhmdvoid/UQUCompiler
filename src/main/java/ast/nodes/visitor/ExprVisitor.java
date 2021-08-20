@@ -1,20 +1,21 @@
 package ast.nodes.visitor;
 
 import ast.nodes.expression.*;
-
 import java.util.Optional;
 
+// It should be updated everytime You change AST weather remove or add child to nodes.
+// one visiting method per each AST concrete type
 public interface ExprVisitor {
 
-    Optional<Expr> visitIntegerLiteral(IntegerLiteral integerLiteral);
+    Expr visitIntegerLiteral(IntegerLiteral integerLiteral);
 
-    Optional<Expr> visitBoolLiteral(BoolLiteral boolLiteral);
+    Expr visitBoolLiteral(BoolLiteral boolLiteral);
 
-    Optional<Expr> visitRefDeclExpr(ReferenceDeclExpr referenceDeclExpr);
+    Expr visitRefDeclExpr(ReferenceDeclExpr referenceDeclExpr);
 
-    Optional<Expr> visitUnresolvedRefExpr(UnresolvedReferenceExpr unresolvedReferenceExpr);
+    Expr visitUnresolvedRefExpr(UnresolvedReferenceExpr unresolvedReferenceExpr);
 
-    //    Optional<Expr> visitFuncExpr();  // TODO
+    Expr visitBlockExpr(BlockExpr blockExpr);
 
-    Optional<Expr> visitBinExpr(BinExpr binExpr);
+    Expr visitBinExpr(BinExpr binExpr);
 }

@@ -13,4 +13,9 @@ public class IfState extends Statement{
     public IfState() {
         super(StateKind.IF_STATE);
     }
+
+    @Override
+    public Expr getExpr() {
+        return condition;
+    }
 }

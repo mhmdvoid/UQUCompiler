@@ -26,4 +26,9 @@ public class ValueDecl extends Decl{
         if (initial != null)
             initial.dump(indent + 2);
     }
+
+    @Override
+    public Expr getExpr() {
+        return initial;
+    }
 }
