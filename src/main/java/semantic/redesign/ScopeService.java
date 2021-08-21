@@ -1,9 +1,12 @@
 package semantic.redesign;
 
 import ast.nodes.Identifier;
+import ast.nodes.declaration.TypeAliasDecl;
 import ast.nodes.declaration.VarDecl;
 import ast.nodes.expression.Expr;
 import ast.type.Type;
+import ast.type.TypeKind;
+import ast.type.UnresolvedType;
 
 public class ScopeService {
 
@@ -29,5 +32,42 @@ public class ScopeService {
         decl = new VarDecl(identifier, type, init);
         ADTScope.getInstance().addValueDecl(identifier, decl);
         return (VarDecl) decl;
+    }
+
+    public TypeAliasDecl typeAliasDeclScope(Type type, Identifier identifier) {
+        var decl = ADTScope.getInstance().lookupTypeParent(identifier);
+        if (decl == null /*|| adt.currentLevel != depthFoundIn*/) {
+            // if (decl != null && type unresolved) {  found and for sure you can't find decl in the same level. so found in anohter level
+                    // type unresolved is double check of course; and means was injected to outermost;
+            //  fix it and make the typedecl.type = toTyope
+            // }
+
+
+            decl = new TypeAliasDecl(type, identifier);
+            ADTScope.getInstance().addTypeDecl(identifier, decl);
+            return decl;
+        }
+
+        if (decl.underlyingType.getKind() == TypeKind.UNRESOLVED_KIND) {
+            decl.underlyingType = type;
+            return decl;
+        }
+        System.err.println("Invalid redeclaration");
+        return null;
+    }
+
+
+    // Deeply to check by type;
+    public Type lookupUseType(Identifier identifier) {
+        var exist = ADTScope.getInstance().lookupTypeParent(identifier);
+        if (exist != null) {
+            // Forward: decl was found before use;
+            return exist.getNameAliasType();
+        }
+        // inject it in outermost;
+        exist = new TypeAliasDecl(new UnresolvedType(TypeKind.UNRESOLVED_KIND, "unresolved"), identifier);
+        var outermost = ADTScope.getInstance().outermost();
+        ADTScope.getInstance().insertInto(outermost, identifier, exist);
+        return exist.getNameAliasType();
     }
 }

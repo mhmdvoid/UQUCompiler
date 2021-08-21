@@ -19,7 +19,6 @@ import semantic.scope.Scope;
 import semantic.scope.TranslationUnitScope;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 // parseArgType, parseArgName();  Why? Separation is always bette.
@@ -232,7 +231,7 @@ public class Parser {
         parseEat(TokenType.ASSIGN_OP, currentToken.loc());
         var typ = parseType(ctx);
         parseEat(TokenType.SEMICOLON, currentToken.loc());  // Diagnostic;
-        var node = sema.decl.typeAliasSema(/*loc,*/ identifier, typ, ctx.getTypeContext());
+        var node = ScopeService.init().typeAliasDeclScope(/*loc,*/ typ, identifier);
         node.location = loc;
         return node;
     }
@@ -245,7 +244,7 @@ public class Parser {
         switch (currentToken.getType()) {
             case IDENTIFIER -> {
                 var Id = parseIdentifier();
-                return sema.type.resolveTypename(Id, ctx.getTypeContext());
+                return ScopeService.init().lookupUseType(Id);
             }
             case INT_KWD -> {
                 consume();

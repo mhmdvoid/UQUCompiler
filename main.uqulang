@@ -1,2 +1,2 @@
-var x: int = 10;
-var x: int = 120;
+var x: Bar = 0;
+typealias Bar = int;
