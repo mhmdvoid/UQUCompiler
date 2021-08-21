@@ -34,16 +34,7 @@ public class SemaExpr extends SemaBase {
         boolValue.type = sema.astContext.bool8Type;
         return boolValue;
     }
-    public Expr semaIdentifierRef(Identifier identifier, Scope scope) {
-        var valueDecl = sema.decl.lookupValueName(identifier, scope);
-        // Lookup;
-        // if (null) unresolvedRefExpression(identifier.name);
-        if (valueDecl == null) {
-//            System.out.println("Unresolved " + identifier.name + " til now. Check NameBinder");
-            return new UnresolvedReferenceExpr(identifier);
-        }
-        return new ReferenceDeclExpr(valueDecl);
-    }
+
 
     public BlockExpr semaBlockExpr(/*Position loc*/ List<ASTNode> elements) {
         // Do any type semantic for the block return type

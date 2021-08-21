@@ -12,6 +12,7 @@ import ast.type.Type;
 import lex_erro_log.ErrorLogger;
 import lexer.*;
 import semantic.*;
+import semantic.redesign.ADTScope;
 import semantic.redesign.ScopeService;
 import semantic.scope.FuncScope;
 import semantic.scope.LocalScope;
@@ -150,7 +151,7 @@ public class Parser {
 //        tu.tuScope = fileScope;
 //        System.out.println("Global ValueDecl " + fileScope.table);
 //        System.out.println("Global TypeScope " + fileScope.getTypeContext().typeScope);
-        sema.decl.handleEndOfTranslationUnit(tu);  // Replace: NameBinder.nameBinding(tu, this.sema.astContext);
+        ScopeService.init().handleEndOfTranslationUnit(tu);  // Replace: NameBinder.nameBinding(tu, this.sema.astContext);
         return tu;
     }
 
@@ -158,7 +159,7 @@ public class Parser {
         var loc = currentToken.loc();
         parseEat(TokenType.IMPORT, loc);
         var identifier = parseIdentifier();
-        return sema.decl.importDeclSema(identifier);
+        return ScopeService.init().importDeclSema(identifier);
     }
 
     VarDecl parseVarDecl() {
@@ -195,7 +196,7 @@ public class Parser {
             skipTill(TokenType.EOF);
         }
         ScopeService.init().exitScope();
-        return sema.decl.funcBodySema(missingBlock, block);
+        return ScopeService.init().funcBodyScope(missingBlock, block);
 
     }
 

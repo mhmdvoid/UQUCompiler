@@ -38,6 +38,11 @@ public class ScopeService {
         ADTScope.getInstance().exitScope();
     }
 
+    public void handleEndOfTranslationUnit(TranslationUnit tu) {
+        unresolvedTypeList.removeIf(typeAliasDecl -> typeAliasDecl.underlyingType.getKind() != TypeKind.UNRESOLVED_KIND);
+        tu.unresolvedTypeList.addAll(unresolvedTypeList);
+    }
+
     //----------------------------------------------------------------------//
     //                              Decls   `                               //
     //----------------------------------------------------------------------//
@@ -100,6 +105,15 @@ public class ScopeService {
         return (ParamDecl) param;
     }
 
+    public FuncDecl funcBodyScope(FuncDecl funcDecl, Expr block) {
+        // assert funcDecl and body not null;
+        funcDecl.initial = block;
+        return funcDecl;
+    }
+
+    public ImportDecl importDeclSema(Identifier module) {
+        return new ImportDecl(module);
+    }
 
     //----------------------------------------------------------------------//
     //                              Lookups                                 //
