@@ -39,6 +39,7 @@ public class ADTScope {
     }
 
     public void exitScope() {
+        parent = --level;
         scopeStack.pop();
     }
 
@@ -69,8 +70,8 @@ public class ADTScope {
             var p = scopeStack.get(i).second().get(identifier);
             if (p != null) {
                 // Redefinition: Decl exists && found in same level.
-                // we could say if not same level but unresolved do it here.
-                if (i != level) return null;
+                if (i != level) return null;  // This way get rid of lookupCurrentType
+                // as we don't need it anymore. TODO: replace lookupCurrent with level/depth encapsulation
                 return p;
             }
         }

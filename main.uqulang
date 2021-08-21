@@ -1,2 +1,5 @@
-var x: Bar = 0;
-func Bar main() {}
+
+// x here is unresolved
+func int main(x: Foo) {
+    typealias Foo = int;
+}

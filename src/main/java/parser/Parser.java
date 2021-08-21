@@ -189,6 +189,7 @@ public class Parser {
         var id = parseIdentifier();
         var funcArgsScope = new FuncScope(tuScope);  // This should do it for now ;
         var blockScope = new LocalScope(funcArgsScope);
+        ScopeService.init().newScope();
         var params = parseParamDecl(funcArgsScope);
         var missingBlock = ScopeService.init().funcDeclScope(id, type, params);
         var block = parseBlockExpr(blockScope);
@@ -196,6 +197,7 @@ public class Parser {
             System.err.println("For now function should have body " + currentToken.loc());
             skipTill(TokenType.EOF);
         }
+        ScopeService.init().exitScope();
         return sema.decl.funcBodySema(missingBlock, block);
 
     }
@@ -219,7 +221,7 @@ public class Parser {
         var identifier = parseIdentifier();
         parseEat(TokenType.COLON, currentToken.loc());
         var paramType = parseType(funcScope.translationUnitScope);
-        return sema.decl.paramDeclSema(identifier, paramType, funcScope);  // Fixme there's a bug sending funcScope to type will do no good maybe later!;
+        return ScopeService.init().paramDeclScope(identifier, paramType);
     }
 
     // WE should have a method called parse statementList(Scope ctx); gets called by the translation unit as well as class decl, struct decl, method decl;
@@ -336,11 +338,14 @@ public class Parser {
         if (parseEat(TokenType.L_BRACE, bLoc)) {
             return null;
         }
+        ScopeService.init().newScope();
         var blockElements = new ArrayList<ASTNode>();
         while (!see(TokenType.R_BRACE) && !see(TokenType.EOF)) {
             blockElements.add(parseBlockElem(nestedScope));   // NOTE: function statements are handled here. lookup, and all simple semantic resolution process is already done through sending nestedScope as param
         }
         parseEat(TokenType.R_BRACE, currentToken.loc());
+        // exitScope
+        ScopeService.init().exitScope();
         return sema.expr.semaBlockExpr(blockElements); // FIXME to do differently on blockExpr Why?, as semantic analysis is done for the function body through parseFuncState i.e they got into a local scope and everything;
         // now this block should be injected into a different scope and give it a type. as of now it doesn't hold a type!
     }
