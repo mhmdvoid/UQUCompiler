@@ -7,13 +7,15 @@ import java.util.Stack;
 
 public class ADTScope {
 
+
+    private int parent = -1;
     public int level = -1;  // like the current scope
     Stack<PairScope> scopeStack = new Stack<>();
     private static ADTScope shared;
 
     private ADTScope() {}
 
-    private static class PairScope {
+    public static class PairScope {
         ValueHT valueScope;
         TypeHT typeScope;
 
@@ -32,7 +34,7 @@ public class ADTScope {
     }
 
     public void enterScope() {
-        level++;
+        parent = ++level;
         scopeStack.push(new PairScope());
     }
 
@@ -94,5 +96,10 @@ public class ADTScope {
     // FIXME
     public void insertInto(TypeHT typeScope, Identifier identifier, TypeAliasDecl decl) {
         typeScope.put(identifier, decl);
+    }
+
+    public TypeHT getParent() {
+        if (parent < 0 || parent == 0) return null;
+        return scopeStack.get(--parent).second();
     }
 }

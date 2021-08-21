@@ -1,12 +1,16 @@
 package semantic.redesign;
 
 import ast.nodes.Identifier;
+import ast.nodes.declaration.FuncDecl;
+import ast.nodes.declaration.ParamDecl;
 import ast.nodes.declaration.TypeAliasDecl;
 import ast.nodes.declaration.VarDecl;
 import ast.nodes.expression.Expr;
 import ast.type.Type;
 import ast.type.TypeKind;
 import ast.type.UnresolvedType;
+
+import java.util.List;
 
 public class ScopeService {
 
@@ -54,6 +58,17 @@ public class ScopeService {
         }
         System.err.println("Invalid redeclaration");
         return null;
+    }
+
+    public FuncDecl funcDeclScope(Identifier identifier, Type type, List<ParamDecl> paramDecls) {
+        var fn = ADTScope.getInstance().lookupParent(identifier); // current scope already
+        if (fn != null) {
+            System.err.println("Invalid redeclaration");
+            return null;
+        }
+        fn = new FuncDecl(identifier, type, paramDecls);
+        ADTScope.getInstance().addValueDecl(identifier, fn);
+        return (FuncDecl) fn;
     }
 
 

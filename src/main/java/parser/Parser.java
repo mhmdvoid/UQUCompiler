@@ -190,7 +190,7 @@ public class Parser {
         var funcArgsScope = new FuncScope(tuScope);  // This should do it for now ;
         var blockScope = new LocalScope(funcArgsScope);
         var params = parseParamDecl(funcArgsScope);
-        var missingBlock = sema.decl.funcDeclSema(type, id, params, tuScope);
+        var missingBlock = ScopeService.init().funcDeclScope(id, type, params);
         var block = parseBlockExpr(blockScope);
         if (block == null) {
             System.err.println("For now function should have body " + currentToken.loc());

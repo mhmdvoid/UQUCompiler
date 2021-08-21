@@ -1,2 +1,2 @@
 var x: Bar = 0;
-typealias Bar = int;
+func Bar main() {}
