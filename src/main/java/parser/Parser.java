@@ -12,6 +12,7 @@ import ast.type.Type;
 import lex_erro_log.ErrorLogger;
 import lexer.*;
 import semantic.*;
+import semantic.redesign.ScopeService;
 import semantic.scope.FuncScope;
 import semantic.scope.LocalScope;
 import semantic.scope.Scope;
@@ -171,7 +172,7 @@ public class Parser {
         var t = parseType(ctx);
         var expression = parseInitializer(ctx);  // Sema.expre !;
         parseEat(TokenType.SEMICOLON, currentToken.loc());  // we need to even advance loc
-        return sema.decl.varDeclSema(id, t, expression, ctx);
+        return ScopeService.init().varDeclScope(id, t, expression);
     }
 
 
