@@ -15,8 +15,4 @@ public class SemaType extends SemaBase {
     public Type resolveBoolType() {
         return sema.astContext.bool8Type;
     }
-
-    public Type resolveTypename(Identifier identifier, TypeContext ctx) {
-        return sema.decl.lookupTypename(identifier, ctx).getNameAliasType();
-    }
 }
