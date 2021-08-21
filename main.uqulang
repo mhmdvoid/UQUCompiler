@@ -2,4 +2,5 @@
 // x here is unresolved
 func int main(x: Foo) {
     typealias Foo = int;
+    return x;
 }

@@ -1,11 +1,10 @@
 package semantic.redesign;
 
 import ast.nodes.Identifier;
-import ast.nodes.declaration.FuncDecl;
-import ast.nodes.declaration.ParamDecl;
-import ast.nodes.declaration.TypeAliasDecl;
-import ast.nodes.declaration.VarDecl;
+import ast.nodes.declaration.*;
 import ast.nodes.expression.Expr;
+import ast.nodes.expression.ReferenceDeclExpr;
+import ast.nodes.expression.UnresolvedReferenceExpr;
 import ast.type.Type;
 import ast.type.TypeKind;
 import ast.type.UnresolvedType;
@@ -118,5 +117,16 @@ public class ScopeService {
         unresolvedTypeList.add(exist);
         unresolvedMap.put(identifier, exist);
         return exist.getNameAliasType();
+    }
+    public Expr lookupValueName(Identifier identifier) {
+        var value = ADTScope.getInstance().lookupParent(identifier);
+        if (value == null) {
+            System.err.println("Ignore it: Unresolved Reference " + identifier + " later phases to resolve it");
+            // notice this objects gets called while parsing having the ability to know little info can beStored;
+            // TODO: Store this little info, unresolvedReferences.push(x);
+            return new UnresolvedReferenceExpr(identifier);
+        }
+        return new ReferenceDeclExpr(value);
+
     }
 }
