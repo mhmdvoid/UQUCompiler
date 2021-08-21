@@ -1,6 +1,2 @@
-typealias Foo = int;
-
-func int bar() {
-    var x: Foo = 10;
-    return x;
-}
+var x: Bar = 0;
+typealias Bar = int;

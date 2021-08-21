@@ -12,13 +12,13 @@ import ast.type.Type;
 import lex_erro_log.ErrorLogger;
 import lexer.*;
 import semantic.*;
+import semantic.redesign.ScopeService;
 import semantic.scope.FuncScope;
 import semantic.scope.LocalScope;
 import semantic.scope.Scope;
 import semantic.scope.TranslationUnitScope;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 // parseArgType, parseArgName();  Why? Separation is always bette.
@@ -171,7 +171,7 @@ public class Parser {
         var t = parseType(ctx);
         var expression = parseInitializer(ctx);  // Sema.expre !;
         parseEat(TokenType.SEMICOLON, currentToken.loc());  // we need to even advance loc
-        return sema.decl.varDeclSema(id, t, expression, ctx);
+        return ScopeService.init().varDeclScope(id, t, expression);
     }
 
 
@@ -231,7 +231,7 @@ public class Parser {
         parseEat(TokenType.ASSIGN_OP, currentToken.loc());
         var typ = parseType(ctx);
         parseEat(TokenType.SEMICOLON, currentToken.loc());  // Diagnostic;
-        var node = sema.decl.typeAliasSema(/*loc,*/ identifier, typ, ctx.getTypeContext());
+        var node = ScopeService.init().typeAliasDeclScope(/*loc,*/ typ, identifier);
         node.location = loc;
         return node;
     }
@@ -244,7 +244,7 @@ public class Parser {
         switch (currentToken.getType()) {
             case IDENTIFIER -> {
                 var Id = parseIdentifier();
-                return sema.type.resolveTypename(Id, ctx.getTypeContext());
+                return ScopeService.init().lookupUseType(Id);
             }
             case INT_KWD -> {
                 consume();
